@@ -28,27 +28,27 @@ class FaceAttendanceService {
   bool get isCameraActive => _isCameraActive;
 
   /// Initialize camera and permissions
-  Future<bool> initializeCamera() async {
+  Future<dynamic> initializeCamera() async {
     try {
       // Request camera permission
       final cameraStatus = await Permission.camera.request();
       if (cameraStatus != PermissionStatus.granted) {
         print('❌ Camera permission denied');
-        return false;
+        return 'Camera permission denied';
       }
 
       // Request location permission
       final locationStatus = await Permission.location.request();
       if (locationStatus != PermissionStatus.granted) {
         print('❌ Location permission denied');
-        return false;
+        return 'Location permission denied';
       }
 
       // Get available cameras
       _cameras = await availableCameras();
       if (_cameras == null || _cameras!.isEmpty) {
         print('❌ No cameras available');
-        return false;
+        return 'No cameras available';
       }
 
       // Initialize camera controller with front camera if available
@@ -64,13 +64,22 @@ class FaceAttendanceService {
       );
 
       await _cameraController!.initialize();
+
+      // Verify camera is actually initialized (important for iOS)
+      if (!_cameraController!.value.isInitialized) {
+        print('❌ Camera initialization failed - not initialized');
+        await _cameraController!.dispose();
+        _cameraController = null;
+        return 'Camera initialization failed';
+      }
+
       _isInitialized = true;
 
       print('✅ Camera initialized successfully');
       return true;
     } catch (e) {
       print('❌ Error initializing camera: $e');
-      return false;
+      return 'Error initializing camera: $e';
     }
   }
 
@@ -78,11 +87,24 @@ class FaceAttendanceService {
   Future<void> startCamera() async {
     if (_isInitialized && _cameraController != null) {
       try {
+        // Verify camera is initialized before resuming (critical for iOS)
+        if (!_cameraController!.value.isInitialized) {
+          print('❌ Camera not initialized, cannot start preview');
+          return;
+        }
+
+        // On iOS, ensure camera is ready before resuming
+        if (Platform.isIOS) {
+          // Wait a bit for iOS camera to be fully ready
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+
         await _cameraController!.resumePreview();
         _isCameraActive = true;
         print('✅ Camera started');
       } catch (e) {
         print('❌ Error starting camera: $e');
+        rethrow;
       }
     }
   }

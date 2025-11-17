@@ -85,7 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Welcome ${employee?.name ?? _emailController.text}!'),
+              content: Text(
+                'Welcome ${employee?.name ?? _emailController.text}!',
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -93,7 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const FaceAttendanceScreen()),
+            MaterialPageRoute(
+              builder: (context) => const FaceAttendanceScreen(),
+            ),
           );
         } else {
           if (mounted) {
@@ -178,7 +182,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Secure Access',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.blueGrey[900],
                             ),
@@ -187,8 +192,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         'Connect with your Odoo HR workspace',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.blueGrey[500],
-                            ),
+                          color: Colors.blueGrey[500],
+                        ),
                       ),
                     ],
                   ),
@@ -211,8 +216,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Email is required';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value.trim())) {
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value.trim())) {
                       return 'Enter a valid email';
                     }
                     return null;
@@ -232,7 +238,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                     ),
                     filled: true,
@@ -269,7 +277,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : const Text(
@@ -292,23 +302,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Current Server',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: Colors.blueGrey[400],
-                            ),
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(color: Colors.blueGrey[400]),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         OdooConfig.baseUrl,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Database: ${OdooConfig.database}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.blueGrey[500],
-                            ),
+                          color: Colors.blueGrey[500],
+                        ),
                       ),
                     ],
                   ),

@@ -202,8 +202,8 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
   Future<Map<String, dynamic>?> _showCameraAndCapture() async {
     if (!_faceService.isInitialized) {
       final initialized = await _faceService.initializeCamera();
-      if (!initialized) {
-        _setFeedback('Camera not available on this device.', success: false);
+      if (initialized is String) {
+        _setFeedback(initialized, success: false);
         return null;
       }
     }
@@ -215,19 +215,23 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       return null;
     }
 
+    // Verify camera is initialized before showing preview (critical for iOS)
+    if (!controller.value.isInitialized) {
+      _setFeedback('Camera not initialized. Please try again.', success: false);
+      return null;
+    }
+
     await _faceService.startCamera();
 
-    final result = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.black,
-      builder: (_) {
-        return _CameraCaptureSheet(
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _CameraCapturePage(
           controller: controller,
-          parentContext: context,
           onCapture: () => _faceService.takeAttendancePhoto(),
-        );
-      },
+        ),
+        fullscreenDialog: true,
+      ),
     );
 
     return result;
@@ -627,23 +631,32 @@ class _FeedbackBanner extends StatelessWidget {
   }
 }
 
-class _CameraCaptureSheet extends StatefulWidget {
-  const _CameraCaptureSheet({
-    required this.controller,
-    required this.parentContext,
-    required this.onCapture,
-  });
+class _CameraCapturePage extends StatefulWidget {
+  const _CameraCapturePage({required this.controller, required this.onCapture});
 
   final CameraController controller;
-  final BuildContext parentContext;
   final Future<Map<String, dynamic>> Function() onCapture;
 
   @override
-  State<_CameraCaptureSheet> createState() => _CameraCaptureSheetState();
+  State<_CameraCapturePage> createState() => _CameraCapturePageState();
 }
 
-class _CameraCaptureSheetState extends State<_CameraCaptureSheet> {
+class _CameraCapturePageState extends State<_CameraCapturePage> {
   bool _isCapturing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure camera is ready on iOS
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !widget.controller.value.isInitialized) {
+        Navigator.of(context).pop({
+          'success': false,
+          'error': 'Camera not ready. Please try again.',
+        });
+      }
+    });
+  }
 
   Future<void> _handleCapture() async {
     if (_isCapturing) return;
@@ -656,17 +669,21 @@ class _CameraCaptureSheetState extends State<_CameraCaptureSheet> {
       if (!mounted) return;
 
       if (result['success'] == true) {
-        Navigator.of(context).pop(result);
+        if (mounted) {
+          Navigator.of(context).pop(result);
+        }
       } else {
-        final message =
-            result['error']?.toString() ?? 'Capture failed. Try again.';
-        ScaffoldMessenger.of(widget.parentContext).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.red),
-        );
+        if (mounted) {
+          final message =
+              result['error']?.toString() ?? 'Capture failed. Try again.';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message), backgroundColor: Colors.red),
+          );
+        }
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(widget.parentContext).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Capture error: $e'),
           backgroundColor: Colors.red,
@@ -683,47 +700,111 @@ class _CameraCaptureSheetState extends State<_CameraCaptureSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      heightFactor: 0.85,
-      child: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-                child: CameraPreview(widget.controller),
+    // Check if camera is initialized before showing preview (critical for iOS)
+    if (!widget.controller.value.isInitialized) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: Colors.white),
+              SizedBox(height: 16),
+              Text(
+                'Initializing camera...',
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isCapturing ? null : _handleCapture,
-                  icon: _isCapturing
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Full screen camera preview
+            Positioned.fill(child: CameraPreview(widget.controller)),
+            // Bottom controls overlay
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.7),
+                      Colors.black.withValues(alpha: 0.9),
+                    ],
+                  ),
+                ),
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+                child: SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _isCapturing ? null : _handleCapture,
+                          icon: _isCapturing
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(Icons.camera_alt_outlined),
+                          label: Text(
+                            _isCapturing
+                                ? 'Capturing...'
+                                : 'Capture & Continue',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[600],
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                        )
-                      : const Icon(Icons.camera_alt_outlined),
-                  label: Text(
-                    _isCapturing ? 'Capturing...' : 'Capture & Continue',
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[600],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Position your face in the frame',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
               ),

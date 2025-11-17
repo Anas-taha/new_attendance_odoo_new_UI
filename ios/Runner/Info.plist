@@ -47,6 +47,7 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access for face recognition attendance</string>
+	
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs location access for attendance verification</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
