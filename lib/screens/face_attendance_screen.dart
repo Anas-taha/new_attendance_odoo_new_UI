@@ -48,7 +48,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
   Future<void> _initialize() async {
     await _ensureEmployeeId();
     if (!_faceService.isInitialized) {
-      await _faceService.initializeCamera();
+      await _faceService.initializeCamera(context: context);
     }
     await _refreshAttendanceStatus();
     await _setupLocationUpdates();
@@ -201,7 +201,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
 
   Future<Map<String, dynamic>?> _showCameraAndCapture() async {
     if (!_faceService.isInitialized) {
-      final initialized = await _faceService.initializeCamera();
+      final initialized = await _faceService.initializeCamera(context: context);
       if (initialized is String) {
         _setFeedback(initialized, success: false);
         return null;

@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter/material.dart';
 import '../config/odoo_config.dart';
 import 'odoo_rpc_service.dart';
 
@@ -28,8 +29,18 @@ class FaceAttendanceService {
   bool get isCameraActive => _isCameraActive;
 
   /// Initialize camera and permissions
-  Future<dynamic> initializeCamera() async {
+  Future<dynamic> initializeCamera({BuildContext? context}) async {
     try {
+      // Request notification permission
+      final notificationStatus = await Permission.notification.request();
+      if (notificationStatus != PermissionStatus.granted) {
+        print('❌ Notification permission denied');
+        if (context != null && context.mounted) {
+          await _showNotificationPermissionDialog(context);
+        }
+        return 'Notification permission denied';
+      }
+
       // Request camera permission
       final cameraStatus = await Permission.camera.request();
       if (cameraStatus != PermissionStatus.granted) {
@@ -598,6 +609,34 @@ class FaceAttendanceService {
       log('❌ Error compressing image: $e');
       return null;
     }
+  }
+
+  /// Show notification permission dialog and open settings
+  Future<void> _showNotificationPermissionDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Notification Permission Required'),
+          content: const Text(
+            'Notifications require permission. Please allow notifications from settings.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await openAppSettings();
+              },
+              child: const Text('Open Settings'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Dispose camera resources

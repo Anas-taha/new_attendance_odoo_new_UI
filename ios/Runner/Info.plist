@@ -53,18 +53,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access for face recognition attendance</string>
-	
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location access for attendance verification</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs location access for attendance verification</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app may need microphone access for video recording</string>
 </dict>
 </plist>
