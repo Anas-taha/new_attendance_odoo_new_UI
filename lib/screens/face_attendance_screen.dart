@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -41,15 +40,11 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
   @override
   void dispose() {
     _locationSubscription?.cancel();
-    _faceService.stopCamera();
     super.dispose();
   }
 
   Future<void> _initialize() async {
     await _ensureEmployeeId();
-    if (!_faceService.isInitialized) {
-      await _faceService.initializeCamera();
-    }
     await _refreshAttendanceStatus();
     await _setupLocationUpdates();
   }
@@ -144,22 +139,22 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       final status = await _faceService.getCurrentAttendanceStatus();
       final currentlyCheckedIn = status['is_checked_in'] == true;
 
-      final capture = await _showCameraAndCapture();
-      log('capture: $capture');
-      if (capture == null || capture['success'] != true) {
-        final error = capture?['error'] ?? 'Could not capture your face.';
+      final imageData = await _pickImageFromGallery();
+      log('imageData: $imageData');
+      if (imageData == null || imageData['success'] != true) {
+        final error = imageData?['error'] ?? 'Could not select image.';
         log('❌ Error: $error');
         _setFeedback(error.toString(), success: false);
         return;
       }
 
-      final latitude = (capture['latitude'] as num?)?.toDouble();
-      final longitude = (capture['longitude'] as num?)?.toDouble();
-      final base64Image = capture['image'] as String?;
+      final latitude = (imageData['latitude'] as num?)?.toDouble();
+      final longitude = (imageData['longitude'] as num?)?.toDouble();
+      final base64Image = imageData['image'] as String?;
 
       if (base64Image == null || base64Image.isEmpty) {
         _setFeedback(
-          'Face image not captured. Please try again.',
+          'Face image not selected. Please try again.',
           success: false,
         );
         return;
@@ -190,7 +185,6 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       log('❌ Stack trace: $stackTrace');
       _setFeedback('Unexpected error: $e, $stackTrace', success: false);
     } finally {
-      await _faceService.stopCamera();
       if (mounted) {
         setState(() {
           _isProcessing = false;
@@ -199,42 +193,14 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
     }
   }
 
-  Future<Map<String, dynamic>?> _showCameraAndCapture() async {
-    if (!_faceService.isInitialized) {
-      final initialized = await _faceService.initializeCamera();
-      if (initialized is String) {
-        _setFeedback(initialized, success: false);
-        return null;
-      }
+  Future<Map<String, dynamic>?> _pickImageFromGallery() async {
+    try {
+      final result = await _faceService.pickImageFromGallery();
+      return result;
+    } catch (e) {
+      log('❌ Error picking image: $e');
+      return {'success': false, 'error': 'Error picking image: $e'};
     }
-
-    final controller = _faceService.cameraController;
-
-    if (controller == null) {
-      _setFeedback('Camera controller not ready.', success: false);
-      return null;
-    }
-
-    // Verify camera is initialized before showing preview (critical for iOS)
-    if (!controller.value.isInitialized) {
-      _setFeedback('Camera not initialized. Please try again.', success: false);
-      return null;
-    }
-
-    await _faceService.startCamera();
-
-    final result = await Navigator.push<Map<String, dynamic>>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => _CameraCapturePage(
-          controller: controller,
-          onCapture: () => _faceService.takeAttendancePhoto(),
-        ),
-        fullscreenDialog: true,
-      ),
-    );
-
-    return result;
   }
 
   void _setFeedback(String message, {required bool success}) {
@@ -261,7 +227,6 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
   }
 
   Future<void> _logout() async {
-    await _faceService.stopCamera();
     OdooRPCService.instance.logout();
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
@@ -626,191 +591,6 @@ class _FeedbackBanner extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CameraCapturePage extends StatefulWidget {
-  const _CameraCapturePage({required this.controller, required this.onCapture});
-
-  final CameraController controller;
-  final Future<Map<String, dynamic>> Function() onCapture;
-
-  @override
-  State<_CameraCapturePage> createState() => _CameraCapturePageState();
-}
-
-class _CameraCapturePageState extends State<_CameraCapturePage> {
-  bool _isCapturing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Ensure camera is ready on iOS
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !widget.controller.value.isInitialized) {
-        Navigator.of(context).pop({
-          'success': false,
-          'error': 'Camera not ready. Please try again.',
-        });
-      }
-    });
-  }
-
-  Future<void> _handleCapture() async {
-    if (_isCapturing) return;
-    setState(() {
-      _isCapturing = true;
-    });
-
-    try {
-      final result = await widget.onCapture();
-      if (!mounted) return;
-
-      if (result['success'] == true) {
-        if (mounted) {
-          Navigator.of(context).pop(result);
-        }
-      } else {
-        if (mounted) {
-          final message =
-              result['error']?.toString() ?? 'Capture failed. Try again.';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message), backgroundColor: Colors.red),
-          );
-        }
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Capture error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isCapturing = false;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Check if camera is initialized before showing preview (critical for iOS)
-    if (!widget.controller.value.isInitialized) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          iconTheme: const IconThemeData(color: Colors.white),
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: Colors.white),
-              SizedBox(height: 16),
-              Text(
-                'Initializing camera...',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // Full screen camera preview
-            Positioned.fill(child: CameraPreview(widget.controller)),
-            // Bottom controls overlay
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.7),
-                      Colors.black.withValues(alpha: 0.9),
-                    ],
-                  ),
-                ),
-                padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
-                child: SafeArea(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _isCapturing ? null : _handleCapture,
-                          icon: _isCapturing
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : const Icon(Icons.camera_alt_outlined),
-                          label: Text(
-                            _isCapturing
-                                ? 'Capturing...'
-                                : 'Capture & Continue',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Position your face in the frame',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

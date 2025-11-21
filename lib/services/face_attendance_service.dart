@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import '../config/odoo_config.dart';
 import 'odoo_rpc_service.dart';
 
@@ -567,6 +568,61 @@ class FaceAttendanceService {
         .replaceAll('&lt;', '<')
         .replaceAll('&gt;', '>');
     return message.trim();
+  }
+
+  /// Pick image from gallery and get current location
+  Future<Map<String, dynamic>> pickImageFromGallery() async {
+    try {
+      // Get current location
+      final location = await _getCurrentLocation();
+      if (location == null) {
+        return {'success': false, 'error': 'Could not get current location'};
+      }
+
+      // Pick image from gallery
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
+
+        // maxWidth: 1920,
+        // maxHeight: 1920,
+        imageQuality: 90,
+      );
+
+      if (image == null) {
+        return {'success': false, 'error': 'No image selected'};
+      }
+
+      // Compress and convert image to base64
+      final compressedBytes = await _compressImage(image.path);
+      if (compressedBytes == null) {
+        return {'success': false, 'error': 'Failed to compress image'};
+      }
+      final base64Image = base64Encode(compressedBytes);
+      log('base64Image length: ${base64Image.length} characters');
+
+      // Get address from coordinates
+      final address = await _getAddressFromCoordinates(
+        location.latitude,
+        location.longitude,
+      );
+
+      final result = {
+        'success': true,
+        'image': base64Image,
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'address': address,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+      log('result pickImageFromGallery: $result');
+      return result;
+    } catch (e, stackTrace) {
+      log('❌ Error picking image from gallery: $e');
+      log('❌ Stack trace: $stackTrace');
+      return {'success': false, 'error': 'Error picking image: $e'};
+    }
   }
 
   /// Compress image to reduce size while maintaining quality for face recognition
