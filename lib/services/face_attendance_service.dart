@@ -31,6 +31,8 @@ class FaceAttendanceService {
   /// Initialize camera and permissions
   Future<dynamic> initializeCamera() async {
     try {
+      // Request notification permission
+
       // Request camera permission
       final cameraStatus = await Permission.camera.request();
       if (cameraStatus != PermissionStatus.granted) {
