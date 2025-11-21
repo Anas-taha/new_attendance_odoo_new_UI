@@ -572,7 +572,8 @@ class FaceAttendanceService {
     return message.trim();
   }
 
-  /// Pick image from gallery and get current location
+  /// Capture image from camera and get current location
+  /// Camera will only start when this method is called (on Check In press)
   Future<Map<String, dynamic>> pickImageFromGallery() async {
     try {
       // Get current location
@@ -581,14 +582,12 @@ class FaceAttendanceService {
         return {'success': false, 'error': 'Could not get current location'};
       }
 
-      // Pick image from gallery
+      // Open camera to capture image (camera starts here, not before)
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.front,
 
-        // maxWidth: 1920,
-        // maxHeight: 1920,
         imageQuality: 90,
       );
 
