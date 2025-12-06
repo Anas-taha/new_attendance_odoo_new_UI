@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -520,12 +521,18 @@ class FaceAttendanceService {
         message.contains("Invalid field 'out_longitude'");
   }
 
+  /// Submit face attendance via Odoo's /submit_face controller endpoint
+  /// This method uses face recognition on the server side for attendance
+  /// The endpoint handles both check-in and check-out automatically based on employee's current status
   Future<Map<String, dynamic>> submitFaceViaController({
     required String base64Image,
     double? latitude,
     double? longitude,
   }) async {
     try {
+      print('🔄 Submitting face attendance via controller...');
+      print('📍 Location: lat=$latitude, lon=$longitude');
+      
       final url = Uri.parse('${OdooConfig.baseUrl}/submit_face');
       final response = await http
           .post(
@@ -542,17 +549,107 @@ class FaceAttendanceService {
           )
           .timeout(Duration(milliseconds: OdooConfig.writeTimeout));
 
+      print('📨 Response status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         final message = _extractMessageFromHtml(response.body);
         final isSuccess = message.contains('Success') || message.contains('✅');
-        return isSuccess
-            ? {'success': true, 'message': message}
-            : {'success': false, 'error': message};
+        
+        // Determine if it was check-in or check-out from the message
+        String action = 'unknown';
+        if (message.toLowerCase().contains('check') && message.toLowerCase().contains('in')) {
+          action = 'check_in';
+        } else if (message.toLowerCase().contains('check') && message.toLowerCase().contains('out')) {
+          action = 'check_out';
+        }
+        
+        if (isSuccess) {
+          print('✅ Face attendance successful: $message');
+          return {
+            'success': true,
+            'message': message,
+            'action': action,
+          };
+        } else {
+          print('❌ Face attendance failed: $message');
+          return {'success': false, 'error': message};
+        }
       } else {
         return {'success': false, 'error': 'HTTP ${response.statusCode}'};
       }
     } catch (e) {
+      print('❌ Face verification error: $e');
       return {'success': false, 'error': 'Face verification failed: $e'};
+    }
+  }
+
+  /// Submit face attendance with automatic fallback
+  /// First tries the controller endpoint (/submit_face) with face recognition
+  /// If that fails, falls back to direct RPC attendance submission
+  Future<Map<String, dynamic>> submitFaceAttendanceWithFallback({
+    required String base64Image,
+    required double latitude,
+    required double longitude,
+    String? address,
+  }) async {
+    try {
+      print('🔄 Attempting face attendance with controller first...');
+      
+      // First, try the face recognition controller
+      final controllerResult = await submitFaceViaController(
+        base64Image: base64Image,
+        latitude: latitude,
+        longitude: longitude,
+      );
+
+      if (controllerResult['success'] == true) {
+        return controllerResult;
+      }
+
+      // If face recognition fails (no matching face, etc.), check error
+      final error = controllerResult['error']?.toString() ?? '';
+      
+      // If it's a face matching issue, don't fallback - return the error
+      if (error.contains('No matching face') || 
+          error.contains('No face detected') ||
+          error.contains('face')) {
+        return controllerResult;
+      }
+
+      // For other errors (network, endpoint not available), try direct RPC
+      print('⚠️ Controller failed, falling back to direct RPC...');
+      return await submitFaceAttendance(
+        base64Image: base64Image,
+        latitude: latitude,
+        longitude: longitude,
+        address: address,
+      );
+    } catch (e) {
+      print('❌ Error in submitFaceAttendanceWithFallback: $e');
+      return {'success': false, 'error': 'Attendance submission failed: $e'};
+    }
+  }
+
+  /// Get face attendance page URL for web view
+  String getFaceAttendanceUrl() {
+    return '${OdooConfig.baseUrl}/face_attendance';
+  }
+
+  /// Check if face attendance controller is available
+  Future<bool> isFaceAttendanceAvailable() async {
+    try {
+      final url = Uri.parse('${OdooConfig.baseUrl}/face_attendance');
+      final response = await http.get(
+        url,
+        headers: {
+          'User-Agent': 'HR App Flutter Face Attendance',
+        },
+      ).timeout(const Duration(seconds: 5));
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('❌ Face attendance controller not available: $e');
+      return false;
     }
   }
 
@@ -572,55 +669,142 @@ class FaceAttendanceService {
     return message.trim();
   }
 
+  /// Check if we're running on a mobile platform with camera support
+  bool get _isMobilePlatform {
+    // Web doesn't support native camera through image_picker
+    if (kIsWeb) {
+      log('📱 Platform: Web - camera not supported');
+      return false;
+    }
+    
+    try {
+      // Check for mobile platforms only (Android/iOS)
+      final isMobile = Platform.isAndroid || Platform.isIOS;
+      if (isMobile) {
+        log('📱 Platform: Mobile (Android/iOS) - camera supported');
+        return true;
+      }
+      // Desktop platforms (Windows, macOS, Linux) - no camera support
+      log('📱 Platform: Desktop (${Platform.operatingSystem}) - using gallery');
+      return false;
+    } catch (e) {
+      log('📱 Platform detection error: $e - defaulting to gallery');
+      return false;
+    }
+  }
+
   /// Capture image from camera and get current location
   /// Camera will only start when this method is called (on Check In press)
+  /// On desktop/web, falls back to gallery picker
   Future<Map<String, dynamic>> pickImageFromGallery() async {
     try {
-      // Get current location
-      final location = await _getCurrentLocation();
-      if (location == null) {
-        return {'success': false, 'error': 'Could not get current location'};
+      log('🔄 Starting image capture process...');
+      
+      // Determine platform first before any async operations
+      final bool useMobileCamera = _isMobilePlatform;
+      log('📱 Using mobile camera: $useMobileCamera');
+      
+      // Get current location (with timeout to prevent hanging)
+      Position? location;
+      try {
+        location = await _getCurrentLocation().timeout(
+          const Duration(seconds: 15),
+          onTimeout: () => null,
+        );
+      } catch (e) {
+        log('⚠️ Location error (continuing anyway): $e');
+        // Continue without location on desktop - don't block the flow
+      }
+      
+      if (location != null) {
+        log('✅ Location obtained: ${location.latitude}, ${location.longitude}');
+      } else {
+        log('⚠️ Location not available, continuing without it');
       }
 
-      // Open camera to capture image (camera starts here, not before)
       final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.front,
+      XFile? image;
 
-        imageQuality: 90,
-      );
+      // Use camera on mobile, gallery on desktop/web
+      if (useMobileCamera) {
+        log('📷 Opening camera...');
+        // Open camera to capture image (camera starts here, not before)
+        image = await picker.pickImage(
+          source: ImageSource.camera,
+          preferredCameraDevice: CameraDevice.front,
+          imageQuality: 90,
+        );
+      } else {
+        // On desktop/web, use gallery as fallback
+        log('🖼️ Opening gallery picker (desktop/web mode)...');
+        try {
+          image = await picker.pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 90,
+          );
+        } catch (e) {
+          log('❌ Gallery picker error: $e');
+          return {'success': false, 'error': 'Could not open image picker: $e'};
+        }
+      }
 
       if (image == null) {
-        return {'success': false, 'error': 'No image selected'};
+        log('❌ No image selected by user');
+        return {'success': false, 'error': 'No image selected. Please select an image.'};
       }
+      log('✅ Image selected: ${image.path}');
 
-      // Compress and convert image to base64
-      final compressedBytes = await _compressImage(image.path);
-      if (compressedBytes == null) {
-        return {'success': false, 'error': 'Failed to compress image'};
+      // Read image bytes
+      final imageBytes = await image.readAsBytes();
+      log('📊 Image size: ${imageBytes.length} bytes');
+      
+      String base64Image;
+      
+      // Compress image on mobile platforms, use raw bytes on desktop/web
+      if (useMobileCamera && !kIsWeb) {
+        log('🗜️ Compressing image...');
+        final compressedBytes = await _compressImage(image.path);
+        if (compressedBytes == null) {
+          log('⚠️ Compression failed, using original image');
+          base64Image = base64Encode(imageBytes);
+        } else {
+          base64Image = base64Encode(compressedBytes);
+        }
+      } else {
+        // On desktop/web, use the raw bytes directly
+        base64Image = base64Encode(imageBytes);
       }
-      final base64Image = base64Encode(compressedBytes);
-      log('base64Image length: ${base64Image.length} characters');
+      
+      log('✅ base64Image length: ${base64Image.length} characters');
 
-      // Get address from coordinates
-      final address = await _getAddressFromCoordinates(
-        location.latitude,
-        location.longitude,
-      );
+      // Get address from coordinates (only if location available)
+      String address = 'Unknown location';
+      double? latitude;
+      double? longitude;
+      
+      if (location != null) {
+        latitude = location.latitude;
+        longitude = location.longitude;
+        try {
+          address = await _getAddressFromCoordinates(latitude, longitude);
+        } catch (e) {
+          log('⚠️ Address lookup failed: $e');
+        }
+        log('📍 Address: $address');
+      }
 
       final result = {
         'success': true,
         'image': base64Image,
-        'latitude': location.latitude,
-        'longitude': location.longitude,
+        'latitude': latitude ?? 0.0,
+        'longitude': longitude ?? 0.0,
         'address': address,
         'timestamp': DateTime.now().toIso8601String(),
       };
-      log('result pickImageFromGallery: $result');
+      log('✅ Image capture complete');
       return result;
     } catch (e, stackTrace) {
-      log('❌ Error picking image from gallery: $e');
+      log('❌ Error picking image: $e');
       log('❌ Stack trace: $stackTrace');
       return {'success': false, 'error': 'Error picking image: $e'};
     }

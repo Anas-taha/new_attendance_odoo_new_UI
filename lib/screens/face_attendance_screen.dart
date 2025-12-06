@@ -160,24 +160,26 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
         return;
       }
 
-      final controllerResult = await _faceService.submitFaceViaController(
+      // Try face attendance with fallback to direct RPC if face recognition fails
+      final result = await _faceService.submitFaceAttendanceWithFallback(
         base64Image: base64Image,
-        latitude: latitude,
-        longitude: longitude,
+        latitude: latitude ?? 0.0,
+        longitude: longitude ?? 0.0,
+        address: imageData['address'] as String?,
       );
-      log('controllerResult: $controllerResult');
+      log('attendanceResult: $result');
 
-      if (controllerResult['success'] == true) {
+      if (result['success'] == true) {
         await _refreshAttendanceStatus();
-        final message =
-            controllerResult['message'] ??
-            (currentlyCheckedIn
+        final action = result['action'] ?? '';
+        final message = result['message'] ?? 
+            (action == 'check_out' || currentlyCheckedIn
                 ? 'Check-out completed successfully.'
                 : 'Check-in completed successfully.');
         _setFeedback(message, success: true);
       } else {
         _setFeedback(
-          controllerResult['error']?.toString() ?? 'Attendance action failed.',
+          result['error']?.toString() ?? 'Attendance action failed.',
           success: false,
         );
       }

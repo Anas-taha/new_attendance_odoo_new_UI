@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'odoo_config_screen.dart';
+import 'home_screen.dart';
 import '../services/odoo_rpc_service.dart';
 import '../services/hr_service.dart';
 import '../services/local_storage_service.dart';
@@ -96,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const FaceAttendanceScreen(),
+              builder: (context) => const HomeScreen(),
             ),
           );
         } else {

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/hr_attendance.dart';
 import '../models/hr_employee.dart';
 import '../services/hr_service.dart';
+import '../services/attendance_report_service.dart';
 
 class AttendanceReportScreen extends StatefulWidget {
   const AttendanceReportScreen({super.key});
@@ -14,12 +15,19 @@ class AttendanceReportScreen extends StatefulWidget {
 class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     with TickerProviderStateMixin {
   final HrService _hrService = HrService();
+  final AttendanceReportService _reportService = AttendanceReportService.instance;
+  
   HrEmployee? _currentEmployee;
   List<HrAttendance> _allRecords = [];
+  Map<String, dynamic>? _statistics;
+  Map<String, dynamic>? _weeklySummary;
+  Map<String, dynamic>? _monthlySummary;
   bool _isLoading = true;
   String _selectedPeriod = 'This Week';
+  String _selectedView = 'summary';
   late AnimationController _fadeController;
   late AnimationController _slideController;
+  late TabController _tabController;
 
   final List<String> _periods = [
     'Today',
@@ -40,6 +48,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
+    _tabController = TabController(length: 3, vsync: this);
     _loadData();
   }
 
@@ -47,6 +56,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -58,7 +68,11 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     try {
       _currentEmployee = await _hrService.getCurrentEmployee();
       if (_currentEmployee != null) {
-        await _loadAttendanceRecords();
+        await Future.wait([
+          _loadAttendanceRecords(),
+          _loadWeeklySummary(),
+          _loadMonthlySummary(),
+        ]);
       }
     } catch (e) {
       print('Error loading data: $e');
@@ -78,11 +92,45 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
         limit: 100,
       );
       
+      final reportData = await _reportService.getAttendanceReport(
+        employeeId: _currentEmployee!.id,
+        limit: 100,
+      );
+      
       setState(() {
         _allRecords = records;
+        if (reportData['success'] == true) {
+          _statistics = reportData['statistics'] as Map<String, dynamic>?;
+        }
       });
     } catch (e) {
       print('Error loading attendance records: $e');
+    }
+  }
+
+  Future<void> _loadWeeklySummary() async {
+    try {
+      final summary = await _reportService.getWeeklySummary(
+        employeeId: _currentEmployee!.id,
+      );
+      setState(() {
+        _weeklySummary = summary['success'] == true ? summary : null;
+      });
+    } catch (e) {
+      print('Error loading weekly summary: $e');
+    }
+  }
+
+  Future<void> _loadMonthlySummary() async {
+    try {
+      final summary = await _reportService.getMonthlySummary(
+        employeeId: _currentEmployee!.id,
+      );
+      setState(() {
+        _monthlySummary = summary['success'] == true ? summary : null;
+      });
+    } catch (e) {
+      print('Error loading monthly summary: $e');
     }
   }
 
@@ -199,32 +247,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           child: Column(
             children: [
               // Custom App Bar
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Text(
-                        'Attendance Report',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: _loadData,
-                      icon: const Icon(Icons.refresh, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildAppBar(),
+              
+              // Tab Bar
+              _buildTabBar(),
               
               // Content
               Expanded(
@@ -238,7 +264,14 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                   ),
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : _buildContent(),
+                      : TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildSummaryView(),
+                            _buildRecordsView(),
+                            _buildAnalyticsView(),
+                          ],
+                        ),
                 ),
               ),
             ],
@@ -248,7 +281,74 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildAppBar() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Attendance Report',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (_currentEmployee != null)
+                  Text(
+                    _currentEmployee!.name,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: _loadData,
+            icon: const Icon(Icons.refresh, color: Colors.white),
+          ),
+          IconButton(
+            onPressed: () => _showExportOptions(),
+            icon: const Icon(Icons.download, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white.withOpacity(0.2),
+        ),
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.white.withOpacity(0.6),
+        labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        tabs: const [
+          Tab(text: 'Summary'),
+          Tab(text: 'Records'),
+          Tab(text: 'Analytics'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryView() {
     final filteredRecords = _getFilteredRecords();
     final stats = _calculateStats(filteredRecords);
     
@@ -261,13 +361,59 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           
           const SizedBox(height: 24),
           
-          // Statistics Cards
-          _buildStatisticsCards(stats),
+          // Quick Stats
+          _buildQuickStats(stats),
           
           const SizedBox(height: 24),
           
-          // Records List
-          _buildRecordsList(filteredRecords),
+          // Weekly Overview
+          if (_weeklySummary != null) _buildWeeklyOverview(),
+          
+          const SizedBox(height: 24),
+          
+          // Monthly Overview
+          if (_monthlySummary != null) _buildMonthlyOverview(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecordsView() {
+    final filteredRecords = _getFilteredRecords();
+    
+    return Column(
+      children: [
+        // Period Selector
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: _buildPeriodSelector(),
+        ),
+        
+        // Records List
+        Expanded(
+          child: _buildRecordsList(filteredRecords),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAnalyticsView() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          // Attendance Trends Chart Placeholder
+          _buildAttendanceTrends(),
+          
+          const SizedBox(height: 24),
+          
+          // Punctuality Analysis
+          _buildPunctualityAnalysis(),
+          
+          const SizedBox(height: 24),
+          
+          // Location Analysis (if available)
+          _buildLocationAnalysis(),
         ],
       ),
     );
@@ -312,35 +458,35 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           
           const SizedBox(height: 16),
           
-          DropdownButtonFormField<String>(
-            value: _selectedPeriod,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            items: _periods.map((period) {
-              return DropdownMenuItem(
-                value: period,
-                child: Text(period),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _periods.map((period) {
+              final isSelected = _selectedPeriod == period;
+              return ChoiceChip(
+                label: Text(period),
+                selected: isSelected,
+                onSelected: (selected) {
+                  if (selected) {
+                    setState(() {
+                      _selectedPeriod = period;
+                    });
+                  }
+                },
+                selectedColor: const Color(0xFF667eea),
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               );
             }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _selectedPeriod = value;
-                });
-              }
-            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatisticsCards(Map<String, dynamic> stats) {
+  Widget _buildQuickStats(Map<String, dynamic> stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -360,7 +506,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             ),
             const SizedBox(width: 12),
             const Text(
-              'Statistics',
+              'Quick Statistics',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -403,6 +549,159 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               title: 'On Time',
               value: '${stats['on_time_count']}',
               color: const Color(0xFF38A169),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeeklyOverview() {
+    final weeklyHours = _weeklySummary?['total_weekly_hours'] ?? 0.0;
+    final dailyBreakdown = _weeklySummary?['daily_breakdown'] as Map<String, dynamic>?;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF667eea).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF667eea).withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.calendar_view_week, color: Color(0xFF667eea)),
+              const SizedBox(width: 12),
+              const Text(
+                'Weekly Overview',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${weeklyHours.toStringAsFixed(1)}h',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF667eea),
+                ),
+              ),
+            ],
+          ),
+          
+          if (dailyBreakdown != null && dailyBreakdown.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 8),
+            ...dailyBreakdown.entries.map((entry) {
+              final dayData = entry.value as Map<String, dynamic>;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      entry.key,
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                    Text(
+                      '${(dayData['total_hours'] as double).toStringAsFixed(1)}h',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMonthlyOverview() {
+    final monthlyHours = _monthlySummary?['total_monthly_hours'] ?? 0.0;
+    final workingDays = _monthlySummary?['working_days'] ?? 0;
+    final avgDaily = _monthlySummary?['average_daily_hours'] ?? 0.0;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF764ba2).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF764ba2).withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.calendar_month, color: Color(0xFF764ba2)),
+              const SizedBox(width: 12),
+              const Text(
+                'Monthly Overview',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${monthlyHours.toStringAsFixed(1)}h',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF764ba2),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          Row(
+            children: [
+              Expanded(
+                child: _buildMiniStat(
+                  'Working Days',
+                  '$workingDays',
+                  Icons.calendar_today,
+                ),
+              ),
+              Expanded(
+                child: _buildMiniStat(
+                  'Avg Daily',
+                  '${avgDaily.toStringAsFixed(1)}h',
+                  Icons.trending_up,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMiniStat(String title, String value, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey[600]),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+            Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -454,9 +753,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
 
   Widget _buildRecordsList(List<HrAttendance> records) {
     if (records.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(40),
+      return Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.analytics,
@@ -485,47 +784,13 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF48BB78).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.history,
-                color: Color(0xFF48BB78),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Records (${records.length})',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3748),
-              ),
-            ),
-          ],
-        ),
-        
-        const SizedBox(height: 16),
-        
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: records.length,
-          itemBuilder: (context, index) {
-            final record = records[index];
-            return _buildRecordCard(record, index);
-          },
-        ),
-      ],
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: records.length,
+      itemBuilder: (context, index) {
+        final record = records[index];
+        return _buildRecordCard(record, index);
+      },
     );
   }
 
@@ -694,6 +959,319 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAttendanceTrends() {
+    final stats = _statistics;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.trending_up, color: Color(0xFF667eea)),
+              const SizedBox(width: 12),
+              const Text(
+                'Attendance Trends',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          if (stats != null) ...[
+            _buildTrendItem(
+              'Total Hours',
+              '${(stats['total_hours'] as num?)?.toStringAsFixed(1) ?? '0.0'}h',
+              const Color(0xFF667eea),
+              0.8,
+            ),
+            const SizedBox(height: 12),
+            _buildTrendItem(
+              'On Time Rate',
+              '${stats['on_time_percentage'] ?? '0.0'}%',
+              const Color(0xFF48BB78),
+              double.tryParse(stats['on_time_percentage']?.toString() ?? '0') ?? 0.0 / 100,
+            ),
+            const SizedBox(height: 12),
+            _buildTrendItem(
+              'Sessions with Location',
+              '${stats['records_with_location'] ?? 0}',
+              const Color(0xFF764ba2),
+              0.6,
+            ),
+          ] else
+            const Center(
+              child: Text(
+                'Loading trends...',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrendItem(String label, String value, Color color, double progress) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: TextStyle(color: Colors.grey[700])),
+            Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: progress.clamp(0.0, 1.0),
+            backgroundColor: color.withOpacity(0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+            minHeight: 6,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPunctualityAnalysis() {
+    final filteredRecords = _getFilteredRecords();
+    final stats = _calculateStats(filteredRecords);
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF48BB78).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF48BB78).withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.alarm_on, color: Color(0xFF48BB78)),
+              const SizedBox(width: 12),
+              const Text(
+                'Punctuality Analysis',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          Row(
+            children: [
+              Expanded(
+                child: _buildPunctualityItem(
+                  'On Time',
+                  stats['on_time_count'],
+                  Colors.green,
+                  Icons.check_circle,
+                ),
+              ),
+              Expanded(
+                child: _buildPunctualityItem(
+                  'Late',
+                  stats['late_count'],
+                  Colors.orange,
+                  Icons.warning,
+                ),
+              ),
+              Expanded(
+                child: _buildPunctualityItem(
+                  'Early Leave',
+                  stats['early_leave_count'],
+                  Colors.red,
+                  Icons.exit_to_app,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPunctualityItem(String label, int count, Color color, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 28),
+        const SizedBox(height: 8),
+        Text(
+          '$count',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationAnalysis() {
+    final locationCount = _statistics?['records_with_location'] ?? 0;
+    final totalRecords = _statistics?['total_sessions'] ?? 0;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF764ba2).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF764ba2).withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.location_on, color: Color(0xFF764ba2)),
+              const SizedBox(width: 12),
+              const Text(
+                'Location Tracking',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    '$locationCount',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF764ba2),
+                    ),
+                  ),
+                  Text(
+                    'With Location',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    '${totalRecords - locationCount}',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                  Text(
+                    'Without Location',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showExportOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Export Report',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.table_chart, color: Color(0xFF667eea)),
+              title: const Text('Export as CSV'),
+              subtitle: const Text('Spreadsheet compatible format'),
+              onTap: () {
+                Navigator.pop(context);
+                _exportReport('csv');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+              title: const Text('Export as PDF'),
+              subtitle: const Text('Print-ready format'),
+              onTap: () {
+                Navigator.pop(context);
+                _exportReport('pdf');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.code, color: Colors.orange),
+              title: const Text('Export as JSON'),
+              subtitle: const Text('Developer-friendly format'),
+              onTap: () {
+                Navigator.pop(context);
+                _exportReport('json');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _exportReport(String format) {
+    // TODO: Implement export functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Exporting report as $format...'),
+        backgroundColor: const Color(0xFF667eea),
+      ),
     );
   }
 }

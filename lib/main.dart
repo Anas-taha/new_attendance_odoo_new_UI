@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'config/odoo_config.dart';
 import 'screens/odoo_config_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/attendance_screen.dart';
+import 'screens/attendance_report_screen.dart';
+import 'screens/face_attendance_screen.dart';
+import 'screens/expense_screen.dart';
+import 'screens/expense_create_screen.dart';
+import 'screens/payslip_screen.dart';
+import 'screens/contracts_screen.dart';
+import 'screens/team_off_screen.dart';
 import 'services/local_storage_service.dart';
 
 void main() async {
@@ -31,6 +40,19 @@ class HrApp extends StatelessWidget {
         ),
       ),
       home: const _StartupRouter(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/config': (context) => const OdooConfigScreen(),
+        '/attendance': (context) => const AttendanceScreen(),
+        '/attendance-report': (context) => const AttendanceReportScreen(),
+        '/face-attendance': (context) => const FaceAttendanceScreen(),
+        '/expenses': (context) => const ExpenseScreen(),
+        '/expense-create': (context) => const ExpenseCreateScreen(),
+        '/payslips': (context) => const PayslipScreen(),
+        '/contracts': (context) => const ContractsScreen(),
+        '/time-off': (context) => const TeamOffScreen(),
+      },
     );
   }
 }
