@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/hr_contract.dart';
 import '../services/hr_service.dart';
 import '../models/hr_employee.dart';
+import '../theme/app_theme.dart';
 
 class ContractsScreen extends StatefulWidget {
   const ContractsScreen({super.key});
@@ -131,8 +132,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Contracts'),
-        backgroundColor: Colors.blue[700],
-        foregroundColor: Colors.white,
+ 
         elevation: 0,
         actions: [
           if (_isAdmin && _contracts.isNotEmpty)
@@ -168,14 +168,14 @@ class _ContractsScreenState extends State<ContractsScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue[700]!, Colors.blue[500]!],
+          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -305,7 +305,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.blue[700] : Colors.grey[700],
+                  color: isSelected ? AppColors.primary700 : Colors.grey[700],
                 ),
               ),
             ),
@@ -318,10 +318,10 @@ class _ContractsScreenState extends State<ContractsScreen> {
           });
         },
         backgroundColor: Colors.grey[200],
-        selectedColor: Colors.blue[100],
-        checkmarkColor: Colors.blue[700],
+        selectedColor: AppColors.primary100,
+        checkmarkColor: AppColors.primary700,
         labelStyle: TextStyle(
-          color: isSelected ? Colors.blue[700] : Colors.grey[700],
+          color: isSelected ? AppColors.primary700 : Colors.grey[700],
         ),
       ),
     );
@@ -362,11 +362,11 @@ class _ContractsScreenState extends State<ContractsScreen> {
               onPressed: _loadData,
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[700],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
+              // style: ElevatedButton.styleFrom(
+              //   backgroundColor: AppColors.primary700,
+              //   foregroundColor: Colors.white,
+              //   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              // ),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
@@ -374,8 +374,8 @@ class _ContractsScreenState extends State<ContractsScreen> {
               icon: const Icon(Icons.arrow_back),
               label: const Text('Go Back'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.blue[700],
-                side: BorderSide(color: Colors.blue[700]!),
+                foregroundColor: AppColors.primary700,
+                side: const BorderSide(color: AppColors.primary700),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
@@ -417,10 +417,10 @@ class _ContractsScreenState extends State<ContractsScreen> {
               onPressed: () => _showCreateContractDialog(),
               icon: const Icon(Icons.add),
               label: const Text('Create Contract'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[700],
-                foregroundColor: Colors.white,
-              ),
+              // style: ElevatedButton.styleFrom(
+              //   backgroundColor: AppColors.primary700,
+              //   foregroundColor: Colors.white,
+              // ),
             ),
           ],
         ],
@@ -460,10 +460,10 @@ class _ContractsScreenState extends State<ContractsScreen> {
               onPressed: () => _showCreateContractDialog(),
               icon: const Icon(Icons.add),
               label: const Text('Create Contract'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[700],
-                foregroundColor: Colors.white,
-              ),
+              // style: ElevatedButton.styleFrom(
+              //   backgroundColor: AppColors.primary700,
+              //   foregroundColor: Colors.white,
+              // ),
             ),
           ],
         ],
@@ -573,14 +573,14 @@ class _ContractsScreenState extends State<ContractsScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: AppColors.primary50,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue[200]!),
+                        border: Border.all(color: AppColors.primary200),
                       ),
                       child: Text(
                         '${contract.durationDays} days',
-                        style: TextStyle(
-                          color: Colors.blue[700],
+                        style: const TextStyle(
+                          color: AppColors.primary700,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -726,10 +726,10 @@ class _ContractsScreenState extends State<ContractsScreen> {
                             },
                             icon: const Icon(Icons.edit),
                             label: const Text('Edit'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[700],
-                              foregroundColor: Colors.white,
-                            ),
+                            // style: ElevatedButton.styleFrom(
+                            //   backgroundColor: AppColors.primary700,
+                            //   foregroundColor: Colors.white,
+                            // ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -764,7 +764,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
       children: [
         Icon(
           icon,
-          color: Colors.blue[700],
+          color: AppColors.primary700,
           size: 20,
         ),
         const SizedBox(width: 8),
@@ -815,7 +815,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Create contract functionality coming soon!'),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.primary,
       ),
     );
   }
@@ -826,7 +826,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Edit contract functionality coming soon!'),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.primary,
       ),
     );
   }

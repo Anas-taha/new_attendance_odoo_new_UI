@@ -1,19 +1,8 @@
-import '../services/local_storage_service.dart';
-
 class OdooConfig {
-  // Odoo server configuration
-  // Default values - will be overridden by saved configuration
-  static const String _defaultBaseUrl = 'http://localhost:8069';
-  static const String _defaultDatabase = 'hr';
+  // Odoo server configuration - fixed values
+  static const String baseUrl = 'https://al-shalawi.gulftriangle.net/';
+  static const String database = 'al-shalawi';
   static const String apiVersion = '1.0';
-
-  // Dynamic configuration - will be loaded from storage
-  static String _baseUrl = _defaultBaseUrl;
-  static String _database = _defaultDatabase;
-
-  // Getters for current configuration
-  static String get baseUrl => _baseUrl.endsWith('/') ? _baseUrl : '$_baseUrl/';
-  static String get database => _database;
 
   // API endpoints
   static const String xmlRpcEndpoint = '/xmlrpc/2/';
@@ -48,42 +37,4 @@ class OdooConfig {
 
   /// Get object endpoint URL
   static String get objectUrl => getEndpointUrl(objectEndpoint);
-
-  /// Load configuration from local storage
-  static Future<void> loadConfiguration() async {
-    final storage = LocalStorageService();
-    final savedUrl = await storage.getOdooUrl();
-    final savedDatabase = await storage.getOdooDatabase();
-
-    if (savedUrl != null && savedUrl.isNotEmpty) {
-      _baseUrl = savedUrl;
-    }
-
-    if (savedDatabase != null && savedDatabase.isNotEmpty) {
-      _database = savedDatabase;
-    }
-  }
-
-  /// Update configuration and save to storage
-  static Future<void> updateConfiguration(String url, String database) async {
-    _baseUrl = url;
-    _database = database;
-
-    final storage = LocalStorageService();
-    await storage.saveOdooConfig(url, database);
-  }
-
-  /// Reset to default configuration
-  static Future<void> resetToDefault() async {
-    _baseUrl = _defaultBaseUrl;
-    _database = _defaultDatabase;
-
-    final storage = LocalStorageService();
-    await storage.clearOdooConfig();
-  }
-
-  /// Check if configuration is set (not default)
-  static bool get isConfigured {
-    return _baseUrl != _defaultBaseUrl || _database != _defaultDatabase;
-  }
 }

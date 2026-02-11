@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:hr_app_odoo/models/hr_employee.dart';
+import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/models/hr_leave.dart';
 import 'package:hr_app_odoo/services/optimized_hr_service.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
@@ -58,7 +59,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${leave.leaveType ?? 'Leave'} request status updated to ${leave.statusDisplay}'),
-          backgroundColor: Colors.blue[600],
+          backgroundColor: AppColors.primary600,
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
             label: 'View',
@@ -200,10 +201,10 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
       
       // Show feedback
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Status changes checked'),
-          backgroundColor: Colors.blue,
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: const Text('Status changes checked'),
+          backgroundColor: AppColors.primary,
+          duration: const Duration(seconds: 2),
         ),
       );
     } else {
@@ -297,8 +298,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
     return Scaffold(
       appBar: AppBar(
         title: const Text('Time Off'),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
+       
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -333,7 +333,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _checkStatusChanges,
-        backgroundColor: Colors.blue[600],
+        backgroundColor: AppColors.primary600,
         child: const Icon(Icons.notifications_active, color: Colors.white),
         tooltip: 'Check for status changes',
       ),
@@ -551,7 +551,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
           children: [
             Row(
               children: [
-                Icon(Icons.add_circle, color: Colors.blue[600], size: 24),
+                Icon(Icons.add_circle, color: AppColors.primary600, size: 24),
                 const SizedBox(width: 12),
                 const Text(
                   'New Leave Request',
@@ -648,8 +648,8 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
                     icon: const Icon(Icons.send),
                     label: const Text('Submit Request'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[600],
-                      foregroundColor: Colors.white,
+                      // backgroundColor: AppColors.primary600,
+                      // foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -739,7 +739,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
           children: [
             Row(
               children: [
-                Icon(Icons.calendar_month, color: Colors.blue[600], size: 24),
+                Icon(Icons.calendar_month, color: AppColors.primary600, size: 24),
                 const SizedBox(width: 12),
                 const Text(
                   'My Leave Requests',
@@ -854,7 +854,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
         chipIcon = Icons.schedule;
         break;
       case 'validate':
-        chipColor = Colors.blue;
+        chipColor = AppColors.primary;
         chipIcon = Icons.check_circle;
         break;
       case 'approve':
@@ -1023,7 +1023,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
               ),
             ),
             const SizedBox(height: 8),
-            _buildLegendItem('Paid Time Off', true, Colors.blue[600]!),
+            _buildLegendItem('Paid Time Off', true, AppColors.primary600),
             _buildLegendItem('Compensatory', true, Colors.green[600]!),
             _buildLegendItem('Sick Time Off', true, Colors.red[600]!),
             const SizedBox(height: 12),
@@ -1037,7 +1037,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
             const SizedBox(height: 8),
             _buildLegendItem('Approved', false, Colors.green[600]!),
             _buildLegendItem('Pending', false, Colors.orange[600]!),
-            _buildLegendItem('To Approve', false, Colors.blue[600]!, isStriped: true),
+            _buildLegendItem('To Approve', false, AppColors.primary600, isStriped: true),
             _buildLegendItem('Refused', false, Colors.red[600]!),
           ],
         ),
@@ -1095,8 +1095,8 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
               ),
             ),
             const SizedBox(height: 8),
-            _buildHolidayItem('July 4', 'Independence Day', Colors.blue[600]!),
-            _buildHolidayItem('Nov 11', 'Veterans Day', Colors.blue[600]!),
+            _buildHolidayItem('July 4', 'Independence Day', AppColors.primary600),
+            _buildHolidayItem('Nov 11', 'Veterans Day', AppColors.primary600),
             _buildHolidayItem('Dec 25', 'Christmas', Colors.red[600]!),
             _buildHolidayItem('Jan 1', 'New Year', Colors.red[600]!),
           ],
@@ -1184,11 +1184,11 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.blue[100],
+                backgroundColor: AppColors.primary100,
                 child: Text(
                   member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
-                  style: TextStyle(
-                    color: Colors.blue[700],
+                  style: const TextStyle(
+                    color: AppColors.primary700,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -1232,11 +1232,11 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: Colors.blue[100],
+                  backgroundColor: AppColors.primary100,
                   child: Text(
                     member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
-                    style: TextStyle(
-                      color: Colors.blue[700],
+                    style: const TextStyle(
+                      color: AppColors.primary700,
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                     ),
@@ -1407,7 +1407,7 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
       case 'draft':
         return Colors.grey;
       default:
-        return Colors.blue;
+        return AppColors.primary;
     }
   }
 

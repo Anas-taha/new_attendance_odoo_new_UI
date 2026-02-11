@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/hr_payslip.dart';
 import '../services/hr_service.dart';
 import '../models/hr_employee.dart';
+import '../theme/app_theme.dart';
 
 class PayslipScreen extends StatefulWidget {
   const PayslipScreen({super.key});
@@ -137,8 +138,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Payslips'),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
+       
         actions: [
           if (_isAdmin)
             IconButton(
@@ -207,15 +207,15 @@ class _PayslipScreenState extends State<PayslipScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue[600]!, Colors.blue[800]!],
+        gradient: const LinearGradient(
+          colors: [AppColors.primary600, AppColors.primary800],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -353,7 +353,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.blue[600] : Colors.grey[700],
+                  color: isSelected ? AppColors.primary600 : Colors.grey[700],
                 ),
               ),
             ),
@@ -366,10 +366,10 @@ class _PayslipScreenState extends State<PayslipScreen> {
           });
         },
         backgroundColor: Colors.grey[200],
-        selectedColor: Colors.blue[100],
-        checkmarkColor: Colors.blue[600],
+        selectedColor: AppColors.primary100,
+        checkmarkColor: AppColors.primary600,
         labelStyle: TextStyle(
-          color: isSelected ? Colors.blue[700] : Colors.grey[700],
+          color: isSelected ? AppColors.primary700 : Colors.grey[700],
         ),
       ),
     );
@@ -500,7 +500,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
       case 'verify':
         return Colors.orange;
       case 'draft':
-        return Colors.blue;
+        return AppColors.primary;
       case 'cancel':
         return Colors.red;
       default:

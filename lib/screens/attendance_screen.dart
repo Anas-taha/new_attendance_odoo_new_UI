@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:intl/intl.dart';
 
 import '../models/hr_attendance.dart';
@@ -123,11 +124,11 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               content: Text(
                 'ℹ️ You are already checked in since $_checkInTime. Use the Log Out button below to check out.',
               ),
-              backgroundColor: Colors.blue[600],
+              backgroundColor: AppColors.primary600,
               duration: const Duration(seconds: 4),
               action: SnackBarAction(
                 label: 'Dismiss',
-                textColor: Colors.white,
+                textColor: Colors.white,  
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 },
@@ -1156,15 +1157,15 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           'View Detailed Reports',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF764ba2),
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 2,
-        ),
+        // style: ElevatedButton.styleFrom(
+        //   backgroundColor: const Color(0xFF764ba2),
+        //   foregroundColor: Colors.white,
+        //   padding: const EdgeInsets.symmetric(vertical: 16),
+        //   shape: RoundedRectangleBorder(
+        //     borderRadius: BorderRadius.circular(12),
+        //   ),
+        //   elevation: 2,
+        // ),
       ),
     );
   }

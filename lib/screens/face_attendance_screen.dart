@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../config/odoo_config.dart';
+import '../theme/app_theme.dart';
 import '../services/face_attendance_service.dart';
 import '../services/hr_service.dart';
 import '../services/odoo_rpc_service.dart';
 import 'login_screen.dart';
-import 'odoo_config_screen.dart';
 
 class FaceAttendanceScreen extends StatefulWidget {
   const FaceAttendanceScreen({super.key});
@@ -220,14 +220,6 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
     );
   }
 
-  Future<void> _openConfig() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const OdooConfigScreen()),
-    );
-    await _refreshAttendanceStatus();
-  }
-
   Future<void> _logout() async {
     OdooRPCService.instance.logout();
     if (!mounted) return;
@@ -250,14 +242,8 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       backgroundColor: const Color(0xFFF8F9FF),
       appBar: AppBar(
         title: const Text('Smart Attendance'),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
+       
         actions: [
-          IconButton(
-            onPressed: _openConfig,
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Configure Odoo',
-          ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'logout') {
@@ -287,14 +273,14 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey[900],
+                              color: AppColors.primary900,
                             ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'What would you like to do today?',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.blueGrey[500],
+                          color: AppColors.primary500,
                         ),
                       ),
                     ],
@@ -412,7 +398,7 @@ class _ActionCard extends StatelessWidget {
                       child: Text(
                         subtitle,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.blueGrey[800],
+                          color: AppColors.primary800,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -464,10 +450,10 @@ class _LocationCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: AppColors.primary50,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(Icons.location_on, color: Colors.blue),
+                child: const Icon(Icons.location_on, color: AppColors.primary),
               ),
               const SizedBox(width: 14),
               Column(
@@ -482,7 +468,7 @@ class _LocationCard extends StatelessWidget {
                   Text(
                     updatedText,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.blueGrey[400],
+                      color: AppColors.primary400,
                     ),
                   ),
                 ],
@@ -503,7 +489,7 @@ class _LocationCard extends StatelessWidget {
             'Odoo Server',
             style: Theme.of(
               context,
-            ).textTheme.labelMedium?.copyWith(color: Colors.blueGrey[400]),
+            ).textTheme.labelMedium?.copyWith(color: AppColors.primary400),
           ),
           const SizedBox(height: 4),
           Text(
@@ -540,14 +526,14 @@ class _LocationChip extends StatelessWidget {
               label,
               style: Theme.of(
                 context,
-              ).textTheme.labelLarge?.copyWith(color: Colors.blueGrey[400]),
+              ).textTheme.labelLarge?.copyWith(color: AppColors.primary400),
             ),
             const SizedBox(height: 4),
             Text(
               value,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.blueGrey[900],
+                color: AppColors.primary900,
               ),
             ),
           ],

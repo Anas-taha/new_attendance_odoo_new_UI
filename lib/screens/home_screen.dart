@@ -711,19 +711,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       );
                     },
                   ),
-                  _buildFeatureCard(
-                    icon: Icons.beach_access,
-                    title: 'Time Off',
-                    color: Colors.blue[600]!,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/team-off');
-                    },
-                  ),
-                  _buildFeatureCard(
-                    icon: Icons.calendar_today,
-                    title: 'Working Schedule',
-                    color: Colors.red[600]!,
-                  ),
+                  // _buildFeatureCard(
+                  //   icon: Icons.beach_access,
+                  //   title: 'Time Off',
+                  //   color: Colors.blue[600]!,
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, '/team-off');
+                  //   },
+                  // ),
+                  // _buildFeatureCard(
+                  //   icon: Icons.calendar_today,
+                  //   title: 'Working Schedule',
+                  //   color: Colors.red[600]!,
+                  // ),
                 ],
               ),
             ],

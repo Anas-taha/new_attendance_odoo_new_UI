@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'odoo_config_screen.dart';
 import 'home_screen.dart';
 import '../services/odoo_rpc_service.dart';
 import '../services/hr_service.dart';
 import '../services/local_storage_service.dart';
 import '../config/odoo_config.dart';
-import 'face_attendance_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -130,30 +128,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _openOdooConfig() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const OdooConfigScreen()),
-    );
-    await OdooConfig.loadConfiguration();
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FF),
       appBar: AppBar(
         title: const Text('Sign In'),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: _openOdooConfig,
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Configure Odoo',
-          ),
-        ],
+
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -177,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Icon(
                           Icons.verified_user,
                           size: 42,
-                          color: Colors.blue[600],
+                          color: Color(0xFF6B46C1),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -191,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Connect with your Odoo HR workspace',
+                        'Connect with your BLUE HR workspace',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.blueGrey[500],
                         ),
@@ -265,8 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[600],
-                    foregroundColor: Colors.white,
+                   
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -292,37 +272,39 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                 ),
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Current Server',
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(color: Colors.blueGrey[400]),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        OdooConfig.baseUrl,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Database: ${OdooConfig.database}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.blueGrey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.all(16),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(16),
+                //   ),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       Text(
+                //         'Current Server',
+                //         style: Theme.of(context).textTheme.labelMedium
+                //             ?.copyWith(color: Colors.blueGrey[400]),
+                //       ),
+                //       const SizedBox(height: 6),
+                //       Text(
+                //         OdooConfig.baseUrl,
+                //         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                //           fontWeight: FontWeight.w600,
+                //         ),
+                //       ),
+                //       const SizedBox(height: 8),
+                //       Text(
+                //         'Database: ${OdooConfig.database}',
+                //         style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                //           color: Colors.blueGrey[500],
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+            
+            
               ],
             ),
           ),

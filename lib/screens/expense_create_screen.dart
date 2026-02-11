@@ -328,8 +328,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                   child: ElevatedButton(
                                     onPressed: _isSubmitting ? null : _submitExpense,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF667eea),
-                                      foregroundColor: Colors.white,
+                                      // backgroundColor: const Color(0xFF667eea),
+                                      // foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(16),
                                       ),

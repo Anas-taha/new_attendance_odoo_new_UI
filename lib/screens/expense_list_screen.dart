@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/hr_expense.dart';
 import '../services/hr_service.dart';
 import '../config/odoo_config.dart';
+import '../theme/app_theme.dart';
 
 class ExpenseListScreen extends StatefulWidget {
   const ExpenseListScreen({super.key});
@@ -111,7 +112,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen>
       case 'draft':
         return Colors.orange;
       case 'submitted':
-        return Colors.blue;
+        return AppColors.primary;
       case 'approved':
         return Colors.green;
       case 'refused':
@@ -221,8 +222,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen>
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6B46C1),
-                            foregroundColor: Colors.white,
+                            // backgroundColor: const Color(0xFF6B46C1),
+                            // foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 16,
@@ -754,7 +755,7 @@ class ExpenseDetailScreen extends StatelessWidget {
       case 'draft':
         return Colors.orange;
       case 'submitted':
-        return Colors.blue;
+        return AppColors.primary;
       case 'approved':
         return Colors.green;
       case 'refused':
