@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:hr_app_odoo/screens/home/home_data.dart';
+import 'package:hr_app_odoo/screens/home/home_controller.dart';
 import 'package:hr_app_odoo/screens/home/widgets/greeting_widget.dart';
 
 import '../../app/locale_scope.dart';

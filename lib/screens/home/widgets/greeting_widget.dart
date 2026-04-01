@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
-import 'package:hr_app_odoo/screens/home/home_data.dart';
+import 'package:hr_app_odoo/screens/home/home_controller.dart';
 
 class GreetingWidget extends StatelessWidget {
     GreetingWidget({super.key});

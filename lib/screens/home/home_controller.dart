@@ -10,6 +10,7 @@ import 'package:hr_app_odoo/services/hr_service.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
+
  class HomeController extends GetxController {
   RxInt seconds = 0.obs;
   RxBool isCheckedIn = false.obs;
