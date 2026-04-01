@@ -10,7 +10,7 @@ import '../services/face_attendance_service.dart';
 import '../services/hr_service.dart';
 import '../services/odoo_rpc_service.dart';
 import '../theme/app_theme.dart';
-import 'login_screen.dart';
+import 'auth/login_screen.dart';
 
 class FaceAttendanceScreen extends StatefulWidget {
   const FaceAttendanceScreen({super.key});

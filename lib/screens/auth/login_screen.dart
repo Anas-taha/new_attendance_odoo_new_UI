@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
-import '../generated/l10n/app_localizations.dart';
-import '../services/odoo_rpc_service.dart';
-import 'home/home_screen.dart';
-import '../services/hr_service.dart';
-import '../services/local_storage_service.dart';
-import '../config/odoo_config.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../services/odoo_rpc_service.dart';
+import '../home/home_screen.dart';
+import '../../services/hr_service.dart';
+import '../../services/local_storage_service.dart';
+import '../../config/odoo_config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

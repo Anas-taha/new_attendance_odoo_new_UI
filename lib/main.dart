@@ -4,7 +4,7 @@ import 'app/locale_scope.dart';
 import 'generated/l10n/app_localizations.dart';
 import 'services/local_storage_service.dart';
 import 'theme/app_theme.dart';
-import 'screens/login_screen.dart';
+import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/attendance_screen.dart';
 import 'screens/attendance_report_screen.dart';

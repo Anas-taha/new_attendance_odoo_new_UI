@@ -10,7 +10,7 @@ import '../../models/hr_expense.dart';
 import '../../services/hr_service.dart';
 import '../../services/local_storage_service.dart';
 import '../../services/odoo_rpc_service.dart';
-import '../login_screen.dart';
+import '../auth/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
