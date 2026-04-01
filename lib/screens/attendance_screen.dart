@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:intl/intl.dart';
 
+import '../generated/l10n/app_localizations.dart';
 import '../models/hr_attendance.dart';
 import '../models/hr_employee.dart';
 import '../services/hr_service.dart';
+import '../theme/app_theme.dart';
 
 class AttendanceScreen extends StatefulWidget {
   final bool? initialIsCheckedIn;
@@ -119,16 +120,17 @@ class _AttendanceScreenState extends State<AttendanceScreen>
 
         // Show appropriate message based on check-in status
         if (_isCheckedIn) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'ℹ️ You are already checked in since $_checkInTime. Use the Log Out button below to check out.',
+                l10n.alreadyCheckedInSnack(_checkInTime),
               ),
               backgroundColor: AppColors.primary600,
               duration: const Duration(seconds: 4),
               action: SnackBarAction(
-                label: 'Dismiss',
-                textColor: Colors.white,  
+                label: l10n.dismiss,
+                textColor: Colors.white,
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 },
@@ -263,8 +265,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           _stopTimer();
           _pulseController.stop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Successfully checked out'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.successCheckedOutShort),
               backgroundColor: Colors.green,
             ),
           );
@@ -283,8 +285,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           _startTimer();
           _pulseController.repeat();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Successfully checked in'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.successCheckedInShort),
               backgroundColor: Colors.green,
             ),
           );
@@ -295,15 +297,18 @@ class _AttendanceScreenState extends State<AttendanceScreen>
         await _loadAttendanceData(); // Reload data
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Failed to update attendance'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedUpdateAttendanceShort),
             backgroundColor: Colors.red,
           ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.errorGeneric(e.toString())),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -378,9 +383,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Attendance Management',
+                        AppLocalizations.of(context)!.attendanceManagement,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -392,7 +397,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                       onPressed: () =>
                           Navigator.pushNamed(context, '/attendance-report'),
                       icon: const Icon(Icons.analytics, color: Colors.white),
-                      tooltip: 'View Reports',
+                      tooltip: AppLocalizations.of(context)!.viewReports,
                     ),
                     IconButton(
                       onPressed: _loadAttendanceData,
@@ -492,7 +497,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isCheckedIn ? '🟢 Currently Working' : '🔵 Ready to Start',
+                  _isCheckedIn
+                      ? '🟢 ${AppLocalizations.of(context)!.currentlyWorkingStatus}'
+                      : '🔵 ${AppLocalizations.of(context)!.readyToStart}',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -502,8 +509,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                 const SizedBox(height: 4),
                 Text(
                   _isCheckedIn
-                      ? 'You are checked in and your work session is active'
-                      : 'You are not checked in. Ready to start your work session.',
+                      ? AppLocalizations.of(context)!.checkedInActive
+                      : AppLocalizations.of(context)!.notCheckedInReady,
                   style: TextStyle(
                     fontSize: 14,
                     color: _isCheckedIn ? Colors.green[600] : Colors.blue[600],
@@ -512,7 +519,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                 if (_isCheckedIn && _checkInTime != '--:--:--') ...[
                   const SizedBox(height: 4),
                   Text(
-                    'Started at: $_checkInTime',
+                    AppLocalizations.of(context)!.startedAtLabel(_checkInTime),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.green[600],
@@ -553,7 +560,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _currentEmployee?.name ?? 'Employee',
+                  _currentEmployee?.name ?? AppLocalizations.of(context)!.employee,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -569,7 +576,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                 ],
                 const SizedBox(height: 4),
                 Text(
-                  'ID: ${_currentEmployee?.id ?? 'N/A'}',
+                  AppLocalizations.of(context)!.idLabel(_currentEmployee?.id.toString() ?? AppLocalizations.of(context)!.na),
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ],
@@ -622,8 +629,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                   children: [
                     Text(
                       _isCheckedIn
-                          ? 'Currently Working'
-                          : 'Register Attendance',
+                          ? AppLocalizations.of(context)!.currentlyWorking
+                          : AppLocalizations.of(context)!.registerAttendance,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -632,8 +639,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                     ),
                     Text(
                       _isCheckedIn
-                          ? 'Checked in since $_checkInTime - Use Log Out to end your shift'
-                          : 'Not Checked In - Use Log In to start your shift',
+                          ? AppLocalizations.of(context)!.checkedInSinceUseLogout(_checkInTime)
+                          : AppLocalizations.of(context)!.notCheckedInUseLogin,
                       style: TextStyle(
                         fontSize: 14,
                         color: _isCheckedIn
@@ -656,7 +663,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               Expanded(
                 child: _buildQuickStat(
                   icon: Icons.timer,
-                  title: 'Today',
+                  title: AppLocalizations.of(context)!.today,
                   value: _totalWorkedHours,
                   color: const Color(0xFF667eea),
                 ),
@@ -665,7 +672,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               Expanded(
                 child: _buildQuickStat(
                   icon: Icons.schedule,
-                  title: 'Records',
+                  title: AppLocalizations.of(context)!.records,
                   value: '${_todayRecords.length}',
                   color: const Color(0xFF764ba2),
                 ),
@@ -689,8 +696,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               ),
               child: Column(
                 children: [
-                  const Text(
-                    'Current Session',
+                  Text(
+                    AppLocalizations.of(context)!.currentSession,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -730,7 +737,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Started at $_checkInTime',
+                    AppLocalizations.of(context)!.startedAt(_checkInTime),
                     style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
@@ -744,7 +751,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _isCheckedIn ? 'End Your Shift' : 'Start Your Shift',
+                _isCheckedIn
+                    ? AppLocalizations.of(context)!.endYourShift
+                    : AppLocalizations.of(context)!.startYourShift,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -754,8 +763,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               const SizedBox(height: 8),
               Text(
                 _isCheckedIn
-                    ? 'You are currently checked in. Click Log Out to end your work session.'
-                    : 'You are not checked in. Click Log In to start your work session.',
+                    ? AppLocalizations.of(context)!.checkedInClickLogout
+                    : AppLocalizations.of(context)!.notCheckedInClickLogin,
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
               const SizedBox(height: 12),
@@ -765,7 +774,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                     child: ElevatedButton.icon(
                       onPressed: _handleCheckInOut,
                       icon: Icon(_isCheckedIn ? Icons.logout : Icons.login),
-                      label: Text(_isCheckedIn ? 'Log Out' : 'Log In'),
+                      label: Text(_isCheckedIn ? AppLocalizations.of(context)!.logOut : AppLocalizations.of(context)!.logIn),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _isCheckedIn
                             ? Colors.red[600]
@@ -784,7 +793,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                       onPressed: () =>
                           Navigator.pushNamed(context, '/attendance-report'),
                       icon: const Icon(Icons.analytics),
-                      label: const Text('View Reports'),
+                      label: Text(AppLocalizations.of(context)!.viewReports),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF6B46C1),
                         side: const BorderSide(color: Color(0xFF6B46C1)),
@@ -836,9 +845,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                "Today's Summary",
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.todaySummary,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3748),
@@ -854,7 +863,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               Expanded(
                 child: _buildQuickStat(
                   icon: Icons.access_time,
-                  title: 'Total Worked',
+                  title: AppLocalizations.of(context)!.totalWorked,
                   value: _totalWorkedHours,
                   color: const Color(0xFF667eea),
                 ),
@@ -863,7 +872,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               Expanded(
                 child: _buildQuickStat(
                   icon: Icons.list_alt,
-                  title: 'Records',
+                  title: AppLocalizations.of(context)!.records,
                   value: '${_todayRecords.length}',
                   color: const Color(0xFF764ba2),
                 ),
@@ -923,7 +932,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
             Icon(Icons.access_time, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No attendance records for today',
+              AppLocalizations.of(context)!.noAttendanceToday,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -932,7 +941,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Check in to start tracking your time',
+              AppLocalizations.of(context)!.checkInToStart,
               style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             ),
           ],
@@ -958,9 +967,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               ),
             ),
             const SizedBox(width: 12),
-            const Text(
-              "Today's Records",
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.todayRecords,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2D3748),
@@ -1033,7 +1042,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                 Row(
                   children: [
                     Text(
-                      isCurrentSession ? 'Active Session' : 'Completed Session',
+                      isCurrentSession ? AppLocalizations.of(context)!.activeSession : AppLocalizations.of(context)!.completedSession,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -1053,9 +1062,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                           color: const Color(0xFF48BB78),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          'LIVE',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.live,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -1073,7 +1082,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Check In ',
+                          '${AppLocalizations.of(context)!.checkIn} ',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -1097,7 +1106,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Check Out',
+                            AppLocalizations.of(context)!.checkOut,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -1120,7 +1129,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Duration',
+                            AppLocalizations.of(context)!.duration,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -1153,9 +1162,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
       child: ElevatedButton.icon(
         onPressed: () => Navigator.pushNamed(context, '/attendance-report'),
         icon: const Icon(Icons.analytics, size: 24),
-        label: const Text(
-          'View Detailed Reports',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        label: Text(
+          AppLocalizations.of(context)!.viewDetailedReports,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         // style: ElevatedButton.styleFrom(
         //   backgroundColor: const Color(0xFF764ba2),

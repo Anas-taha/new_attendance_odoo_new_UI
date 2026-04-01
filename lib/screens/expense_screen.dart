@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../config/odoo_config.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../models/hr_expense.dart';
 import '../services/hr_service.dart';
-import '../config/odoo_config.dart';
 import '../theme/app_theme.dart';
 
 class ExpenseScreen extends StatefulWidget {
@@ -79,20 +81,20 @@ class _ExpenseScreenState extends State<ExpenseScreen>
         } catch (e) {
           print('❌ Error processing expenses list: $e');
           setState(() {
-            _errorMessage = 'Error processing expenses: $e';
+            _errorMessage = AppLocalizations.of(context)!.errorProcessingExpenses(e.toString());
             _isLoading = false;
           });
         }
       } else {
         setState(() {
-          _errorMessage = result['message'] ?? 'Failed to load expenses';
+          _errorMessage = result['message'] ?? AppLocalizations.of(context)!.failedToLoadExpenses;
           _isLoading = false;
         });
       }
     } catch (e) {
       print('❌ Error in _loadExpenses: $e');
       setState(() {
-        _errorMessage = 'Error loading expenses: $e';
+        _errorMessage = AppLocalizations.of(context)!.errorLoadingExpenses;
         _isLoading = false;
       });
     }
@@ -168,10 +170,10 @@ class _ExpenseScreenState extends State<ExpenseScreen>
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'My Expenses',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.myExpenses,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -183,12 +185,12 @@ class _ExpenseScreenState extends State<ExpenseScreen>
                         Navigator.pushNamed(context, '/expense-create');
                       },
                       icon: const Icon(Icons.add, color: Colors.white),
-                      tooltip: 'Add New Expense',
+                      tooltip: AppLocalizations.of(context)!.addNewExpense,
                     ),
                     IconButton(
                       onPressed: _loadExpenses,
                       icon: const Icon(Icons.refresh, color: Colors.white),
-                      tooltip: 'Refresh',
+                      tooltip: AppLocalizations.of(context)!.refresh,
                     ),
                   ],
                 ),
@@ -214,9 +216,9 @@ class _ExpenseScreenState extends State<ExpenseScreen>
                             Navigator.pushNamed(context, '/expense-create');
                           },
                           icon: const Icon(Icons.add_circle_outline, size: 24),
-                          label: const Text(
-                            'New Expense',
-                            style: TextStyle(
+                          label: Text(
+                            AppLocalizations.of(context)!.newExpense,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
@@ -279,7 +281,7 @@ class _ExpenseScreenState extends State<ExpenseScreen>
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadExpenses,
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ),
@@ -298,7 +300,7 @@ class _ExpenseScreenState extends State<ExpenseScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'No expenses found',
+              AppLocalizations.of(context)!.noExpensesFound,
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 18,
@@ -307,7 +309,7 @@ class _ExpenseScreenState extends State<ExpenseScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Tap the "New Expense" button above to create your first expense request',
+              AppLocalizations.of(context)!.tapNewExpenseToCreate,
               style: TextStyle(
                 color: Colors.grey[500],
                 fontSize: 14,
@@ -504,7 +506,7 @@ class _ExpenseScreenState extends State<ExpenseScreen>
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          DateFormat('MMM dd, yyyy').format(expense.expenseDate),
+                          DateFormat('MMM dd, yyyy', Localizations.localeOf(context).toString()).format(expense.expenseDate),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -582,10 +584,10 @@ class ExpenseDetailScreen extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Expense Details',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.expenseDetails,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -633,7 +635,7 @@ class ExpenseDetailScreen extends StatelessWidget {
                         
                         _buildDetailCard(
                           title: 'Date',
-                          content: DateFormat('EEEE, MMMM dd, yyyy')
+                          content: DateFormat('EEEE, MMMM dd, yyyy', Localizations.localeOf(context).toString())
                               .format(expense.expenseDate),
                           icon: Icons.calendar_today,
                         ),

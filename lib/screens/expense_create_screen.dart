@@ -1,10 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+
+import '../generated/l10n/app_localizations.dart';
+import '../models/hr_employee.dart';
 import '../services/expense_service.dart';
 import '../services/hr_service.dart';
-import '../models/hr_employee.dart';
 
 class ExpenseCreateScreen extends StatefulWidget {
   const ExpenseCreateScreen({super.key});
@@ -61,7 +64,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showError('Failed to load data: $e');
+      _showError(AppLocalizations.of(context)!.failedToLoadData(e.toString()));
     }
   }
 
@@ -89,7 +92,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Take Photo'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () async {
                 Navigator.pop(context);
                 final image = await picker.pickImage(source: ImageSource.camera);
@@ -100,7 +103,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () async {
                 Navigator.pop(context);
                 final image = await picker.pickImage(source: ImageSource.gallery);
@@ -112,7 +115,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             if (_receiptImage != null)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Remove Receipt', style: TextStyle(color: Colors.red)),
+                title: Text(AppLocalizations.of(context)!.removeReceipt, style: const TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() => _receiptImage = null);
@@ -128,12 +131,12 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     if (!_formKey.currentState!.validate()) return;
     
     if (_currentEmployee == null) {
-      _showError('Employee information not available');
+      _showError(AppLocalizations.of(context)!.employeeInfoNotAvailable);
       return;
     }
     
     if (_selectedCategory == null) {
-      _showError('Please select a category');
+      _showError(AppLocalizations.of(context)!.pleaseSelectCategory);
       return;
     }
     
@@ -155,14 +158,14 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       setState(() => _isSubmitting = false);
       
       if (result['success']) {
-        _showSuccess('Expense created successfully!');
+        _showSuccess(AppLocalizations.of(context)!.expenseCreatedSuccess);
         Navigator.pop(context, true);
       } else {
-        _showError(result['error'] ?? 'Failed to create expense');
+        _showError(result['error'] ?? AppLocalizations.of(context)!.failedToCreateExpense);
       }
     } catch (e) {
       setState(() => _isSubmitting = false);
-      _showError('Error creating expense: $e');
+      _showError(AppLocalizations.of(context)!.errorCreatingExpense(e.toString()));
     }
   }
 
@@ -211,10 +214,10 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'New Expense',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.newExpense,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -246,13 +249,14 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                               children: [
                                 // Name Field
                                 _buildTextField(
+                                  context: context,
                                   controller: _nameController,
-                                  label: 'Expense Name',
-                                  hint: 'e.g., Business lunch with client',
+                                  label: AppLocalizations.of(context)!.expenseName,
+                                  hint: AppLocalizations.of(context)!.expenseNameHint,
                                   icon: Icons.receipt_long,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter expense name';
+                                      return AppLocalizations.of(context)!.pleaseEnterExpenseName;
                                     }
                                     return null;
                                   },
@@ -262,17 +266,18 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                 
                                 // Amount Field
                                 _buildTextField(
+                                  context: context,
                                   controller: _amountController,
-                                  label: 'Amount',
+                                  label: AppLocalizations.of(context)!.amount,
                                   hint: '0.00',
                                   icon: Icons.attach_money,
                                   keyboardType: TextInputType.number,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter amount';
+                                      return AppLocalizations.of(context)!.pleaseEnterAmount;
                                     }
                                     if (double.tryParse(value) == null) {
-                                      return 'Please enter a valid amount';
+                                      return AppLocalizations.of(context)!.pleaseEnterValidAmount;
                                     }
                                     return null;
                                   },
@@ -297,9 +302,10 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                 
                                 // Description
                                 _buildTextField(
+                                  context: context,
                                   controller: _descriptionController,
-                                  label: 'Description (Optional)',
-                                  hint: 'Additional details about the expense',
+                                  label: AppLocalizations.of(context)!.descriptionOptional,
+                                  hint: AppLocalizations.of(context)!.descriptionHint,
                                   icon: Icons.description,
                                   maxLines: 3,
                                 ),
@@ -308,9 +314,10 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                 
                                 // Reference
                                 _buildTextField(
+                                  context: context,
                                   controller: _referenceController,
-                                  label: 'Reference (Optional)',
-                                  hint: 'Invoice number or reference',
+                                  label: AppLocalizations.of(context)!.referenceOptional,
+                                  hint: AppLocalizations.of(context)!.referenceHint,
                                   icon: Icons.tag,
                                 ),
                                 
@@ -336,9 +343,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                     ),
                                     child: _isSubmitting
                                         ? const CircularProgressIndicator(color: Colors.white)
-                                        : const Text(
-                                            'Submit Expense',
-                                            style: TextStyle(
+                                        : Text(
+                                            AppLocalizations.of(context)!.submitExpense,
+                                            style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -359,6 +366,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required String hint,
@@ -415,9 +423,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Category',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.category,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
             color: Color(0xFF2D3748),
@@ -440,7 +448,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                   const Icon(Icons.category, color: Color(0xFF667eea)),
                   const SizedBox(width: 12),
                   Text(
-                    'Select a category',
+                    AppLocalizations.of(context)!.selectCategory,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
@@ -454,7 +462,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          category['name'] ?? 'Unknown',
+                          category['name'] ?? AppLocalizations.of(context)!.unknown,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -472,7 +480,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              'No categories available. Please configure expense products in Odoo.',
+              AppLocalizations.of(context)!.noCategoriesAvailable,
               style: TextStyle(color: Colors.orange[700], fontSize: 12),
             ),
           ),
@@ -484,9 +492,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Date',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.date,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
             color: Color(0xFF2D3748),
@@ -508,7 +516,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                 const Icon(Icons.calendar_today, color: Color(0xFF667eea)),
                 const SizedBox(width: 12),
                 Text(
-                  DateFormat('EEEE, MMMM dd, yyyy').format(_selectedDate),
+                  DateFormat('EEEE, MMMM dd, yyyy', Localizations.localeOf(context).toString()).format(_selectedDate),
                   style: const TextStyle(fontSize: 16),
                 ),
                 const Spacer(),
@@ -525,9 +533,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Payment Mode',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.paymentMode,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
             color: Color(0xFF2D3748),
@@ -539,7 +547,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             Expanded(
               child: _buildPaymentModeOption(
                 'own_account',
-                'Own Account',
+                AppLocalizations.of(context)!.ownAccount,
                 Icons.person,
               ),
             ),
@@ -547,7 +555,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             Expanded(
               child: _buildPaymentModeOption(
                 'company_account',
-                'Company Account',
+                AppLocalizations.of(context)!.companyAccount,
                 Icons.business,
               ),
             ),
@@ -598,9 +606,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Receipt (Optional)',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.receiptOptional,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
             color: Color(0xFF2D3748),
@@ -641,7 +649,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                           Icon(Icons.check_circle, color: Colors.green[600]),
                           const SizedBox(width: 8),
                           Text(
-                            'Receipt attached',
+                            AppLocalizations.of(context)!.receiptAttached,
                             style: TextStyle(color: Colors.green[600]),
                           ),
                         ],
@@ -657,7 +665,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Tap to upload receipt',
+                        AppLocalizations.of(context)!.tapToUploadReceipt,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w500,
@@ -665,7 +673,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Take photo or select from gallery',
+                        AppLocalizations.of(context)!.takePhotoOrSelect,
                         style: TextStyle(
                           color: Colors.grey[500],
                           fontSize: 12,

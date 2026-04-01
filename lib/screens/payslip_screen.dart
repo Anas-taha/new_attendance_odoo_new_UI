@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
+import '../generated/l10n/app_localizations.dart';
+import '../models/hr_employee.dart';
 import '../models/hr_payslip.dart';
 import '../services/hr_service.dart';
-import '../models/hr_employee.dart';
 import '../theme/app_theme.dart';
 
 class PayslipScreen extends StatefulWidget {
@@ -57,14 +59,14 @@ class _PayslipScreenState extends State<PayslipScreen> {
       } catch (e) {
         print('❌ Error loading payslips: $e');
         setState(() {
-          _errorMessage = 'Failed to load payslips: ${e.toString()}';
+          _errorMessage = AppLocalizations.of(context)!.failedToLoadPayslips(e.toString());
           _isLoading = false;
         });
       }
     } catch (e) {
       print('❌ Error loading employee data: $e');
       setState(() {
-        _errorMessage = 'Failed to load employee data: ${e.toString()}';
+        _errorMessage = AppLocalizations.of(context)!.failedToLoadEmployeeData(e.toString());
         _isLoading = false;
       });
     }
@@ -137,7 +139,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payslips'),
+        title: Text(AppLocalizations.of(context)!.payslips),
        
         actions: [
           if (_isAdmin)
@@ -179,7 +181,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Error Loading Payslips',
+            AppLocalizations.of(context)!.errorLoadingPayslips,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -195,7 +197,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadData,
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
@@ -233,7 +235,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Employee Payslip Overview',
+                AppLocalizations.of(context)!.employeePayslipOverview,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -318,12 +320,12 @@ class _PayslipScreenState extends State<PayslipScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildFilterChip('all', 'All', Icons.all_inclusive, _payslips.length),
-          _buildFilterChip('paid', 'Paid', Icons.check_circle, 
+          _buildFilterChip('all', AppLocalizations.of(context)!.all, Icons.all_inclusive, _payslips.length),
+          _buildFilterChip('paid', AppLocalizations.of(context)!.paid, Icons.check_circle,
             _payslips.where((p) => p.state == 'done').length),
-          _buildFilterChip('verified', 'Verified', Icons.verified, 
+          _buildFilterChip('verified', AppLocalizations.of(context)!.verified, Icons.verified,
             _payslips.where((p) => p.state == 'verify').length),
-          _buildFilterChip('draft', 'Draft', Icons.edit, 
+          _buildFilterChip('draft', AppLocalizations.of(context)!.draft, Icons.edit, 
             _payslips.where((p) => p.state == 'draft').length),
         ],
       ),
@@ -387,7 +389,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No payslips found for this employee',
+            AppLocalizations.of(context)!.noPayslipsFound,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -396,7 +398,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Payslips will appear here once they are generated for this employee',
+            AppLocalizations.of(context)!.payslipsWillAppear,
             style: TextStyle(
               color: Colors.grey[500],
             ),
@@ -418,7 +420,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No payslips found matching your filter',
+            AppLocalizations.of(context)!.noPayslipsMatchingFilter,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -427,7 +429,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Try adjusting your filter or contact HR to generate a new payslip.',
+            AppLocalizations.of(context)!.tryAdjustingFilterPayslip,
             style: TextStyle(
               color: Colors.grey[500],
             ),
@@ -622,7 +624,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
                         _showEditPayslipDialog(payslip);
                       },
                       icon: const Icon(Icons.edit),
-                      label: const Text('Edit'),
+                      label: Text(AppLocalizations.of(context)!.edit),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -632,11 +634,11 @@ class _PayslipScreenState extends State<PayslipScreen> {
                         Navigator.pop(context);
                         // TODO: Implement payslip actions
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Payslip actions coming soon!')),
+                          SnackBar(content: Text(AppLocalizations.of(context)!.payslipActionsComingSoon)),
                         );
                       },
                       icon: const Icon(Icons.check),
-                      label: const Text('Actions'),
+                      label: Text(AppLocalizations.of(context)!.actions),
                     ),
                   ),
                 ],
@@ -679,14 +681,14 @@ class _PayslipScreenState extends State<PayslipScreen> {
   void _showCreatePayslipDialog() {
     // TODO: Implement create payslip dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Create payslip functionality coming soon!')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.createPayslipComingSoon)),
     );
   }
 
   void _showEditPayslipDialog(HrPayslip payslip) {
     // TODO: Implement edit payslip dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit payslip functionality coming soon!')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.editPayslipComingSoon)),
     );
   }
 }

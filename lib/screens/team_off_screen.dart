@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:hr_app_odoo/models/hr_employee.dart';
-import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/models/hr_leave.dart';
-import 'package:hr_app_odoo/services/optimized_hr_service.dart';
-import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
-import 'package:hr_app_odoo/services/notification_service.dart';
+import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
+import '../models/hr_employee.dart';
+import '../models/hr_leave.dart';
+import '../services/notification_service.dart';
+import '../services/odoo_rpc_service.dart';
+import '../services/optimized_hr_service.dart';
+import '../theme/app_theme.dart';
 
 class TeamOffScreen extends StatefulWidget {
   const TeamOffScreen({super.key});
@@ -55,14 +56,14 @@ class _TeamOffScreenState extends State<TeamOffScreen> with TickerProviderStateM
         }
       });
       
-      // Show snackbar notification
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${leave.leaveType ?? 'Leave'} request status updated to ${leave.statusDisplay}'),
+          content: Text(l10n.leaveRequestStatusUpdated(leave.leaveType ?? 'Leave', leave.statusDisplay)),
           backgroundColor: AppColors.primary600,
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
-            label: 'View',
+            label: l10n.view,
             textColor: Colors.white,
             onPressed: () {
               // Scroll to the notification
