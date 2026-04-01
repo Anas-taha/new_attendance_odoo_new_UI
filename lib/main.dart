@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/app/app_bending.dart';
 
 import 'app/locale_scope.dart';
 import 'generated/l10n/app_localizations.dart';
@@ -63,27 +65,28 @@ class _HrAppState extends State<HrApp> {
   Widget build(BuildContext context) {
     return LocaleScope(
       setLocale: setLocale,
-      child: MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'HR App',
-      theme: appTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: _locale,
-      home: const LoginScreen(),
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/attendance': (context) => const AttendanceScreen(),
-        '/attendance-report': (context) => const AttendanceReportScreen(),
-        '/face-attendance': (context) => const FaceAttendanceScreen(),
-        '/expenses': (context) => const ExpenseScreen(),
-        '/expense-create': (context) => const ExpenseCreateScreen(),
-        '/payslips': (context) => const PayslipScreen(),
-        '/contracts': (context) => const ContractsScreen(),
-        '/time-off': (context) => const TeamOffScreen(),
-      },
-    ),
+      child: GetMaterialApp(
+        initialBinding: AppBinding(),
+        debugShowCheckedModeBanner: false,
+        title: 'HR App',
+        theme: appTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: _locale,
+        home: const LoginScreen(),
+        routes: {
+          '/login': (context) => const LoginScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/attendance': (context) => const AttendanceScreen(),
+          '/attendance-report': (context) => const AttendanceReportScreen(),
+          '/face-attendance': (context) => const FaceAttendanceScreen(),
+          '/expenses': (context) => const ExpenseScreen(),
+          '/expense-create': (context) => const ExpenseCreateScreen(),
+          '/payslips': (context) => const PayslipScreen(),
+          '/contracts': (context) => const ContractsScreen(),
+          '/time-off': (context) => const TeamOffScreen(),
+        },
+      ),
     );
   }
 }

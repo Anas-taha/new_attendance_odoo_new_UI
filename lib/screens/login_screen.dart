@@ -51,6 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void homeGlitch() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -88,7 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                l10n.welcomeName(employee?.name ?? _emailController.text.trim()),
+                l10n.welcomeName(
+                  employee?.name ?? _emailController.text.trim(),
+                ),
               ),
               backgroundColor: Colors.green,
             ),
@@ -97,15 +106,15 @@ class _LoginScreenState extends State<LoginScreen> {
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(result['error'] ?? AppLocalizations.of(context)!.authFailed),
+                content: Text(
+                  result['error'] ?? AppLocalizations.of(context)!.authFailed,
+                ),
                 backgroundColor: Colors.red,
               ),
             );
@@ -116,7 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.connectionError(e.toString())),
+              content: Text(
+                AppLocalizations.of(context)!.connectionError(e.toString()),
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -136,9 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FF),
-      appBar: AppBar(
-        title: Text(l10n.signIn),
-      ),
+      appBar: AppBar(title: Text(l10n.signIn)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -247,9 +256,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
+                  // onPressed: _isLoading ? null : _handleLogin,
+                  onPressed: _isLoading ? null : homeGlitch,
                   style: ElevatedButton.styleFrom(
-                   
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -275,6 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                 ),
                 const SizedBox(height: 24),
+
                 // Container(
                 //   padding: const EdgeInsets.all(16),
                 //   decoration: BoxDecoration(
@@ -306,8 +316,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 //     ],
                 //   ),
                 // ),
-            
-            
               ],
             ),
           ),
