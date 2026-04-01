@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../config/odoo_config.dart';
-import '../theme/app_theme.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../services/face_attendance_service.dart';
 import '../services/hr_service.dart';
 import '../services/odoo_rpc_service.dart';
+import '../theme/app_theme.dart';
 import 'login_screen.dart';
 
 class FaceAttendanceScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       _setFeedback(
-        'Location services are disabled. Please enable them to continue.',
+        AppLocalizations.of(context)!.locationServicesDisabled,
         success: false,
       );
       return false;
@@ -110,7 +111,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       _setFeedback(
-        'Location permission denied. Please grant access from settings.',
+        AppLocalizations.of(context)!.locationPermissionDenied,
         success: false,
       );
       return false;
@@ -142,7 +143,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       final imageData = await _pickImageFromGallery();
       log('imageData: $imageData');
       if (imageData == null || imageData['success'] != true) {
-        final error = imageData?['error'] ?? 'Could not select image.';
+        final error = imageData?['error'] ?? AppLocalizations.of(context)!.couldNotSelectImage;
         log('❌ Error: $error');
         _setFeedback(error.toString(), success: false);
         return;
@@ -154,7 +155,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
 
       if (base64Image == null || base64Image.isEmpty) {
         _setFeedback(
-          'Face image not selected. Please try again.',
+          AppLocalizations.of(context)!.faceImageNotSelected,
           success: false,
         );
         return;
@@ -172,20 +173,20 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       if (result['success'] == true) {
         await _refreshAttendanceStatus();
         final action = result['action'] ?? '';
-        final message = result['message'] ?? 
+        final message = result['message'] ??
             (action == 'check_out' || currentlyCheckedIn
-                ? 'Check-out completed successfully.'
-                : 'Check-in completed successfully.');
+                ? AppLocalizations.of(context)!.checkoutCompletedSuccess
+                : AppLocalizations.of(context)!.checkinCompletedSuccess);
         _setFeedback(message, success: true);
       } else {
         _setFeedback(
-          result['error']?.toString() ?? 'Attendance action failed.',
+          result['error']?.toString() ?? AppLocalizations.of(context)!.attendanceActionFailed,
           success: false,
         );
       }
     } catch (e, stackTrace) {
       log('❌ Stack trace: $stackTrace');
-      _setFeedback('Unexpected error: $e, $stackTrace', success: false);
+      _setFeedback(AppLocalizations.of(context)!.unexpectedError('$e, $stackTrace'), success: false);
     } finally {
       if (mounted) {
         setState(() {
@@ -201,7 +202,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       return result;
     } catch (e) {
       log('❌ Error picking image: $e');
-      return {'success': false, 'error': 'Error picking image: $e'};
+      return {'success': false, 'error': AppLocalizations.of(context)!.errorPickingImage(e.toString())};
     }
   }
 
@@ -235,13 +236,13 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
     final latText = _currentPosition?.latitude.toStringAsFixed(5) ?? '--';
     final lonText = _currentPosition?.longitude.toStringAsFixed(5) ?? '--';
     final updatedText = _lastLocationUpdate != null
-        ? 'Updated ${TimeOfDay.fromDateTime(_lastLocationUpdate!).format(context)}'
-        : 'Waiting for location...';
+        ? '${AppLocalizations.of(context)!.view} ${TimeOfDay.fromDateTime(_lastLocationUpdate!).format(context)}'
+        : AppLocalizations.of(context)!.waitingForLocation;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FF),
       appBar: AppBar(
-        title: const Text('Smart Attendance'),
+        title: Text(AppLocalizations.of(context)!.smartAttendance),
        
         actions: [
           PopupMenuButton<String>(
@@ -250,8 +251,8 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
                 _logout();
               }
             },
-            itemBuilder: (context) => const [
-              PopupMenuItem<String>(value: 'logout', child: Text('Logout')),
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(value: 'logout', child: Text(AppLocalizations.of(context)!.logout)),
             ],
             icon: const Icon(Icons.person_outline),
           ),
@@ -269,7 +270,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Welcome!',
+                        AppLocalizations.of(context)!.welcome,
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
@@ -278,7 +279,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'What would you like to do today?',
+                        AppLocalizations.of(context)!.whatWouldYouLikeToDo,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.primary500,
                         ),
@@ -288,10 +289,10 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
                 ),
                 const SizedBox(height: 32),
                 _ActionCard(
-                  title: 'Check In / Check Out',
+                  title: AppLocalizations.of(context)!.checkInCheckOut,
                   subtitle: _isCheckedIn
-                      ? 'Currently checked in - Tap to check out'
-                      : 'Ready to start - Tap to check in',
+                      ? AppLocalizations.of(context)!.currentlyCheckedInTapOut
+                      : AppLocalizations.of(context)!.readyToStartTapIn,
                   icon: Icons.fingerprint_rounded,
                   colors: _isCheckedIn
                       ? const [Color(0xFFFF6F61), Color(0xFFD84315)]
@@ -460,7 +461,7 @@ class _LocationCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Current Location',
+                    AppLocalizations.of(context)!.currentLocation,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -479,14 +480,14 @@ class _LocationCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _LocationChip(label: 'Latitude', value: latitude),
+              _LocationChip(label: AppLocalizations.of(context)!.latitude, value: latitude),
               const SizedBox(width: 12),
-              _LocationChip(label: 'Longitude', value: longitude),
+              _LocationChip(label: AppLocalizations.of(context)!.longitude, value: longitude),
             ],
           ),
           const SizedBox(height: 16),
           Text(
-            'Odoo Server',
+            AppLocalizations.of(context)!.odooServer,
             style: Theme.of(
               context,
             ).textTheme.labelMedium?.copyWith(color: AppColors.primary400),

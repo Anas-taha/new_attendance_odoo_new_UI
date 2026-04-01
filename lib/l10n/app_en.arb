@@ -1,0 +1,371 @@
+{
+  "@@locale": "en",
+  "appTitle": "HR App",
+  "signIn": "Sign In",
+  "secureAccess": "Secure Access",
+  "connectWorkspace": "Connect with your BLUE HR workspace",
+  "email": "Email",
+  "password": "Password",
+  "emailRequired": "Email is required",
+  "emailInvalid": "Enter a valid email",
+  "passwordRequired": "Password is required",
+  "passwordMinLength": "Password must be at least 4 characters",
+  "welcomeName": "Welcome {name}!",
+  "@welcomeName": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "authFailed": "Authentication failed",
+  "connectionError": "Connection error: {error}",
+  "@connectionError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "logout": "Logout",
+  "logoutConfirm": "Are you sure you want to logout?",
+  "cancel": "Cancel",
+  "loggedOutSuccess": "Logged out successfully",
+  "logoutError": "Error during logout: {error}",
+  "@logoutError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "hrDashboard": "HR Dashboard",
+  "employee": "Employee",
+  "noEmail": "No email",
+  "goodMorning": "Good Morning",
+  "goodAfternoon": "Good Afternoon",
+  "goodEvening": "Good Evening",
+  "goodNight": "Good Night",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "greetingHappyDay": "{greeting}! Happy {day}",
+  "@greetingHappyDay": {
+    "placeholders": {
+      "greeting": {"type": "String"},
+      "day": {"type": "String"}
+    }
+  },
+  "welcomeBackDashboard": "Welcome back to your HR dashboard",
+  "currentTime": "Current time: {time}",
+  "@currentTime": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "registerAttendance": "Register Attendance",
+  "currentlyWorking": "Currently Working",
+  "notCheckedIn": "Not Checked In",
+  "today": "Today",
+  "thisWeek": "This Week",
+  "currentSession": "Current Session",
+  "startedAt": "Started at {time}",
+  "@startedAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "checkInFace": "Check In (Face)",
+  "checkOutFace": "Check Out (Face)",
+  "viewDetails": "View Details",
+  "whatDoYouNeed": "What do you need?",
+  "contracts": "Contracts",
+  "payslip": "Payslip",
+  "expenses": "Expenses",
+  "attendance": "Attendance",
+  "successCheckedOut": "Successfully checked out",
+  "successCheckedIn": "Successfully checked in",
+  "failedUpdateAttendance": "Failed to update attendance. Please check your connection and try again.",
+  "errorGeneric": "Error: {error}",
+  "@errorGeneric": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "attendanceManagement": "Attendance Management",
+  "viewReports": "View Reports",
+  "dismiss": "Dismiss",
+  "alreadyCheckedInSnack": "You are already checked in since {time}. Use the Log Out button below to check out.",
+  "@alreadyCheckedInSnack": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "readyToStart": "Ready to Start",
+  "currentlyWorkingStatus": "Currently Working",
+  "checkedInActive": "You are checked in and your work session is active",
+  "notCheckedInReady": "You are not checked in. Ready to start your work session.",
+  "startedAtLabel": "Started at: {time}",
+  "@startedAtLabel": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "idLabel": "ID: {id}",
+  "@idLabel": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+  "na": "N/A",
+  "notCheckedInUseLogin": "Not Checked In - Use Log In to start your shift",
+  "checkedInSinceUseLogout": "Checked in since {time} - Use Log Out to end your shift",
+  "@checkedInSinceUseLogout": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "records": "Records",
+  "endYourShift": "End Your Shift",
+  "startYourShift": "Start Your Shift",
+  "checkedInClickLogout": "You are currently checked in. Click Log Out to end your work session.",
+  "notCheckedInClickLogin": "You are not checked in. Click Log In to start your work session.",
+  "logOut": "Log Out",
+  "logIn": "Log In",
+  "todaySummary": "Today's Summary",
+  "totalWorked": "Total Worked",
+  "todayRecords": "Today's Records",
+  "noAttendanceToday": "No attendance records for today",
+  "checkInToStart": "Check in to start tracking your time",
+  "viewDetailedReports": "View Detailed Reports",
+  "activeSession": "Active Session",
+  "completedSession": "Completed Session",
+  "live": "LIVE",
+  "checkIn": "Check In",
+  "checkOut": "Check Out",
+  "duration": "Duration",
+  "successCheckedOutShort": "Successfully checked out",
+  "successCheckedInShort": "Successfully checked in",
+  "failedUpdateAttendanceShort": "Failed to update attendance",
+  "attendanceReport": "Attendance Report",
+  "summary": "Summary",
+  "analytics": "Analytics",
+  "thisMonth": "This Month",
+  "lastMonth": "Last Month",
+  "customRange": "Custom Range",
+  "selectPeriod": "Select Period",
+  "quickStatistics": "Quick Statistics",
+  "totalHours": "Total Hours",
+  "dailyAverage": "Daily Average",
+  "sessions": "Sessions",
+  "onTime": "On Time",
+  "weeklyOverview": "Weekly Overview",
+  "monthlyOverview": "Monthly Overview",
+  "workingDays": "Working Days",
+  "avgDaily": "Avg Daily",
+  "attendanceTrends": "Attendance Trends",
+  "loadingTrends": "Loading trends...",
+  "totalHoursLabel": "Total Hours",
+  "onTimeRate": "On Time Rate",
+  "sessionsWithLocation": "Sessions with Location",
+  "punctualityAnalysis": "Punctuality Analysis",
+  "late": "Late",
+  "earlyLeave": "Early Leave",
+  "locationTracking": "Location Tracking",
+  "withLocation": "With Location",
+  "withoutLocation": "Without Location",
+  "noAttendanceRecords": "No attendance records found",
+  "tryDifferentPeriod": "Try selecting a different period",
+  "exportReport": "Export Report",
+  "exportAsCsv": "Export as CSV",
+  "exportCsvSubtitle": "Spreadsheet compatible format",
+  "exportAsPdf": "Export as PDF",
+  "exportPdfSubtitle": "Print-ready format",
+  "exportAsJson": "Export as JSON",
+  "exportJsonSubtitle": "Developer-friendly format",
+  "exportingAs": "Exporting report as {format}...",
+  "@exportingAs": {
+    "placeholders": {
+      "format": {"type": "String"}
+    }
+  },
+  "newExpense": "New Expense",
+  "expenseName": "Expense Name",
+  "expenseNameHint": "e.g., Business lunch with client",
+  "pleaseEnterExpenseName": "Please enter expense name",
+  "amount": "Amount",
+  "pleaseEnterAmount": "Please enter amount",
+  "pleaseEnterValidAmount": "Please enter a valid amount",
+  "descriptionOptional": "Description (Optional)",
+  "descriptionHint": "Additional details about the expense",
+  "referenceOptional": "Reference (Optional)",
+  "referenceHint": "Invoice number or reference",
+  "submitExpense": "Submit Expense",
+  "category": "Category",
+  "selectCategory": "Select a category",
+  "unknown": "Unknown",
+  "noCategoriesAvailable": "No categories available. Please configure expense products in Odoo.",
+  "date": "Date",
+  "paymentMode": "Payment Mode",
+  "ownAccount": "Own Account",
+  "companyAccount": "Company Account",
+  "receiptOptional": "Receipt (Optional)",
+  "receiptAttached": "Receipt attached",
+  "tapToUploadReceipt": "Tap to upload receipt",
+  "takePhotoOrSelect": "Take photo or select from gallery",
+  "takePhoto": "Take Photo",
+  "chooseFromGallery": "Choose from Gallery",
+  "removeReceipt": "Remove Receipt",
+  "failedToLoadData": "Failed to load data: {error}",
+  "@failedToLoadData": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "employeeInfoNotAvailable": "Employee information not available",
+  "pleaseSelectCategory": "Please select a category",
+  "expenseCreatedSuccess": "Expense created successfully!",
+  "failedToCreateExpense": "Failed to create expense",
+  "errorCreatingExpense": "Error creating expense: {error}",
+  "@errorCreatingExpense": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "locationServicesDisabled": "Location services are disabled. Please enable them to continue.",
+  "locationPermissionDenied": "Location permission denied. Please grant access from settings.",
+  "couldNotSelectImage": "Could not select image.",
+  "faceImageNotSelected": "Face image not selected. Please try again.",
+  "checkoutCompletedSuccess": "Check-out completed successfully.",
+  "checkinCompletedSuccess": "Check-in completed successfully.",
+  "attendanceActionFailed": "Attendance action failed.",
+  "unexpectedError": "Unexpected error: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "errorPickingImage": "Error picking image: {error}",
+  "@errorPickingImage": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "waitingForLocation": "Waiting for location...",
+  "smartAttendance": "Smart Attendance",
+  "welcome": "Welcome!",
+  "whatWouldYouLikeToDo": "What would you like to do today?",
+  "checkInCheckOut": "Check In / Check Out",
+  "currentlyCheckedInTapOut": "Currently checked in - Tap to check out",
+  "readyToStartTapIn": "Ready to start - Tap to check in",
+  "currentLocation": "Current Location",
+  "latitude": "Latitude",
+  "longitude": "Longitude",
+  "odooServer": "Odoo Server",
+  "view": "View",
+  "failedToLoadPayslips": "Failed to load payslips: {error}",
+  "@failedToLoadPayslips": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "failedToLoadEmployeeData": "Failed to load employee data: {error}",
+  "@failedToLoadEmployeeData": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "contractsNotAvailable": "Contract management is not available in your Odoo instance. Please contact your administrator to enable the HR Contracts module.",
+  "errorLoadingEmployeeData": "Error loading employee data: {error}",
+  "@errorLoadingEmployeeData": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "leaveRequestStatusUpdated": "{leaveType} request status updated to {status}",
+  "@leaveRequestStatusUpdated": {
+    "placeholders": {
+      "leaveType": {"type": "String"},
+      "status": {"type": "String"}
+    }
+  },
+  "payslips": "Payslips",
+  "errorLoadingPayslips": "Error Loading Payslips",
+  "retry": "Retry",
+  "employeePayslipOverview": "Employee Payslip Overview",
+  "total": "Total",
+  "paid": "Paid",
+  "verified": "Verified",
+  "draft": "Draft",
+  "all": "All",
+  "noPayslipsFound": "No payslips found for this employee",
+  "payslipsWillAppear": "Payslips will appear here once they are generated for this employee",
+  "noPayslipsMatchingFilter": "No payslips found matching your filter",
+  "tryAdjustingFilterPayslip": "Try adjusting your filter or contact HR to generate a new payslip.",
+  "periodLabel": "Period: {period}",
+  "@periodLabel": {"placeholders": {"period": {"type": "String"}}},
+  "statusLabel": "Status: {status}",
+  "@statusLabel": {"placeholders": {"status": {"type": "String"}}},
+  "netWage": "Net Wage: {amount}",
+  "@netWage": {"placeholders": {"amount": {"type": "String"}}},
+  "employeeLabel": "Employee",
+  "dateRange": "Date Range",
+  "basicWage": "Basic Wage",
+  "grossWage": "Gross Wage",
+  "created": "Created",
+  "lastUpdated": "Last Updated",
+  "edit": "Edit",
+  "actions": "Actions",
+  "payslipActionsComingSoon": "Payslip actions coming soon!",
+  "createPayslipComingSoon": "Create payslip functionality coming soon!",
+  "editPayslipComingSoon": "Edit payslip functionality coming soon!",
+  "contractsTitle": "Contracts",
+  "employeeContractOverview": "Employee Contract Overview",
+  "active": "Active",
+  "expired": "Expired",
+  "contractsNotAvailable": "Contracts Not Available",
+  "goBack": "Go Back",
+  "noContractsFound": "No contracts found for this employee",
+  "contractsWillAppear": "Contracts will appear here once they are created for this employee",
+  "createContract": "Create Contract",
+  "noContractsMatchingFilter": "No contracts found matching your filter",
+  "tryAdjustingFilterContract": "Try adjusting your filter or contact HR to create a new contract.",
+  "unknownEmployee": "Unknown Employee",
+  "closed": "Closed",
+  "cancelled": "Cancelled",
+  "employeeInformation": "Employee Information",
+  "contractPeriod": "Contract Period",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "ongoing": "Ongoing",
+  "durationDays": "{count} days",
+  "@durationDays": {"placeholders": {"count": {"type": "int"}}},
+  "salaryDetails": "Salary Details",
+  "wage": "Wage",
+  "contractType": "Contract Type",
+  "fullTime": "Full Time",
+  "systemInformation": "System Information",
+  "delete": "Delete",
+  "deleteContract": "Delete Contract",
+  "deleteContractConfirm": "Are you sure you want to delete \"{name}\"?",
+  "@deleteContractConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "createContractComingSoon": "Create contract functionality coming soon!",
+  "editContractComingSoon": "Edit contract functionality coming soon!",
+  "deleteContractComingSoon": "Delete contract functionality coming soon!",
+  "myExpenses": "My Expenses",
+  "addNewExpense": "Add New Expense",
+  "refresh": "Refresh",
+  "noExpensesFound": "No expenses found",
+  "tapNewExpenseToCreate": "Tap the \"New Expense\" button above to create your first expense request",
+  "expenseDetails": "Expense Details",
+  "description": "Description",
+  "taxAmount": "Tax Amount",
+  "notes": "Notes",
+  "employeeId": "Employee ID",
+  "paidBy": "Paid By",
+  "errorLoadingExpenses": "Error loading expenses",
+  "failedToLoadExpenses": "Failed to load expenses",
+  "errorProcessingExpenses": "Error processing expenses: {error}",
+  "@errorProcessingExpenses": {"placeholders": {"error": {"type": "String"}}},
+  "language": "Language",
+  "english": "English",
+  "arabic": "Arabic"
+}

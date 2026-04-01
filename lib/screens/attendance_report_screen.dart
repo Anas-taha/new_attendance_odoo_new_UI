@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../generated/l10n/app_localizations.dart';
 import '../models/hr_attendance.dart';
 import '../models/hr_employee.dart';
-import '../services/hr_service.dart';
 import '../services/attendance_report_service.dart';
+import '../services/hr_service.dart';
 
 class AttendanceReportScreen extends StatefulWidget {
   const AttendanceReportScreen({super.key});
@@ -23,19 +25,37 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Map<String, dynamic>? _weeklySummary;
   Map<String, dynamic>? _monthlySummary;
   bool _isLoading = true;
-  String _selectedPeriod = 'This Week';
+  String _selectedPeriod = 'this_week';
   String _selectedView = 'summary';
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late TabController _tabController;
 
-  final List<String> _periods = [
-    'Today',
-    'This Week',
-    'This Month',
-    'Last Month',
-    'Custom Range'
+  static const List<String> _periodKeys = [
+    'today',
+    'this_week',
+    'this_month',
+    'last_month',
+    'custom_range',
   ];
+
+  String _periodLabel(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (key) {
+      case 'today':
+        return l10n.today;
+      case 'this_week':
+        return l10n.thisWeek;
+      case 'this_month':
+        return l10n.thisMonth;
+      case 'last_month':
+        return l10n.lastMonth;
+      case 'custom_range':
+        return l10n.customRange;
+      default:
+        return key;
+    }
+  }
 
   @override
   void initState() {
@@ -139,36 +159,36 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     final today = DateTime(now.year, now.month, now.day);
     
     switch (_selectedPeriod) {
-      case 'Today':
+      case 'today':
         return _allRecords.where((record) {
           final recordDate = DateTime(record.createDate.year, record.createDate.month, record.createDate.day);
           return recordDate.isAtSameMomentAs(today);
         }).toList();
-        
-      case 'This Week':
+
+      case 'this_week':
         final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
         final endOfWeek = startOfWeek.add(const Duration(days: 7));
         return _allRecords.where((record) {
           return record.createDate.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
                  record.createDate.isBefore(endOfWeek);
         }).toList();
-        
-      case 'This Month':
+
+      case 'this_month':
         final startOfMonth = DateTime(now.year, now.month, 1);
         final endOfMonth = DateTime(now.year, now.month + 1, 1);
         return _allRecords.where((record) {
           return record.createDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
                  record.createDate.isBefore(endOfMonth);
         }).toList();
-        
-      case 'Last Month':
+
+      case 'last_month':
         final startOfLastMonth = DateTime(now.year, now.month - 1, 1);
         final endOfLastMonth = DateTime(now.year, now.month, 1);
         return _allRecords.where((record) {
           return record.createDate.isAfter(startOfLastMonth.subtract(const Duration(days: 1))) &&
                  record.createDate.isBefore(endOfLastMonth);
         }).toList();
-        
+
       default:
         return _allRecords;
     }
@@ -295,8 +315,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Attendance Report',
+                Text(
+                  AppLocalizations.of(context)!.attendanceReport,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -339,10 +359,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white.withOpacity(0.6),
         labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        tabs: const [
-          Tab(text: 'Summary'),
-          Tab(text: 'Records'),
-          Tab(text: 'Analytics'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)!.summary),
+          Tab(text: AppLocalizations.of(context)!.records),
+          Tab(text: AppLocalizations.of(context)!.analytics),
         ],
       ),
     );
@@ -362,7 +382,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           const SizedBox(height: 24),
           
           // Quick Stats
-          _buildQuickStats(stats),
+          _buildQuickStats(context, stats),
           
           const SizedBox(height: 24),
           
@@ -391,7 +411,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
         
         // Records List
         Expanded(
-          child: _buildRecordsList(filteredRecords),
+          child: _buildRecordsList(context, filteredRecords),
         ),
       ],
     );
@@ -445,9 +465,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Select Period',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.selectPeriod,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF2D3748),
@@ -461,15 +481,15 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _periods.map((period) {
-              final isSelected = _selectedPeriod == period;
+            children: _periodKeys.map((key) {
+              final isSelected = _selectedPeriod == key;
               return ChoiceChip(
-                label: Text(period),
+                label: Text(_periodLabel(context, key)),
                 selected: isSelected,
                 onSelected: (selected) {
                   if (selected) {
                     setState(() {
-                      _selectedPeriod = period;
+                      _selectedPeriod = key;
                     });
                   }
                 },
@@ -486,7 +506,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildQuickStats(Map<String, dynamic> stats) {
+  Widget _buildQuickStats(BuildContext context, Map<String, dynamic> stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -505,9 +525,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ),
             const SizedBox(width: 12),
-            const Text(
-              'Quick Statistics',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.quickStatistics,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2D3748),
@@ -527,26 +547,30 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           childAspectRatio: 1.2,
           children: [
             _buildStatCard(
+              context: context,
               icon: Icons.access_time,
-              title: 'Total Hours',
+              title: AppLocalizations.of(context)!.totalHours,
               value: stats['total_hours'],
               color: const Color(0xFF667eea),
             ),
             _buildStatCard(
+              context: context,
               icon: Icons.timer,
-              title: 'Daily Average',
+              title: AppLocalizations.of(context)!.dailyAverage,
               value: stats['average_daily'],
               color: const Color(0xFF764ba2),
             ),
             _buildStatCard(
+              context: context,
               icon: Icons.list_alt,
-              title: 'Sessions',
+              title: AppLocalizations.of(context)!.sessions,
               value: '${stats['total_sessions']}',
               color: const Color(0xFF48BB78),
             ),
             _buildStatCard(
+              context: context,
               icon: Icons.check_circle,
-              title: 'On Time',
+              title: AppLocalizations.of(context)!.onTime,
               value: '${stats['on_time_count']}',
               color: const Color(0xFF38A169),
             ),
@@ -574,9 +598,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               const Icon(Icons.calendar_view_week, color: Color(0xFF667eea)),
               const SizedBox(width: 12),
-              const Text(
-                'Weekly Overview',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.weeklyOverview,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3748),
@@ -642,9 +666,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               const Icon(Icons.calendar_month, color: Color(0xFF764ba2)),
               const SizedBox(width: 12),
-              const Text(
-                'Monthly Overview',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.monthlyOverview,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3748),
@@ -668,14 +692,16 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               Expanded(
                 child: _buildMiniStat(
-                  'Working Days',
+                  context,
+                  AppLocalizations.of(context)!.workingDays,
                   '$workingDays',
                   Icons.calendar_today,
                 ),
               ),
               Expanded(
                 child: _buildMiniStat(
-                  'Avg Daily',
+                  context,
+                  AppLocalizations.of(context)!.avgDaily,
                   '${avgDaily.toStringAsFixed(1)}h',
                   Icons.trending_up,
                 ),
@@ -687,7 +713,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildMiniStat(String title, String value, IconData icon) {
+  Widget _buildMiniStat(BuildContext context, String title, String value, IconData icon) {
     return Row(
       children: [
         Icon(icon, size: 16, color: Colors.grey[600]),
@@ -710,6 +736,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   }
 
   Widget _buildStatCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String value,
@@ -751,7 +778,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildRecordsList(List<HrAttendance> records) {
+  Widget _buildRecordsList(BuildContext context, List<HrAttendance> records) {
     if (records.isEmpty) {
       return Center(
         child: Column(
@@ -764,7 +791,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'No attendance records found',
+              AppLocalizations.of(context)!.noAttendanceRecords,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -773,7 +800,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Try selecting a different period',
+              AppLocalizations.of(context)!.tryDifferentPeriod,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
@@ -789,12 +816,12 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
       itemCount: records.length,
       itemBuilder: (context, index) {
         final record = records[index];
-        return _buildRecordCard(record, index);
+        return _buildRecordCard(context, record, index);
       },
     );
   }
 
-  Widget _buildRecordCard(HrAttendance record, int index) {
+  Widget _buildRecordCard(BuildContext context, HrAttendance record, int index) {
     final isCurrentSession = record.isCheckedIn;
     final workedHours = record.getFormattedWorkedHours();
     
@@ -845,7 +872,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                     Row(
                       children: [
                         Text(
-                          isCurrentSession ? 'Active Session' : 'Completed Session',
+                          isCurrentSession ? AppLocalizations.of(context)!.activeSession : AppLocalizations.of(context)!.completedSession,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -865,9 +892,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                               color: const Color(0xFF48BB78),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Text(
-                              'LIVE',
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)!.live,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -880,7 +907,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                     const SizedBox(height: 8),
                     
                     Text(
-                      DateFormat('EEEE, MMMM dd, yyyy').format(record.createDate),
+                      DateFormat('EEEE, MMMM dd, yyyy', Localizations.localeOf(context).toString()).format(record.createDate),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -898,7 +925,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               Expanded(
                 child: _buildTimeInfo(
-                  title: 'Check In',
+                  context: context,
+                  title: AppLocalizations.of(context)!.checkIn,
                   time: DateFormat('HH:mm:ss').format(record.checkIn),
                   icon: Icons.login,
                   color: Colors.green[600]!,
@@ -908,7 +936,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               if (record.checkOut != null) ...[
                 Expanded(
                   child: _buildTimeInfo(
-                    title: 'Check Out',
+                    context: context,
+                    title: AppLocalizations.of(context)!.checkOut,
                     time: DateFormat('HH:mm:ss').format(record.checkOut!),
                     icon: Icons.logout,
                     color: Colors.red[600]!,
@@ -917,7 +946,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                 
                 Expanded(
                   child: _buildTimeInfo(
-                    title: 'Duration',
+                    context: context,
+                    title: AppLocalizations.of(context)!.duration,
                     time: workedHours,
                     icon: Icons.timer,
                     color: const Color(0xFF667eea),
@@ -932,6 +962,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   }
 
   Widget _buildTimeInfo({
+    required BuildContext context,
     required String title,
     required String time,
     required IconData icon,
@@ -979,9 +1010,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               const Icon(Icons.trending_up, color: Color(0xFF667eea)),
               const SizedBox(width: 12),
-              const Text(
-                'Attendance Trends',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.attendanceTrends,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3748),
@@ -994,30 +1025,33 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           
           if (stats != null) ...[
             _buildTrendItem(
-              'Total Hours',
+              context,
+              AppLocalizations.of(context)!.totalHoursLabel,
               '${(stats['total_hours'] as num?)?.toStringAsFixed(1) ?? '0.0'}h',
               const Color(0xFF667eea),
               0.8,
             ),
             const SizedBox(height: 12),
             _buildTrendItem(
-              'On Time Rate',
+              context,
+              AppLocalizations.of(context)!.onTimeRate,
               '${stats['on_time_percentage'] ?? '0.0'}%',
               const Color(0xFF48BB78),
               double.tryParse(stats['on_time_percentage']?.toString() ?? '0') ?? 0.0 / 100,
             ),
             const SizedBox(height: 12),
             _buildTrendItem(
-              'Sessions with Location',
+              context,
+              AppLocalizations.of(context)!.sessionsWithLocation,
               '${stats['records_with_location'] ?? 0}',
               const Color(0xFF764ba2),
               0.6,
             ),
           ] else
-            const Center(
+            Center(
               child: Text(
-                'Loading trends...',
-                style: TextStyle(color: Colors.grey),
+                AppLocalizations.of(context)!.loadingTrends,
+                style: const TextStyle(color: Colors.grey),
               ),
             ),
         ],
@@ -1025,7 +1059,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildTrendItem(String label, String value, Color color, double progress) {
+  Widget _buildTrendItem(BuildContext context, String label, String value, Color color, double progress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1068,9 +1102,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               const Icon(Icons.alarm_on, color: Color(0xFF48BB78)),
               const SizedBox(width: 12),
-              const Text(
-                'Punctuality Analysis',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.punctualityAnalysis,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3748),
@@ -1085,7 +1119,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               Expanded(
                 child: _buildPunctualityItem(
-                  'On Time',
+                  AppLocalizations.of(context)!.onTime,
                   stats['on_time_count'],
                   Colors.green,
                   Icons.check_circle,
@@ -1093,7 +1127,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
               Expanded(
                 child: _buildPunctualityItem(
-                  'Late',
+                  AppLocalizations.of(context)!.late,
                   stats['late_count'],
                   Colors.orange,
                   Icons.warning,
@@ -1101,7 +1135,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
               Expanded(
                 child: _buildPunctualityItem(
-                  'Early Leave',
+                  AppLocalizations.of(context)!.earlyLeave,
                   stats['early_leave_count'],
                   Colors.red,
                   Icons.exit_to_app,
@@ -1156,9 +1190,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               const Icon(Icons.location_on, color: Color(0xFF764ba2)),
               const SizedBox(width: 12),
-              const Text(
-                'Location Tracking',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.locationTracking,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3748),
@@ -1183,7 +1217,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                     ),
                   ),
                   Text(
-                    'With Location',
+                    AppLocalizations.of(context)!.withLocation,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
@@ -1199,7 +1233,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                     ),
                   ),
                   Text(
-                    'Without Location',
+                    AppLocalizations.of(context)!.withoutLocation,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
@@ -1224,9 +1258,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Export Report',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.exportReport,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -1234,29 +1268,29 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.table_chart, color: Color(0xFF667eea)),
-              title: const Text('Export as CSV'),
-              subtitle: const Text('Spreadsheet compatible format'),
+              title: Text(AppLocalizations.of(context)!.exportAsCsv),
+              subtitle: Text(AppLocalizations.of(context)!.exportCsvSubtitle),
               onTap: () {
                 Navigator.pop(context);
-                _exportReport('csv');
+                _exportReport(context, 'csv');
               },
             ),
             ListTile(
               leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-              title: const Text('Export as PDF'),
-              subtitle: const Text('Print-ready format'),
+              title: Text(AppLocalizations.of(context)!.exportAsPdf),
+              subtitle: Text(AppLocalizations.of(context)!.exportPdfSubtitle),
               onTap: () {
                 Navigator.pop(context);
-                _exportReport('pdf');
+                _exportReport(context, 'pdf');
               },
             ),
             ListTile(
               leading: const Icon(Icons.code, color: Colors.orange),
-              title: const Text('Export as JSON'),
-              subtitle: const Text('Developer-friendly format'),
+              title: Text(AppLocalizations.of(context)!.exportAsJson),
+              subtitle: Text(AppLocalizations.of(context)!.exportJsonSubtitle),
               onTap: () {
                 Navigator.pop(context);
-                _exportReport('json');
+                _exportReport(context, 'json');
               },
             ),
           ],
@@ -1265,11 +1299,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  void _exportReport(String format) {
-    // TODO: Implement export functionality
+  void _exportReport(BuildContext context, String format) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Exporting report as $format...'),
+        content: Text(AppLocalizations.of(context)!.exportingAs(format)),
         backgroundColor: const Color(0xFF667eea),
       ),
     );

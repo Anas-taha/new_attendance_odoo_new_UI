@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
+import '../generated/l10n/app_localizations.dart';
 import '../models/hr_contract.dart';
-import '../services/hr_service.dart';
 import '../models/hr_employee.dart';
+import '../services/hr_service.dart';
 import '../theme/app_theme.dart';
 
 class ContractsScreen extends StatefulWidget {
@@ -58,14 +60,14 @@ class _ContractsScreenState extends State<ContractsScreen> {
         print('Error loading contracts: $e');
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Contract management is not available in your Odoo instance. Please contact your administrator to enable the HR Contracts module.';
+          _errorMessage = AppLocalizations.of(context)!.contractsNotAvailable;
         });
       }
     } catch (e) {
       print('Error loading employee data: $e');
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Error loading employee data: $e';
+        _errorMessage = AppLocalizations.of(context)!.errorLoadingEmployeeData(e.toString());
       });
     }
   }
@@ -131,7 +133,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contracts'),
+        title: Text(AppLocalizations.of(context)!.contractsTitle),
  
         elevation: 0,
         actions: [
@@ -193,7 +195,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Employee Contract Overview',
+                AppLocalizations.of(context)!.employeeContractOverview,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -341,7 +343,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Contracts Not Available',
+              AppLocalizations.of(context)!.contractsNotAvailable,
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.grey[800],
@@ -361,7 +363,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             ElevatedButton.icon(
               onPressed: _loadData,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
               // style: ElevatedButton.styleFrom(
               //   backgroundColor: AppColors.primary700,
               //   foregroundColor: Colors.white,
@@ -372,7 +374,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             OutlinedButton.icon(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back),
-              label: const Text('Go Back'),
+              label: Text(AppLocalizations.of(context)!.goBack),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primary700,
                 side: const BorderSide(color: AppColors.primary700),
@@ -397,7 +399,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No contracts found for this employee',
+            AppLocalizations.of(context)!.noContractsFound,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -406,7 +408,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Contracts will appear here once they are created for this employee',
+            AppLocalizations.of(context)!.contractsWillAppear,
             style: TextStyle(
               color: Colors.grey[500],
             ),
@@ -416,7 +418,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             ElevatedButton.icon(
               onPressed: () => _showCreateContractDialog(),
               icon: const Icon(Icons.add),
-              label: const Text('Create Contract'),
+              label: Text(AppLocalizations.of(context)!.createContract),
               // style: ElevatedButton.styleFrom(
               //   backgroundColor: AppColors.primary700,
               //   foregroundColor: Colors.white,
@@ -440,7 +442,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No contracts found matching your filter',
+            AppLocalizations.of(context)!.noContractsMatchingFilter,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -449,7 +451,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Try adjusting your filter or contact HR to create a new contract.',
+            AppLocalizations.of(context)!.tryAdjustingFilterContract,
             style: TextStyle(
               color: Colors.grey[500],
             ),
@@ -459,7 +461,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             ElevatedButton.icon(
               onPressed: () => _showCreateContractDialog(),
               icon: const Icon(Icons.add),
-              label: const Text('Create Contract'),
+              label: Text(AppLocalizations.of(context)!.createContract),
               // style: ElevatedButton.styleFrom(
               //   backgroundColor: AppColors.primary700,
               //   foregroundColor: Colors.white,

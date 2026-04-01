@@ -1,12 +1,16 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import '../services/hr_service.dart';
-import '../services/odoo_rpc_service.dart';
-import '../services/local_storage_service.dart';
-import '../models/hr_employee.dart';
-import '../models/hr_attendance.dart';
-import '../models/hr_expense.dart';
-import 'login_screen.dart';
+
+import 'package:flutter/material.dart';
+
+import '../../app/locale_scope.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../models/hr_attendance.dart';
+import '../../models/hr_employee.dart';
+import '../../models/hr_expense.dart';
+import '../../services/hr_service.dart';
+import '../../services/local_storage_service.dart';
+import '../../services/odoo_rpc_service.dart';
+import '../login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -122,51 +126,51 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   /// Get appropriate greeting based on time of day
-  String _getGreeting() {
+  String _getGreeting(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hour = DateTime.now().hour;
     final now = DateTime.now();
     final weekday = now.weekday;
-    
+
     String timeGreeting;
     if (hour >= 5 && hour < 12) {
-      timeGreeting = 'Good Morning';
+      timeGreeting = l10n.goodMorning;
     } else if (hour >= 12 && hour < 17) {
-      timeGreeting = 'Good Afternoon';
+      timeGreeting = l10n.goodAfternoon;
     } else if (hour >= 17 && hour < 22) {
-      timeGreeting = 'Good Evening';
+      timeGreeting = l10n.goodEvening;
     } else {
-      timeGreeting = 'Good Night';
+      timeGreeting = l10n.goodNight;
     }
-    
-    // Add day of the week for more personal touch
+
     String dayName;
     switch (weekday) {
       case 1:
-        dayName = 'Monday';
+        dayName = l10n.monday;
         break;
       case 2:
-        dayName = 'Tuesday';
+        dayName = l10n.tuesday;
         break;
       case 3:
-        dayName = 'Wednesday';
+        dayName = l10n.wednesday;
         break;
       case 4:
-        dayName = 'Thursday';
+        dayName = l10n.thursday;
         break;
       case 5:
-        dayName = 'Friday';
+        dayName = l10n.friday;
         break;
       case 6:
-        dayName = 'Saturday';
+        dayName = l10n.saturday;
         break;
       case 7:
-        dayName = 'Sunday';
+        dayName = l10n.sunday;
         break;
       default:
         dayName = '';
     }
-    
-    return '$timeGreeting! Happy $dayName';
+
+    return l10n.greetingHappyDay(timeGreeting, dayName);
   }
 
   /// Get current time as formatted string
@@ -180,21 +184,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   /// Handle logout
   Future<void> _handleLogout() async {
     try {
-      // Show confirmation dialog
+      final l10n = AppLocalizations.of(context)!;
       final shouldLogout = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Logout'),
-            content: const Text('Are you sure you want to logout?'),
+            title: Text(l10n.logout),
+            content: Text(l10n.logoutConfirm),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Logout'),
+                child: Text(l10n.logout),
               ),
             ],
           );
@@ -211,8 +215,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Logged out successfully'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.loggedOutSuccess),
               backgroundColor: Colors.green,
             ),
           );
@@ -229,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Error during logout: $e'),
+            content: Text(AppLocalizations.of(context)!.logoutError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -255,8 +259,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _loadTodayAttendance();
           
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Successfully checked out'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.successCheckedOut),
               backgroundColor: Colors.green,
             ),
           );
@@ -276,8 +280,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _startTimer();
           
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Successfully checked in'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.successCheckedIn),
               backgroundColor: Colors.green,
             ),
           );
@@ -286,17 +290,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       
       if (!success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Failed to update attendance. Please check your connection and try again.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedUpdateAttendance),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
+            duration: const Duration(seconds: 4),
           ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Error: $e'),
+          content: Text(AppLocalizations.of(context)!.errorGeneric(e.toString())),
           backgroundColor: Colors.red,
         ),
       );
@@ -308,16 +312,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('HR Dashboard'),
+        title: Text(AppLocalizations.of(context)!.hrDashboard),
         backgroundColor: const Color(0xFF6B46C1),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           // User info and logout button
           PopupMenuButton<String>(
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'logout') {
                 _handleLogout();
+              } else if (value == 'lang_en' || value == 'lang_ar') {
+                final code = value == 'lang_en' ? 'en' : 'ar';
+                await LocaleScope.of(context).setLocale(code);
               }
             },
             itemBuilder: (BuildContext context) => [
@@ -328,14 +335,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _currentEmployee?.name ?? 'Employee',
+                      _currentEmployee?.name ?? AppLocalizations.of(context)!.employee,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF2D3748),
                       ),
                     ),
                     Text(
-                      _currentEmployee?.workEmail ?? 'No email',
+                      _currentEmployee?.workEmail ?? AppLocalizations.of(context)!.noEmail,
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF718096),
@@ -345,13 +352,34 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
               ),
               const PopupMenuDivider(),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
+                value: 'lang_en',
+                child: Row(
+                  children: [
+                    const Icon(Icons.language),
+                    const SizedBox(width: 8),
+                    Text(AppLocalizations.of(context)!.english),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'lang_ar',
+                child: Row(
+                  children: [
+                    const Icon(Icons.language),
+                    const SizedBox(width: 8),
+                    Text(AppLocalizations.of(context)!.arabic),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem<String>(
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Logout'),
+                    const Icon(Icons.logout, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(AppLocalizations.of(context)!.logout),
                   ],
                 ),
               ),
@@ -410,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${_getGreeting()}, ${_currentEmployee?.name ?? 'Employee'}',
+                          '${_getGreeting(context)}, ${_currentEmployee?.name ?? AppLocalizations.of(context)!.employee}',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -419,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Welcome back to your HR dashboard',
+                          AppLocalizations.of(context)!.welcomeBackDashboard,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -427,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Current time: ${_getCurrentTime()}',
+                          AppLocalizations.of(context)!.currentTime(_getCurrentTime()),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[500],
@@ -475,8 +503,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Register Attendance',
+                              Text(
+                                AppLocalizations.of(context)!.registerAttendance,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -484,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                               Text(
-                                _isCheckedIn ? 'Currently Working' : 'Not Checked In',
+                                _isCheckedIn ? AppLocalizations.of(context)!.currentlyWorking : AppLocalizations.of(context)!.notCheckedIn,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: _isCheckedIn ? Colors.green[600] : Colors.grey[600],
@@ -518,7 +546,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         Expanded(
                           child: _buildQuickStat(
                             icon: Icons.timer,
-                            title: 'Today',
+                            title: AppLocalizations.of(context)!.today,
                             value: _totalToday,
                             color: const Color(0xFF667eea),
                           ),
@@ -527,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         Expanded(
                           child: _buildQuickStat(
                             icon: Icons.schedule,
-                            title: 'This Week',
+                            title: AppLocalizations.of(context)!.thisWeek,
                             value: _beforeTime, // Reusing for weekly hours
                             color: const Color(0xFF764ba2),
                           ),
@@ -551,8 +579,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         child: Column(
                           children: [
-                            const Text(
-                              'Current Session',
+                            Text(
+                              AppLocalizations.of(context)!.currentSession,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -572,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Started at $_checkInTime',
+                              AppLocalizations.of(context)!.startedAt(_checkInTime),
                               style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,
@@ -588,9 +616,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Register Attendance',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.registerAttendance,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF2D3748),
@@ -603,7 +631,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           child: ElevatedButton.icon(
                             onPressed: () => Navigator.pushNamed(context, '/face-attendance'),
                             icon: Icon(_isCheckedIn ? Icons.logout : Icons.login),
-                            label: Text(_isCheckedIn ? 'Check Out (Face)' : 'Check In (Face)'),
+                            label: Text(_isCheckedIn ? AppLocalizations.of(context)!.checkOutFace : AppLocalizations.of(context)!.checkInFace),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _isCheckedIn ? Colors.red[600] : Colors.green[600],
                               foregroundColor: Colors.white,
@@ -628,7 +656,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               },
                             ),
                             icon: const Icon(Icons.visibility),
-                            label: const Text('View Details'),
+                            label: Text(AppLocalizations.of(context)!.viewDetails),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF6B46C1),
                               side: const BorderSide(color: Color(0xFF6B46C1)),
@@ -651,7 +679,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               // What do you need section
               Text(
-                'What do you need?',
+                AppLocalizations.of(context)!.whatDoYouNeed,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -672,7 +700,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 children: [
                   _buildFeatureCard(
                     icon: Icons.work,
-                    title: 'Contracts',
+                    title: AppLocalizations.of(context)!.contracts,
                     color: Colors.orange[600]!,
                     onTap: () {
                       Navigator.pushNamed(context, '/contracts');
@@ -680,7 +708,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   _buildFeatureCard(
                     icon: Icons.payment,
-                    title: 'Payslip',
+                    title: AppLocalizations.of(context)!.payslip,
                     color: Colors.green[600]!,
                     onTap: () {
                       Navigator.pushNamed(context, '/payslips');
@@ -688,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   _buildFeatureCard(
                     icon: Icons.receipt_long,
-                    title: 'Expenses',
+                    title: AppLocalizations.of(context)!.expenses,
                     color: Colors.red,
                     onTap: () {
                       Navigator.pushNamed(context, '/expenses');
@@ -696,7 +724,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   _buildFeatureCard(
                     icon: Icons.access_time,
-                    title: 'Attendance',
+                    title: AppLocalizations.of(context)!.attendance,
                     color: Colors.grey[700]!,
                     onTap: () {
                       Navigator.pushNamed(
@@ -711,19 +739,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       );
                     },
                   ),
-                  // _buildFeatureCard(
-                  //   icon: Icons.beach_access,
-                  //   title: 'Time Off',
-                  //   color: Colors.blue[600]!,
-                  //   onTap: () {
-                  //     Navigator.pushNamed(context, '/team-off');
-                  //   },
-                  // ),
-                  // _buildFeatureCard(
-                  //   icon: Icons.calendar_today,
-                  //   title: 'Working Schedule',
-                  //   color: Colors.red[600]!,
-                  // ),
+                  _buildFeatureCard(
+                    icon: Icons.beach_access,
+                    title: 'Time Off',
+                    color: Colors.blue[600]!,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/team-off');
+                    },
+                  ),
+                  _buildFeatureCard(
+                    icon: Icons.calendar_today,
+                    title: 'Working Schedule',
+                    color: Colors.red[600]!,
+                  ),
                 ],
               ),
             ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+
+import '../generated/l10n/app_localizations.dart';
 import '../services/odoo_rpc_service.dart';
+import 'home/home_screen.dart';
 import '../services/hr_service.dart';
 import '../services/local_storage_service.dart';
 import '../config/odoo_config.dart';
@@ -82,10 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
           }
 
           if (!mounted) return;
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Welcome ${employee?.name ?? _emailController.text}!',
+                l10n.welcomeName(employee?.name ?? _emailController.text.trim()),
               ),
               backgroundColor: Colors.green,
             ),
@@ -102,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(result['error'] ?? 'Authentication failed'),
+                content: Text(result['error'] ?? AppLocalizations.of(context)!.authFailed),
                 backgroundColor: Colors.red,
               ),
             );
@@ -113,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Connection error: $e'),
+              content: Text(AppLocalizations.of(context)!.connectionError(e.toString())),
               backgroundColor: Colors.red,
             ),
           );
@@ -130,11 +133,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FF),
       appBar: AppBar(
-        title: const Text('Sign In'),
-
+        title: Text(l10n.signIn),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -163,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Secure Access',
+                        l10n.secureAccess,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
@@ -172,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Connect with your BLUE HR workspace',
+                        l10n.connectWorkspace,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.blueGrey[500],
                         ),
@@ -185,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'Email',
+                    labelText: l10n.email,
                     prefixIcon: const Icon(Icons.alternate_email),
                     filled: true,
                     fillColor: Colors.white,
@@ -196,13 +199,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Email is required';
+                      return l10n.emailRequired;
                     }
-                    if (!RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    ).hasMatch(value.trim())) {
-                      return 'Enter a valid email';
-                    }
+                    // if (!RegExp(
+                    //   r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    // ).hasMatch(value.trim())) {
+                    //   return l10n.emailInvalid;
+                    // }
                     return null;
                   },
                 ),
@@ -211,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: l10n.password,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -234,10 +237,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Password is required';
+                      return l10n.passwordRequired;
                     }
                     if (value.length < 4) {
-                      return 'Password must be at least 4 characters';
+                      return l10n.passwordMinLength;
                     }
                     return null;
                   },
@@ -263,9 +266,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         )
-                      : const Text(
-                          'Sign In',
-                          style: TextStyle(
+                      : Text(
+                          l10n.signIn,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

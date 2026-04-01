@@ -14,6 +14,8 @@ class LocalStorageService {
   static const String _isFirstLoginKey = 'is_first_login';
   static const String _savedEmailKey = 'saved_email';
   static const String _savedPasswordKey = 'saved_password';
+  static const String _localeLanguageKey = 'locale_language';
+  static const String _localeCountryKey = 'locale_country';
 
   // Cache duration - refresh data after 15 minutes
   static const Duration _cacheDuration = Duration(minutes: 15);
@@ -291,6 +293,29 @@ class LocalStorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_savedEmailKey);
     await prefs.remove(_savedPasswordKey);
+  }
+
+  /// Save selected locale (e.g. 'en', 'ar')
+  Future<void> saveLocale(String languageCode, [String? countryCode]) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_localeLanguageKey, languageCode);
+    if (countryCode != null) {
+      await prefs.setString(_localeCountryKey, countryCode);
+    } else {
+      await prefs.remove(_localeCountryKey);
+    }
+  }
+
+  /// Get saved locale language code
+  Future<String?> getSavedLocaleLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_localeLanguageKey);
+  }
+
+  /// Get saved locale country code
+  Future<String?> getSavedLocaleCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_localeCountryKey);
   }
 
   /// Clear all data including Odoo configuration
