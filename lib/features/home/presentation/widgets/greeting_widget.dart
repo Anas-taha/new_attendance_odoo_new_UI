@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
-import 'package:hr_app_odoo/screens/home/home_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/CustomText/customText.dart';
 
 class GreetingWidget extends StatelessWidget {
-  GreetingWidget({super.key});
-  final homeController = Get.find<HomeController>();
+  const GreetingWidget({super.key, required this.employeeName});
+
+  final String employeeName;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -26,15 +25,14 @@ class GreetingWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Customtext(
+              CustomText(
                 text: 'مرحباً بك',
                 color: AppColors.appA0A0A0Text2,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
-              Customtext(
-                text:
-                    " ${homeController.currentEmployee.value?.name ?? AppLocalizations.of(context)!.employee}",
+              CustomText(
+                text: " $employeeName",
                 color: AppColors.primaryColor,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,

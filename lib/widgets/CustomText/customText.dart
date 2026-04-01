@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
-class Customtext extends StatelessWidget {
-  Customtext({
+class CustomText extends StatelessWidget {
+  CustomText({
     super.key,
     required this.text,
     this.color,
