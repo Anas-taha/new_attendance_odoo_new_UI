@@ -15,7 +15,7 @@ abstract class AppColors {
   // background
   static const Color appFFFFFFBackGround = Color(0xFFFFFFFF);
   static const Color appE5E5E5Border = Color(0xFFE5E5E5);
-// system State
+  // system State
   static const Color app4CAF50Success = Color(0xFF4CAF50);
   static const Color appF44336Error = Color(0xFFF44336);
   static const Color appF59E0BWorning = Color(0xFFF59E0B);
