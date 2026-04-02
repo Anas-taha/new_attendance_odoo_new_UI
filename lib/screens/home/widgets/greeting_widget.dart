@@ -26,13 +26,13 @@ class GreetingWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Customtext(
+              CustomText(
                 text: 'مرحباً بك',
                 color: AppColors.appA0A0A0Text2,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
-              Customtext(
+              CustomText(
                 text:
                     " ${homeController.currentEmployee.value?.name ?? AppLocalizations.of(context)!.employee}",
                 color: AppColors.primaryColor,
