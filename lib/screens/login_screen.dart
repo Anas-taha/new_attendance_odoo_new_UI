@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../services/odoo_rpc_service.dart';
-import 'home/home_screen.dart';
+import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import '../services/hr_service.dart';
 import '../services/local_storage_service.dart';
 import '../config/odoo_config.dart';
