@@ -37,7 +37,7 @@ class CustomContainer extends StatelessWidget {
             : usedefaultSahdow == true
             ? [
                 BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.4),
+                  color: AppColors.appE5E5E5Border,
                   blurRadius: 4,
                   offset: const Offset(0, 0),
                 ),

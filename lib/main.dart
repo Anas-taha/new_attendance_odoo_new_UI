@@ -80,7 +80,7 @@ class _HrAppState extends State<HrApp> {
           supportedLocales: AppLocalizations.supportedLocales,
           locale: _locale,
           home: const LoginScreen(),
-          routes: {
+          routes: {  
             '/login': (context) => const LoginScreen(),
             '/home': (context) => const HomeScreen(),
             '/attendance': (context) => const AttendanceScreen(),

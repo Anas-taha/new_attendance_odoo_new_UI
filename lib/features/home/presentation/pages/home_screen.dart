@@ -3,12 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/locale_scope.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/attendance_widget.dart';
+import 'package:hr_app_odoo/features/home/presentation/widgets/feature_card_widget.dart';
+import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/greeting_widget.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
+import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -143,86 +147,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       () => Scaffold(
         backgroundColor: Colors.white,
 
-        // appBar: AppBar(
-        //   title: const Text('HR Dashboard'),
-        //   backgroundColor: const Color(0xFF6B46C1),
-        //   foregroundColor: Colors.white,
-        //   elevation: 0,
-        //   actions: [
-        //     // User info and logout button
-        //     PopupMenuButton<String>(
-        //       onSelected: (value) {
-        //         // if (value == 'logout') {
-        //         //   _handleLogout();
-        //         // }
-        //       },
-        //       itemBuilder: (BuildContext context) => [
-        //         PopupMenuItem<String>(
-        //           value: 'user',
-        //           enabled: false,
-        //           child: Column(
-        //             crossAxisAlignment: CrossAxisAlignment.start,
-        //             children: [
-        //               Text(
-        //                 homeController.currentEmployee.value?.name ??
-        //                     'Employee',
-        //                 style: const TextStyle(
-        //                   fontWeight: FontWeight.bold,
-        //                   color: Color(0xFF2D3748),
-        //                 ),
-        //               ),
-        //               Text(
-        //                 homeController.currentEmployee.value?.workEmail ??
-        //                     'No email',
-        //                 style: const TextStyle(
-        //                   fontSize: 12,
-        //                   color: Color(0xFF718096),
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //         const PopupMenuDivider(),
-        //         const PopupMenuItem<String>(
-        //           value: 'logout',
-        //           child: Row(
-        //             children: [
-        //               Icon(Icons.logout, color: Colors.red),
-        //               SizedBox(width: 8),
-        //               Text('Logout'),
-        //             ],
-        //           ),
-        //         ),
-        //       ],
-        //       child: Container(
-        //         padding: const EdgeInsets.symmetric(
-        //           horizontal: 12,
-        //           vertical: 8,
-        //         ),
-        //         child: Row(
-        //           mainAxisSize: MainAxisSize.min,
-        //           children: [
-        //             CircleAvatar(
-        //               radius: 16,
-        //               backgroundColor: Colors.white,
-        //               child: Text(
-        //                 (homeController.currentEmployee.value?.name ?? 'E')
-        //                     .substring(0, 1)
-        //                     .toUpperCase(),
-        //                 style: const TextStyle(
-        //                   color: Color(0xFF6B46C1),
-        //                   fontWeight: FontWeight.bold,
-        //                 ),
-        //               ),
-        //             ),
-        //             const SizedBox(width: 8),
-        //             const Icon(Icons.arrow_drop_down, color: Colors.white),
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -236,232 +160,85 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
                 16.verticalSpace,
                 AttendanceWidget(),
-                const SizedBox(height: 32),
-                Text(
-                  AppLocalizations.of(context)!.whatDoYouNeed,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.2,
+                16.verticalSpace,
+
+                Row(
                   children: [
-                    _buildFeatureCard(
-                      icon: Icons.work,
-                      title: AppLocalizations.of(context)!.contracts,
-                      color: Colors.orange[600]!,
-                      onTap: () => Navigator.pushNamed(context, '/contracts'),
+                    Expanded(
+                      child: FeatureCardWidget(
+                        image: AppImage.attendance,
+                        title: AppLocalizations.of(context)!.attendance,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/attendance',
+                            arguments: {
+                              'isCheckedIn': homeController.isCheckedIn.value,
+                              'checkInDateTime':
+                                  homeController.checkInDateTime.value,
+                              'checkInTime': homeController.checkInTime.value,
+                              'totalWorkedHours':
+                                  homeController.totalToday.value,
+                            },
+                          );
+                        },
+                      ),
                     ),
-                    _buildFeatureCard(
-                      icon: Icons.payment,
-                      title: AppLocalizations.of(context)!.payslip,
-                      color: Colors.green[600]!,
-                      onTap: () => Navigator.pushNamed(context, '/payslips'),
-                    ),
-                    _buildFeatureCard(
-                      icon: Icons.receipt_long,
-                      title: AppLocalizations.of(context)!.expenses,
-                      color: Colors.red,
-                      onTap: () => Navigator.pushNamed(context, '/expenses'),
-                    ),
-                    _buildFeatureCard(
-                      icon: Icons.access_time_rounded,
-                      title: AppLocalizations.of(context)!.attendance,
-                      color: Colors.grey[700]!,
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/attendance',
-                          arguments: {
-                            'isCheckedIn': homeController.isCheckedIn.value,
-                            'checkInDateTime':
-                                homeController.checkInDateTime.value,
-                            'checkInTime': homeController.checkInTime.value,
-                            'totalWorkedHours': homeController.totalToday.value,
-                          },
-                        );
-                      },
-                    ),
-                    _buildFeatureCard(
-                      icon: Icons.beach_access,
-                      title: 'Time Off',
-                      color: Colors.blue[600]!,
-                      onTap: () => Navigator.pushNamed(context, '/team-off'),
-                    ),
-                    _buildFeatureCard(
-                      icon: Icons.calendar_today,
-                      title: 'Working Schedule',
-                      color: Colors.red[600]!,
+                    20.horizontalSpace,
+                    Expanded(
+                      child: FeatureCardWidget(
+                        image: AppImage.holiday,
+                        title: 'Time Off',
+                        onTap: () => Navigator.pushNamed(context, '/team-off'),
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+                20.verticalSpace,
+                Row(
+                  children: [
+                    Expanded(
+                      child: FeatureCardWidget(
+                        image: AppImage.money,
+                        title: AppLocalizations.of(context)!.payslip,
 
-  AppBar _homeAppBar(BuildContext context) {
-    return AppBar(
-      title: Text(AppLocalizations.of(context)!.hrDashboard),
-      backgroundColor: Colors.red,
-      foregroundColor: Colors.white,
-      elevation: 0,
-      actions: [
-        PopupMenuButton<String>(
-          onSelected: (value) async {
-            if (value == 'logout') {
-              homeController.requestLogout();
-            } else if (value == 'lang_en' || value == 'lang_ar') {
-              final code = value == 'lang_en' ? 'en' : 'ar';
-              await LocaleScope.of(context).setLocale(code);
-            }
-          },
-          itemBuilder: (BuildContext context) => [
-            PopupMenuItem<String>(
-              value: 'user',
-              enabled: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    homeController.currentEmployee.value?.name ??
-                        AppLocalizations.of(context)!.employee,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D3748),
+                        onTap: () => Navigator.pushNamed(context, '/payslips'),
+                      ),
                     ),
-                  ),
-                  Text(
-                    homeController.currentEmployee.value?.workEmail ??
-                        AppLocalizations.of(context)!.noEmail,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF718096),
+                    20.horizontalSpace,
+                    Expanded(
+                      child: FeatureCardWidget(
+                        image: AppImage.person,
+                        title: 'Working Schedule',
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            PopupMenuItem<String>(
-              value: 'lang_en',
-              child: Row(
-                children: [
-                  const Icon(Icons.language),
-                  const SizedBox(width: 8),
-                  Text(AppLocalizations.of(context)!.english),
-                ],
-              ),
-            ),
-            PopupMenuItem<String>(
-              value: 'lang_ar',
-              child: Row(
-                children: [
-                  const Icon(Icons.language),
-                  const SizedBox(width: 8),
-                  Text(AppLocalizations.of(context)!.arabic),
-                ],
-              ),
-            ),
-            const PopupMenuDivider(),
-            PopupMenuItem<String>(
-              value: 'logout',
-              child: Row(
-                children: [
-                  const Icon(Icons.logout, color: Colors.red),
-                  const SizedBox(width: 8),
-                  Text(AppLocalizations.of(context)!.logout),
-                ],
-              ),
-            ),
-          ],
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    (homeController.currentEmployee.value?.name ?? 'E')
-                        .substring(0, 1)
-                        .toUpperCase(),
-                    style: const TextStyle(
-                      color: Color(0xFF6B46C1),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_drop_down, color: Colors.white),
+                16.verticalSpace,
+                CustomText(
+                  text: 'اخر اشعارات الشركة',
+                  fontWeight: FontWeight.w600,
+                ),
+                16.verticalSpace,
+
+                ListView.separated(
+                  itemCount: 30,
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  separatorBuilder: (context, index) => 13.verticalSpace,
+                  itemBuilder: (context, index) {
+                    return NotificationCardWidget(
+                      title: 'تم الموافقة على طلب الإجازة',
+                      date: 'منذ يومين',
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildFeatureCard({
-    required IconData icon,
-    required String title,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    final cardContent = Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey[200]!,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
-          ),
-        ],
       ),
     );
-
-    if (onTap != null) {
-      return GestureDetector(onTap: onTap, child: cardContent);
-    }
-
-    return cardContent;
   }
 }
