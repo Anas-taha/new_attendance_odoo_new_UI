@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       onTap: () => Navigator.pushNamed(context, '/expenses'),
                     ),
                     _buildFeatureCard(
-                      icon: Icons.access_time,
+                      icon: Icons.access_time_rounded,
                       title: AppLocalizations.of(context)!.attendance,
                       color: Colors.grey[700]!,
                       onTap: () {

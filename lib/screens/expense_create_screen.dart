@@ -20,12 +20,12 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final ExpenseService _expenseService = ExpenseService.instance;
   final HrService _hrService = HrService();
-  
+
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _referenceController = TextEditingController();
-  
+
   HrEmployee? _currentEmployee;
   List<Map<String, dynamic>> _categories = [];
   Map<String, dynamic>? _selectedCategory;
@@ -52,11 +52,11 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final employee = await _hrService.getCurrentEmployee();
       final categories = await _expenseService.getExpenseCategories();
-      
+
       setState(() {
         _currentEmployee = employee;
         _categories = categories;
@@ -75,7 +75,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-    
+
     if (picked != null) {
       setState(() => _selectedDate = picked);
     }
@@ -83,7 +83,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   Future<void> _pickReceipt() async {
     final picker = ImagePicker();
-    
+
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -95,7 +95,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
               title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () async {
                 Navigator.pop(context);
-                final image = await picker.pickImage(source: ImageSource.camera);
+                final image = await picker.pickImage(
+                  source: ImageSource.camera,
+                );
                 if (image != null) {
                   setState(() => _receiptImage = File(image.path));
                 }
@@ -106,7 +108,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
               title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () async {
                 Navigator.pop(context);
-                final image = await picker.pickImage(source: ImageSource.gallery);
+                final image = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
                 if (image != null) {
                   setState(() => _receiptImage = File(image.path));
                 }
@@ -115,7 +119,10 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             if (_receiptImage != null)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: Text(AppLocalizations.of(context)!.removeReceipt, style: const TextStyle(color: Colors.red)),
+                title: Text(
+                  AppLocalizations.of(context)!.removeReceipt,
+                  style: const TextStyle(color: Colors.red),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() => _receiptImage = null);
@@ -129,19 +136,19 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
 
   Future<void> _submitExpense() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (_currentEmployee == null) {
       _showError(AppLocalizations.of(context)!.employeeInfoNotAvailable);
       return;
     }
-    
+
     if (_selectedCategory == null) {
       _showError(AppLocalizations.of(context)!.pleaseSelectCategory);
       return;
     }
-    
+
     setState(() => _isSubmitting = true);
-    
+
     try {
       final result = await _expenseService.createExpense(
         employeeId: _currentEmployee!.id,
@@ -149,41 +156,44 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
         amount: double.parse(_amountController.text),
         productId: _selectedCategory!['id'],
         date: _selectedDate,
-        description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
-        reference: _referenceController.text.isEmpty ? null : _referenceController.text,
+        description: _descriptionController.text.isEmpty
+            ? null
+            : _descriptionController.text,
+        reference: _referenceController.text.isEmpty
+            ? null
+            : _referenceController.text,
         paymentMode: _paymentMode,
         receipt: _receiptImage,
       );
-      
+
       setState(() => _isSubmitting = false);
-      
+
       if (result['success']) {
         _showSuccess(AppLocalizations.of(context)!.expenseCreatedSuccess);
         Navigator.pop(context, true);
       } else {
-        _showError(result['error'] ?? AppLocalizations.of(context)!.failedToCreateExpense);
+        _showError(
+          result['error'] ??
+              AppLocalizations.of(context)!.failedToCreateExpense,
+        );
       }
     } catch (e) {
       setState(() => _isSubmitting = false);
-      _showError(AppLocalizations.of(context)!.errorCreatingExpense(e.toString()));
+      _showError(
+        AppLocalizations.of(context)!.errorCreatingExpense(e.toString()),
+      );
     }
   }
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
   }
 
@@ -195,10 +205,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-            ],
+            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
           ),
         ),
         child: SafeArea(
@@ -227,7 +234,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                   ],
                 ),
               ),
-              
+
               // Content
               Expanded(
                 child: Container(
@@ -251,19 +258,25 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                 _buildTextField(
                                   context: context,
                                   controller: _nameController,
-                                  label: AppLocalizations.of(context)!.expenseName,
-                                  hint: AppLocalizations.of(context)!.expenseNameHint,
+                                  label: AppLocalizations.of(
+                                    context,
+                                  )!.expenseName,
+                                  hint: AppLocalizations.of(
+                                    context,
+                                  )!.expenseNameHint,
                                   icon: Icons.receipt_long,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return AppLocalizations.of(context)!.pleaseEnterExpenseName;
+                                      return AppLocalizations.of(
+                                        context,
+                                      )!.pleaseEnterExpenseName;
                                     }
                                     return null;
                                   },
                                 ),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Amount Field
                                 _buildTextField(
                                   context: context,
@@ -274,66 +287,80 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                   keyboardType: TextInputType.number,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return AppLocalizations.of(context)!.pleaseEnterAmount;
+                                      return AppLocalizations.of(
+                                        context,
+                                      )!.pleaseEnterAmount;
                                     }
                                     if (double.tryParse(value) == null) {
-                                      return AppLocalizations.of(context)!.pleaseEnterValidAmount;
+                                      return AppLocalizations.of(
+                                        context,
+                                      )!.pleaseEnterValidAmount;
                                     }
                                     return null;
                                   },
                                 ),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Category Dropdown
                                 _buildCategoryDropdown(),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Date Selector
                                 _buildDateSelector(),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Payment Mode
                                 _buildPaymentModeSelector(),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Description
                                 _buildTextField(
                                   context: context,
                                   controller: _descriptionController,
-                                  label: AppLocalizations.of(context)!.descriptionOptional,
-                                  hint: AppLocalizations.of(context)!.descriptionHint,
+                                  label: AppLocalizations.of(
+                                    context,
+                                  )!.descriptionOptional,
+                                  hint: AppLocalizations.of(
+                                    context,
+                                  )!.descriptionHint,
                                   icon: Icons.description,
                                   maxLines: 3,
                                 ),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Reference
                                 _buildTextField(
                                   context: context,
                                   controller: _referenceController,
-                                  label: AppLocalizations.of(context)!.referenceOptional,
-                                  hint: AppLocalizations.of(context)!.referenceHint,
+                                  label: AppLocalizations.of(
+                                    context,
+                                  )!.referenceOptional,
+                                  hint: AppLocalizations.of(
+                                    context,
+                                  )!.referenceHint,
                                   icon: Icons.tag,
                                 ),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Receipt Upload
                                 _buildReceiptUpload(),
-                                
+
                                 const SizedBox(height: 32),
-                                
+
                                 // Submit Button
                                 SizedBox(
                                   width: double.infinity,
                                   height: 56,
                                   child: ElevatedButton(
-                                    onPressed: _isSubmitting ? null : _submitExpense,
+                                    onPressed: _isSubmitting
+                                        ? null
+                                        : _submitExpense,
                                     style: ElevatedButton.styleFrom(
                                       // backgroundColor: const Color(0xFF667eea),
                                       // foregroundColor: Colors.white,
@@ -342,9 +369,13 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                                       ),
                                     ),
                                     child: _isSubmitting
-                                        ? const CircularProgressIndicator(color: Colors.white)
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
                                         : Text(
-                                            AppLocalizations.of(context)!.submitExpense,
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.submitExpense,
                                             style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -462,7 +493,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          category['name'] ?? AppLocalizations.of(context)!.unknown,
+                          category['name'] ??
+                              AppLocalizations.of(context)!.unknown,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -516,7 +548,10 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                 const Icon(Icons.calendar_today, color: Color(0xFF667eea)),
                 const SizedBox(width: 12),
                 Text(
-                  DateFormat('EEEE, MMMM dd, yyyy', Localizations.localeOf(context).toString()).format(_selectedDate),
+                  DateFormat(
+                    'EEEE, MMMM dd, yyyy',
+                    Localizations.localeOf(context).toString(),
+                  ).format(_selectedDate),
                   style: const TextStyle(fontSize: 16),
                 ),
                 const Spacer(),
@@ -578,7 +613,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
-          color: isSelected ? const Color(0xFF667eea).withOpacity(0.1) : Colors.grey[50],
+          color: isSelected
+              ? const Color(0xFF667eea).withOpacity(0.1)
+              : Colors.grey[50],
         ),
         child: Column(
           children: [
@@ -622,7 +659,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               border: Border.all(
-                color: _receiptImage != null 
+                color: _receiptImage != null
                     ? const Color(0xFF667eea)
                     : Colors.grey[300]!,
                 style: BorderStyle.solid,
@@ -674,10 +711,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       const SizedBox(height: 4),
                       Text(
                         AppLocalizations.of(context)!.takePhotoOrSelect,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
                       ),
                     ],
                   ),
