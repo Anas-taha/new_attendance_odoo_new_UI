@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
+import 'package:hr_app_odoo/main.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
 import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
@@ -54,7 +55,7 @@ class GreetingWidget extends StatelessWidget {
             ),
             CustomText(
               text: employeeName ?? '',
-              color: AppColors.primaryColor,
+              color: AppColors.appPrimaryColor,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),

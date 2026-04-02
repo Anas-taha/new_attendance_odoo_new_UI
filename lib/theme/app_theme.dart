@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// App color palette (same as main.dart theme)
 abstract class AppColors {
   // primary
-  static const Color primaryColor = Color(0xFF22004C);
+  static const Color appPrimaryColor = Color(0xFF22004C);
   //secodry
   static const Color app5700A8Sedondary1 = Color(0xFFF8F9FF);
   static const Color app670379Sedondary2 = Color(0xFF670379);
@@ -13,8 +13,10 @@ abstract class AppColors {
   static const Color appA0A0A0Text2 = Color(0xFFA0A0A0);
   static const Color appF5F5F7Text3 = Color(0xFFF5F5F7);
   // background
-  static const Color appFFFFFFBackGround = Color(0xFFFFFFFF);
+  static const Color appFFFFFFBackGround1 = Color(0xFFFFFFFF);
+  static const Color appFAFAFABackGround2 = Color(0xFFFAFAFA);
   static const Color appE5E5E5Border = Color(0xFFE5E5E5);
+  static const Color appE1CDE4CardBG = Color(0xFFE1CDE4);
   // system State
   static const Color app4CAF50Success = Color(0xFF4CAF50);
   static const Color appF44336Error = Color(0xFFF44336);

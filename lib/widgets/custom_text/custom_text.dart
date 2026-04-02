@@ -9,12 +9,16 @@ class CustomText extends StatelessWidget {
     this.fontSize,
     this.fontWeight,
     this.isBold = false,
+    this.overflow,
   });
   String text;
   Color? color;
   double? fontSize;
   FontWeight? fontWeight;
   bool isBold;
+
+  TextOverflow? overflow;
+
   @override
   Widget build(BuildContext context) {
     return Text(
@@ -23,6 +27,7 @@ class CustomText extends StatelessWidget {
         color: color ?? AppColors.app1A1A1AText1,
         fontSize: isBold ? 20 : fontSize ?? 16,
         fontWeight: isBold ? FontWeight.bold : fontWeight ?? FontWeight.w500,
+        overflow: overflow,
       ),
     );
   }

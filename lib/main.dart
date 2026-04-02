@@ -38,6 +38,7 @@ class _HrAppState extends State<HrApp> {
   void initState() {
     super.initState();
     _loadSavedLocale();
+    setLocale('ar'); // لا للنعوييم
   }
 
   Future<void> _loadSavedLocale() async {
@@ -70,6 +71,7 @@ class _HrAppState extends State<HrApp> {
         splitScreenMode: true,
         designSize: Size(375, 812),
         child: GetMaterialApp(
+          fallbackLocale: _locale,
           initialBinding: AppBinding(),
           debugShowCheckedModeBanner: false,
           title: 'HR App',

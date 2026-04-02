@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/locale_scope.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
+import 'package:hr_app_odoo/features/home/presentation/widgets/attendance_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/greeting_widget.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
@@ -140,6 +142,87 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Obx(
       () => Scaffold(
         backgroundColor: Colors.white,
+
+        // appBar: AppBar(
+        //   title: const Text('HR Dashboard'),
+        //   backgroundColor: const Color(0xFF6B46C1),
+        //   foregroundColor: Colors.white,
+        //   elevation: 0,
+        //   actions: [
+        //     // User info and logout button
+        //     PopupMenuButton<String>(
+        //       onSelected: (value) {
+        //         // if (value == 'logout') {
+        //         //   _handleLogout();
+        //         // }
+        //       },
+        //       itemBuilder: (BuildContext context) => [
+        //         PopupMenuItem<String>(
+        //           value: 'user',
+        //           enabled: false,
+        //           child: Column(
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             children: [
+        //               Text(
+        //                 homeController.currentEmployee.value?.name ??
+        //                     'Employee',
+        //                 style: const TextStyle(
+        //                   fontWeight: FontWeight.bold,
+        //                   color: Color(0xFF2D3748),
+        //                 ),
+        //               ),
+        //               Text(
+        //                 homeController.currentEmployee.value?.workEmail ??
+        //                     'No email',
+        //                 style: const TextStyle(
+        //                   fontSize: 12,
+        //                   color: Color(0xFF718096),
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //         ),
+        //         const PopupMenuDivider(),
+        //         const PopupMenuItem<String>(
+        //           value: 'logout',
+        //           child: Row(
+        //             children: [
+        //               Icon(Icons.logout, color: Colors.red),
+        //               SizedBox(width: 8),
+        //               Text('Logout'),
+        //             ],
+        //           ),
+        //         ),
+        //       ],
+        //       child: Container(
+        //         padding: const EdgeInsets.symmetric(
+        //           horizontal: 12,
+        //           vertical: 8,
+        //         ),
+        //         child: Row(
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: [
+        //             CircleAvatar(
+        //               radius: 16,
+        //               backgroundColor: Colors.white,
+        //               child: Text(
+        //                 (homeController.currentEmployee.value?.name ?? 'E')
+        //                     .substring(0, 1)
+        //                     .toUpperCase(),
+        //                 style: const TextStyle(
+        //                   color: Color(0xFF6B46C1),
+        //                   fontWeight: FontWeight.bold,
+        //                 ),
+        //               ),
+        //             ),
+        //             const SizedBox(width: 8),
+        //             const Icon(Icons.arrow_drop_down, color: Colors.white),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -151,197 +234,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       homeController.currentEmployee.value?.name ??
                       AppLocalizations.of(context)!.employee,
                 ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildQuickStat(
-                              icon: Icons.timer,
-                              title: AppLocalizations.of(context)!.today,
-                              value: homeController.totalToday.value,
-                              color: const Color(0xFF667eea),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildQuickStat(
-                              icon: Icons.schedule,
-                              title: AppLocalizations.of(context)!.thisWeek,
-                              value: homeController.beforeTime.value,
-                              color: const Color(0xFF764ba2),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      if (homeController.isCheckedIn.value) ...[
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF6B46C1), Color(0xFF9F7AEA)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.currentSession,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _buildTimeBox(
-                                    '${(homeController.seconds.value ~/ 3600).toString().padLeft(2, '0')}',
-                                  ),
-                                  const Text(
-                                    ' : ',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  _buildTimeBox(
-                                    '${((homeController.seconds.value % 3600) ~/ 60).toString().padLeft(2, '0')}',
-                                  ),
-                                  const Text(
-                                    ' : ',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  _buildTimeBox(
-                                    '${(homeController.seconds.value % 60).toString().padLeft(2, '0')}',
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.startedAt(homeController.checkInTime.value),
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.registerAttendance,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D3748),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    '/face-attendance',
-                                  ),
-                                  icon: Icon(
-                                    homeController.isCheckedIn.value
-                                        ? Icons.logout
-                                        : Icons.login,
-                                  ),
-                                  label: Text(
-                                    homeController.isCheckedIn.value
-                                        ? AppLocalizations.of(
-                                            context,
-                                          )!.checkOutFace
-                                        : AppLocalizations.of(
-                                            context,
-                                          )!.checkInFace,
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        homeController.isCheckedIn.value
-                                        ? Colors.red[600]
-                                        : Colors.green[600],
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    '/attendance',
-                                    arguments: {
-                                      'isCheckedIn':
-                                          homeController.isCheckedIn.value,
-                                      'checkInDateTime':
-                                          homeController.checkInDateTime.value,
-                                      'checkInTime':
-                                          homeController.checkInTime.value,
-                                      'totalWorkedHours':
-                                          homeController.totalToday.value,
-                                    },
-                                  ),
-                                  icon: const Icon(Icons.visibility),
-                                  label: Text(
-                                    AppLocalizations.of(context)!.viewDetails,
-                                  ),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: const Color(0xFF6B46C1),
-                                    side: const BorderSide(
-                                      color: Color(0xFF6B46C1),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                16.verticalSpace,
+                AttendanceWidget(),
                 const SizedBox(height: 32),
                 Text(
                   AppLocalizations.of(context)!.whatDoYouNeed,
@@ -516,66 +410,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildTimeBox(String time) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Text(
-          time,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF6B46C1),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickStat({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
