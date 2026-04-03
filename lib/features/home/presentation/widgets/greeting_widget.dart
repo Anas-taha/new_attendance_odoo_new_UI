@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/main.dart';
@@ -50,7 +51,7 @@ class GreetingWidget extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Get.to(() => NotificationScreen());
+                Get.toNamed(AppRoutes.notifications);
               },
               child: Container(
                 height: 24.h,

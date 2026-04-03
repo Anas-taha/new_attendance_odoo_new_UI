@@ -10,9 +10,23 @@ import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_sta
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/custom_appbar/custom_appbar.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   NotificationScreen({super.key});
+
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
   final notifController = Get.put(NotificationController());
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifController.init();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +53,7 @@ class NotificationScreen extends StatelessWidget {
                 ),
               ],
             ),
-            8.verticalSpace,
+            16.verticalSpace,
             Obx(() {
               if (notifController.notificationList.value.isEmpty) {
                 return NoNotificationWidget();
@@ -51,7 +65,7 @@ class NotificationScreen extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
-                  separatorBuilder: (context, index) => 13.verticalSpace,
+                  separatorBuilder: (context, index) => 16.verticalSpace,
                   itemBuilder: (context, index) {
                     return NotificationCardWidget(
                       title: notifList[index],

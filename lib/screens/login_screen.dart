@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../services/odoo_rpc_service.dart';
@@ -52,10 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void homeGlitch() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-    );
+    Get.toNamed(AppRoutes.home);
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+    // );
   }
 
   void _handleLogin() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
@@ -53,7 +54,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           // 4.horizontalSpace,
           _buildIconButton(
             image: AppImage.home,
-            onTap: () => Get.to(() => HomeScreen()),
+            onTap: () => Get.toNamed(AppRoutes.home),
           ),
         ],
       ),

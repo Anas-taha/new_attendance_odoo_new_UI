@@ -6,7 +6,13 @@ enum NotifiState { all, readed, unReaded }
 
 class NotificationController extends GetxController {
   Rx<NotifiState> selectedNotifiState = Rx<NotifiState>(NotifiState.all);
-  Rx<List<String>> notificationList = Rx<List<String>>([]);
+  RxList<String> notificationList = RxList<String>([]);
+
+  void init() {
+    selectedNotifiState.value = NotifiState.all;
+    notificationList.value = [];
+  }
+
   void changeNotifiState(NotifiState state) {
     selectedNotifiState.value = state;
     getAllNotification();
