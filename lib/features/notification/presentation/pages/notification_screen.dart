@@ -9,6 +9,7 @@ import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_car
 import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_state_widget.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/custom_appbar/custom_appbar.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NotificationScreen extends StatefulWidget {
   NotificationScreen({super.key});
@@ -18,7 +19,7 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final notifController = Get.put(NotificationController());
+  final notifController = Get.find<NotificationController>();
   @override
   void initState() {
     super.initState();
@@ -67,9 +68,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   physics: const BouncingScrollPhysics(),
                   separatorBuilder: (context, index) => 16.verticalSpace,
                   itemBuilder: (context, index) {
-                    return NotificationCardWidget(
-                      title: notifList[index],
-                      date: 'منذ يومين',
+                    return Skeletonizer(
+                      enabled: false,
+                      child: NotificationCardWidget(
+                        title: notifList[index],
+                        date: 'منذ يومين',
+                      ),
                     );
                   },
                 ),

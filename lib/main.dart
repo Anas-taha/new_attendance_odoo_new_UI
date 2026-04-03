@@ -72,6 +72,8 @@ class _HrAppState extends State<HrApp> {
         splitScreenMode: true,
         designSize: Size(375, 812),
         child: GetMaterialApp(
+          initialRoute: AppRoutes.login,
+          getPages: AppPages.pages,
           // initialBinding: AppBinding(),
           fallbackLocale: _locale,
           debugShowCheckedModeBanner: false,
@@ -81,8 +83,6 @@ class _HrAppState extends State<HrApp> {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: _locale,
-          initialRoute: AppRoutes.login,
-          getPages: AppPages.pages,
           // home: const LoginScreen(),
           // routes: {
           //   '/login': (context) => const LoginScreen(),

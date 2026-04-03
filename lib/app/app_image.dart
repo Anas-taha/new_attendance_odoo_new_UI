@@ -1,11 +1,12 @@
 class AppImage {
-  static const String attendance = 'assets/images/attendance.svg';
-  static const String holiday = 'assets/images/holiday.svg';
-  static const String home = 'assets/images/icon_home.svg';
-  static const String notificationIcon = 'assets/images/icon_notification.svg';
-  static const String notification = 'assets/images/notification.svg';
-  static const String money = 'assets/images/money.svg';
-  static const String moon = 'assets/images/moon.svg';
-  static const String person = 'assets/images/person.svg';
-  static const String sun = 'assets/images/sun.svg';
+  static const imageUrl = 'assets/images';
+  static const String attendance = '$imageUrl/attendance.svg';
+  static const String holiday = '$imageUrl/holiday.svg';
+  static const String home = '$imageUrl/icon_home.svg';
+  static const String notificationIcon = '$imageUrl/icon_notification.svg';
+  static const String notification = '$imageUrl/notification.svg';
+  static const String money = '$imageUrl/money.svg';
+  static const String moon = '$imageUrl/moon.svg';
+  static const String person = '$imageUrl/person.svg';
+  static const String sun = '$imageUrl/sun.svg';
 }

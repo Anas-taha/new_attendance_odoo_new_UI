@@ -16,6 +16,7 @@ import 'package:hr_app_odoo/screens/team_off_screen.dart';
 class AppRoutes {
   static const login = '/login';
   static const home = '/home';
+  static const notifications = '/notifications';
   static const attendance = '/attendance';
   static const attendanceReport = '/attendance-report';
   static const faceAttendance = '/face-attendance';
@@ -24,8 +25,6 @@ class AppRoutes {
   static const payslips = '/payslips';
   static const contracts = '/contracts';
   static const timeOff = '/time-off';
-
-  static const notifications = '/notifications';
 }
 
 class AppPages {
@@ -42,7 +41,7 @@ class AppPages {
       name: AppRoutes.notifications,
       page: () => NotificationScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<NotificationController>((() => NotificationController()));
+        Get.lazyPut<NotificationController>(() => NotificationController());
       }),
     ),
     GetPage(name: AppRoutes.attendance, page: () => const AttendanceScreen()),
@@ -64,5 +63,3 @@ class AppPages {
     GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
   ];
 }
-
-
