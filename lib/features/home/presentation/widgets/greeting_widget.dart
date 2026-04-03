@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
+import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/main.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
@@ -18,32 +19,6 @@ class GreetingWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Row(
-          children: [
-            InkWell(
-              onTap: () {},
-              child: Container(
-                height: 24.h,
-                width: 24.w,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: CustomImage(fit: BoxFit.contain, image: AppImage.home),
-              ),
-            ),
-            InkWell(
-              onTap: () {},
-              child: Container(
-                height: 24.h,
-                width: 30.w,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: CustomImage(
-                  fit: BoxFit.contain,
-                  image: AppImage.notifications,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const Spacer(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -58,6 +33,34 @@ class GreetingWidget extends StatelessWidget {
               color: AppColors.appPrimaryColor,
               fontSize: 18,
               fontWeight: FontWeight.w700,
+            ),
+          ],
+        ),
+        const Spacer(),
+        Row(
+          children: [
+            InkWell(
+              onTap: () {},
+              child: Container(
+                height: 24.h,
+                width: 24.w,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: CustomImage(fit: BoxFit.contain, image: AppImage.home),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Get.to(() => NotificationScreen());
+              },
+              child: Container(
+                height: 24.h,
+                width: 30.w,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: CustomImage(
+                  fit: BoxFit.contain,
+                  image: AppImage.notificationIcon,
+                ),
+              ),
             ),
           ],
         ),

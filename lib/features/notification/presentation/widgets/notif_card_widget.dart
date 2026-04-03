@@ -38,7 +38,7 @@ class NotificationCardWidget extends StatelessWidget {
                 color: AppColors.appE1CDE4CardBG,
                 shape: BoxShape.circle,
               ),
-              child: CustomImage(image: AppImage.notifications),
+              child: CustomImage(image: AppImage.notificationIcon),
             ),
             8.horizontalSpace,
             CustomText(

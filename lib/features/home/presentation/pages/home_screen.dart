@@ -8,7 +8,7 @@ import 'package:hr_app_odoo/app/locale_scope.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/attendance_widget.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/feature_card_widget.dart';
-import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_widget.dart';
+import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_card_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/greeting_widget.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
