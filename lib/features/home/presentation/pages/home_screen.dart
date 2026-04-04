@@ -168,17 +168,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       image: AppImage.attendance,
                       title: 'الحضور والانصراف',
                       onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/attendance',
-                          arguments: {
-                            'isCheckedIn': homeController.isCheckedIn.value,
-                            'checkInDateTime':
-                                homeController.checkInDateTime.value,
-                            'checkInTime': homeController.checkInTime.value,
-                            'totalWorkedHours': homeController.totalToday.value,
-                          },
-                        );
+                        Get.toNamed(AppRoutes.attendance);
+                        // Navigator.pushNamed(
+                        //   context,
+                        //   '/attendance',
+                        //   arguments: {
+                        //     'isCheckedIn': homeController.isCheckedIn.value,
+                        //     'checkInDateTime':
+                        //         homeController.checkInDateTime.value,
+                        //     'checkInTime': homeController.checkInTime.value,
+                        //     'totalWorkedHours': homeController.totalToday.value,
+                        //   },
+                        // );
                       },
                     ),
                   ),

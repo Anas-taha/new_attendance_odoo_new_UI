@@ -9,6 +9,8 @@ import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/services/hr_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
+enum AttendanceStateEnum { leaveEarly, absences, holidays, lateArrival }
+
 class AttendanceController extends GetxController {
   final HrService hrService = HrService();
   HrEmployee? currentEmployee;
@@ -22,6 +24,9 @@ class AttendanceController extends GetxController {
   Timer? timer;
   late AnimationController pulseController;
   late AnimationController slideController;
+  TextEditingController dateController = TextEditingController();
+  RxList<String> weekCards = ['Week 1', 'Week 2', 'Week 3', 'Week 4'].obs;
+  RxInt selectedWeekCard = 0.obs;
 
   void init() {
     //  _pulseController = AnimationController(
@@ -47,8 +52,12 @@ class AttendanceController extends GetxController {
     //   _totalWorkedHours = widget.initialTotalWorkedHours!;
     // }
 
-    loadAttendanceData();
-    slideController.forward();
+    // loadAttendanceData();
+    // slideController.forward();
+  }
+
+  void selectWeekCard(int index) {
+    selectedWeekCard.value = index;
   }
 
   Future<void> loadAttendanceData() async {

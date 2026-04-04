@@ -15,13 +15,25 @@ abstract class AppColors {
   static const Color app9F9F9FText4 = Color(0xFF9F9F9F);
   static const Color app212529Text5 = Color(0xFF212529);
   static const Color app6C757DText5 = Color(0xFF6C757D);
+  static const Color app796DFFText6 = Color(0xFF796DFF);
   // background
   static const Color appFFFFFFBackGround1 = Color(0xFFFFFFFF);
   static const Color appFAFAFABackGround2 = Color(0xFFFAFAFA);
+  // border
   static const Color appE5E5E5Border = Color(0xFFE5E5E5);
+  static const Color app6A5CFFBorder2 = Color(0xFF6A5CFF);
+  // card
   static const Color appE1CDE4CardBG = Color(0xFFE1CDE4);
   static const Color appFDD9D7CardBG2 = Color(0xFFFDD9D7);
   static const Color appEEF7EECardBG3 = Color(0xFFEEF7EE);
+  static const Color appF9F5FACardBG4 = Color(0xFFF9F5FA);
+  static const Color appF5F8FFCardBG5 = Color(0xFFF5F8FF);
+  static const Color appFFF7F4CardBG6 = Color(0xFFFFF7F4);
+  static const Color appFFF7F5CardBG6 = Color(0xFFFFF7F5);
+  static const Color appF0E6F2CardBG6 = Color(0xFFF0E6F2);
+  static const Color appDEDBFFCardBG6 = Color(0xFFDEDBFF);
+  static const Color appFFDFAACardBG6 = Color(0xFFFFDFAA);
+  static const Color appFDD0CDCardBG6 = Color(0xFFFDD0CD);
   // system State
   static const Color app4CAF50Success = Color(0xFF4CAF50);
   static const Color appF44336Error = Color(0xFFF44336);

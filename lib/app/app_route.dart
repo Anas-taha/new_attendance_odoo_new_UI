@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/pages/attendance_screen.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
@@ -51,6 +52,9 @@ class AppPages {
     GetPage(
       name: AppRoutes.attendance,
       page: () => const AttendanceScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<AttendanceController>(() => AttendanceController());
+      }),
     ),
     GetPage(
       name: AppRoutes.attendanceReport,
