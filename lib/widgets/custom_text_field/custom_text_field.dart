@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
@@ -9,7 +11,7 @@ class CustomTextField extends StatelessWidget {
   CustomTextField({
     super.key,
     required this.controller,
-    this.onTap,
+
     this.enabled = true,
     this.prefixIcon,
     this.usePrefixCalender = false,
@@ -19,7 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines,
   });
   TextEditingController controller;
-  Function()? onTap;
+
   bool enabled;
   Widget? prefixIcon;
   Widget? suffixIcon;
@@ -29,12 +31,11 @@ class CustomTextField extends StatelessWidget {
   int? maxLines;
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
-      onTap: () {
-        if (!enabled) onTap!();
-      },
+
       enabled: enabled,
+
       maxLines: maxLines,
       decoration: InputDecoration(
         filled: true,

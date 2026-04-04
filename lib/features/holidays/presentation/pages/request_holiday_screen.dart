@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/custom_button/custom_button.dart';
 import 'package:hr_app_odoo/widgets/custom_screen/custom_screen.dart';
 import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
 import 'package:hr_app_odoo/widgets/custom_text_field/custom_text_field.dart';
 
-class RequestHolidayScreen extends StatefulWidget {
-  const RequestHolidayScreen({super.key});
-
-  @override
-  State<RequestHolidayScreen> createState() => _RequestHolidayScreenState();
-}
-
-class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
+class RequestHolidayScreen extends StatelessWidget {
+  RequestHolidayScreen({super.key});
+  final controller = Get.find<HolidaysController>();
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
@@ -42,11 +40,16 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
             color: AppColors.app1A1A1AText1,
           ),
           8.verticalSpace,
-          CustomTextField(
-            controller: TextEditingController(),
-            enabled: false,
-            usePrefixCalender: true,
-            useSuffixArrow: true,
+          GestureDetector(
+            onTap: () {
+              controller.selectStartDate();
+            },
+            child: CustomTextField(
+              controller: controller.holidayStartDateController,
+              enabled: false,
+              usePrefixCalender: true,
+              useSuffixArrow: true,
+            ),
           ),
           16.verticalSpace,
           CustomText(
@@ -56,11 +59,16 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
             color: AppColors.app1A1A1AText1,
           ),
           8.verticalSpace,
-          CustomTextField(
-            controller: TextEditingController(),
-            enabled: false,
-            usePrefixCalender: true,
-            useSuffixArrow: true,
+          GestureDetector(
+            onTap: () {
+              controller.selectStartDate();
+            },
+            child: CustomTextField(
+              controller: TextEditingController(),
+              enabled: false,
+              usePrefixCalender: true,
+              useSuffixArrow: true,
+            ),
           ),
           16.verticalSpace,
           CustomText(

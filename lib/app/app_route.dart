@@ -86,7 +86,7 @@ class AppPages {
     GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
     GetPage(
       name: AppRoutes.requestHoliday,
-      page: () => const RequestHolidayScreen(),
+      page: () =>   RequestHolidayScreen(),
     ),
     GetPage(
       name: AppRoutes.holidays,
