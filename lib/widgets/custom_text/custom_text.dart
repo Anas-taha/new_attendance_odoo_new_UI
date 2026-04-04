@@ -8,7 +8,7 @@ class CustomText extends StatelessWidget {
     this.color,
     this.fontSize,
     this.fontWeight,
-    this.isBold = false,
+    this.bold = false,
     this.overflow,
     this.textAlign,
   });
@@ -16,7 +16,7 @@ class CustomText extends StatelessWidget {
   Color? color;
   double? fontSize;
   FontWeight? fontWeight;
-  bool isBold;
+  bool bold;
   TextAlign? textAlign;
   TextOverflow? overflow;
 
@@ -27,8 +27,8 @@ class CustomText extends StatelessWidget {
       textAlign: textAlign,
       style: TextStyle(
         color: color ?? AppColors.app1A1A1AText1,
-        fontSize: isBold ? 20 : fontSize ?? 16,
-        fontWeight: isBold ? FontWeight.bold : fontWeight ?? FontWeight.w500,
+        fontSize: bold ? 20 : fontSize ?? 16,
+        fontWeight: bold ? FontWeight.bold : fontWeight ?? FontWeight.w500,
         overflow: overflow,
       ),
     );

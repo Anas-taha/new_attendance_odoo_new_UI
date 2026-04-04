@@ -9,4 +9,6 @@ class AppImage {
   static const String moon = '$imageUrl/moon.svg';
   static const String person = '$imageUrl/person.svg';
   static const String sun = '$imageUrl/sun.svg';
+  static const String calender = '$imageUrl/calender.svg';
+  static const String salaryCard = '$imageUrl/salary_card.svg';
 }

@@ -15,7 +15,7 @@ import 'screens/attendance_report_screen.dart';
 import 'screens/face_attendance_screen.dart';
 import 'screens/expense_screen.dart';
 import 'screens/expense_create_screen.dart';
-import 'screens/payslip_screen.dart';
+import 'features/salaries/presentaion/pages/payslip_screen.dart';
 import 'screens/contracts_screen.dart';
 import 'screens/team_off_screen.dart';
 

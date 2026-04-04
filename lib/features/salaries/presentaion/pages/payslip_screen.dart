@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../generated/l10n/app_localizations.dart';
-import '../models/hr_employee.dart';
-import '../models/hr_payslip.dart';
-import '../services/hr_service.dart';
-import '../theme/app_theme.dart';
+import '../../../../generated/l10n/app_localizations.dart';
+import '../../../../models/hr_employee.dart';
+import '../../../../models/hr_payslip.dart';
+import '../../../../services/hr_service.dart';
+import '../../../../theme/app_theme.dart';
 
 class PayslipScreen extends StatefulWidget {
   const PayslipScreen({super.key});

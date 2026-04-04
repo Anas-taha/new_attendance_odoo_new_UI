@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/app/locale_scope.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/attendance_widget.dart';
@@ -200,9 +201,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Expanded(
                       child: FeatureCardWidget(
                         image: AppImage.money,
-                        title: AppLocalizations.of(context)!.payslip,
+                        // title: AppLocalizations.of(context)!.payslip,
+                        title: "الرواتب",
 
-                        onTap: () => Navigator.pushNamed(context, '/payslips'),
+                        onTap: () => Get.toNamed(AppRoutes.salaries),
                       ),
                     ),
                     20.horizontalSpace,

@@ -3,6 +3,8 @@ import 'package:hr_app_odoo/features/home/presentation/controllers/home_controll
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
+import 'package:hr_app_odoo/features/salaries/presentaion/controller/salaries_controller.dart';
+import 'package:hr_app_odoo/features/salaries/presentaion/pages/salaries_screen.dart';
 import 'package:hr_app_odoo/screens/attendance_report_screen.dart';
 import 'package:hr_app_odoo/screens/attendance_screen.dart';
 import 'package:hr_app_odoo/screens/contracts_screen.dart';
@@ -10,7 +12,7 @@ import 'package:hr_app_odoo/screens/expense_create_screen.dart';
 import 'package:hr_app_odoo/screens/expense_screen.dart';
 import 'package:hr_app_odoo/screens/face_attendance_screen.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
-import 'package:hr_app_odoo/screens/payslip_screen.dart';
+import 'package:hr_app_odoo/features/salaries/presentaion/pages/payslip_screen.dart';
 import 'package:hr_app_odoo/screens/team_off_screen.dart';
 
 class AppRoutes {
@@ -23,6 +25,7 @@ class AppRoutes {
   static const expenses = '/expenses';
   static const expenseCreate = '/expense-create';
   static const payslips = '/payslips';
+  static const salaries = '/salaries';
   static const contracts = '/contracts';
   static const timeOff = '/time-off';
 }
@@ -59,6 +62,13 @@ class AppPages {
       page: () => const ExpenseCreateScreen(),
     ),
     GetPage(name: AppRoutes.payslips, page: () => const PayslipScreen()),
+    GetPage(
+      name: AppRoutes.salaries,
+      page: () => const SalariesScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<SalariesController>(() => SalariesController());
+      }),
+    ),
     GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),
     GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
   ];
