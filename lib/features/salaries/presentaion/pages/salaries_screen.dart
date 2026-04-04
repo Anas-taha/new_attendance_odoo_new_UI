@@ -122,7 +122,7 @@ class _SalariesScreenState extends State<SalariesScreen> {
                 CustomText(
                   text: 'صافي الراتب',
                   color: AppColors.app4CAF50Success,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w700,     
                 ),
                 Spacer(),
                 CustomText(

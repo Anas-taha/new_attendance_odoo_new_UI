@@ -10,7 +10,7 @@ import 'services/local_storage_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/login_screen.dart';
 import 'features/home/presentation/pages/home_screen.dart';
-import 'screens/attendance_screen.dart';
+import 'features/attendance/presentation/pages/old_attendance_screen.dart';
 import 'screens/attendance_report_screen.dart';
 import 'screens/face_attendance_screen.dart';
 import 'screens/expense_screen.dart';

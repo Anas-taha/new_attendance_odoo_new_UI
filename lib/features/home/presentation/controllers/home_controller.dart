@@ -47,6 +47,7 @@ class HomeController extends GetxController {
   Rx<String> totalToday = Rx<String>("00:00:00");
   Rx<String> beforeTime = Rx<String>("00:00");
   Rxn<HomeUiEvent> uiEvent = Rxn<HomeUiEvent>();
+  RxList<String> lastNotivication = RxList<String>([]);
 
   final HomeRepository _homeRepository;
 

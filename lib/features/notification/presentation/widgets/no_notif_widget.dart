@@ -6,13 +6,13 @@ import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
 import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
 
 class NoNotificationWidget extends StatelessWidget {
-  const NoNotificationWidget({super.key});
-
+  NoNotificationWidget({super.key, this.height});
+  double? height;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 100.h),
+        SizedBox(height: height ?? 100.h),
         CustomImage(image: AppImage.notification),
         CustomText(text: 'لا يوجد إشعارات', color: AppColors.app212529Text5),
         4.verticalSpace,

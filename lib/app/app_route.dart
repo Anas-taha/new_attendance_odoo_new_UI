@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/features/attendance/presentation/pages/attendance_screen.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
@@ -6,7 +7,7 @@ import 'package:hr_app_odoo/features/notification/presentation/pages/notificatio
 import 'package:hr_app_odoo/features/salaries/presentaion/controller/salaries_controller.dart';
 import 'package:hr_app_odoo/features/salaries/presentaion/pages/salaries_screen.dart';
 import 'package:hr_app_odoo/screens/attendance_report_screen.dart';
-import 'package:hr_app_odoo/screens/attendance_screen.dart';
+import 'package:hr_app_odoo/features/attendance/presentation/pages/old_attendance_screen.dart';
 import 'package:hr_app_odoo/screens/contracts_screen.dart';
 import 'package:hr_app_odoo/screens/expense_create_screen.dart';
 import 'package:hr_app_odoo/screens/expense_screen.dart';
@@ -47,7 +48,10 @@ class AppPages {
         Get.lazyPut<NotificationController>(() => NotificationController());
       }),
     ),
-    GetPage(name: AppRoutes.attendance, page: () => const AttendanceScreen()),
+    GetPage(
+      name: AppRoutes.attendance,
+      page: () => const AttendanceScreen(),
+    ),
     GetPage(
       name: AppRoutes.attendanceReport,
       page: () => const AttendanceReportScreen(),

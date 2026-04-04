@@ -9,10 +9,12 @@ import 'package:hr_app_odoo/app/locale_scope.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/attendance_widget.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/feature_card_widget.dart';
+import 'package:hr_app_odoo/features/notification/presentation/widgets/no_notif_widget.dart';
 import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_card_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/greeting_widget.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
+import 'package:hr_app_odoo/widgets/custom_screen/custom_screen.dart';
 import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -145,99 +147,100 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Scaffold(
-        backgroundColor: Colors.white,
-
+      () => CustomScreen(
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GreetingWidget(
-                  employeeName:
-                      homeController.currentEmployee.value?.name ??
-                      AppLocalizations.of(context)!.employee,
-                ),
-                16.verticalSpace,
-                AttendanceWidget(),
-                16.verticalSpace,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GreetingWidget(
+                employeeName:
+                    homeController.currentEmployee.value?.name ??
+                    AppLocalizations.of(context)!.employee,
+              ),
+              16.verticalSpace,
+              AttendanceWidget(),
+              16.verticalSpace,
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: FeatureCardWidget(
-                        image: AppImage.attendance,
-                        title: AppLocalizations.of(context)!.attendance,
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/attendance',
-                            arguments: {
-                              'isCheckedIn': homeController.isCheckedIn.value,
-                              'checkInDateTime':
-                                  homeController.checkInDateTime.value,
-                              'checkInTime': homeController.checkInTime.value,
-                              'totalWorkedHours':
-                                  homeController.totalToday.value,
-                            },
-                          );
-                        },
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: FeatureCardWidget(
+                      image: AppImage.attendance,
+                      title: 'الحضور والانصراف',
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/attendance',
+                          arguments: {
+                            'isCheckedIn': homeController.isCheckedIn.value,
+                            'checkInDateTime':
+                                homeController.checkInDateTime.value,
+                            'checkInTime': homeController.checkInTime.value,
+                            'totalWorkedHours': homeController.totalToday.value,
+                          },
+                        );
+                      },
                     ),
-                    20.horizontalSpace,
-                    Expanded(
-                      child: FeatureCardWidget(
-                        image: AppImage.holiday,
-                        title: 'Time Off',
-                        onTap: () => Navigator.pushNamed(context, '/team-off'),
-                      ),
+                  ),
+                  20.horizontalSpace,
+                  Expanded(
+                    child: FeatureCardWidget(
+                      image: AppImage.holiday,
+                      title: 'الاجازات',
+                      onTap: () => Navigator.pushNamed(context, '/team-off'),
                     ),
-                  ],
-                ),
-                20.verticalSpace,
-                Row(
-                  children: [
-                    Expanded(
-                      child: FeatureCardWidget(
-                        image: AppImage.money,
-                        // title: AppLocalizations.of(context)!.payslip,
-                        title: "الرواتب",
+                  ),
+                ],
+              ),
+              20.verticalSpace,
+              Row(
+                children: [
+                  Expanded(
+                    child: FeatureCardWidget(
+                      image: AppImage.money,
+                      // title: AppLocalizations.of(context)!.payslip,
+                      title: "الرواتب",
 
-                        onTap: () => Get.toNamed(AppRoutes.salaries),
-                      ),
+                      onTap: () => Get.toNamed(AppRoutes.salaries),
                     ),
-                    20.horizontalSpace,
-                    Expanded(
-                      child: FeatureCardWidget(
-                        image: AppImage.person,
-                        title: 'Working Schedule',
-                      ),
+                  ),
+                  20.horizontalSpace,
+                  Expanded(
+                    child: FeatureCardWidget(
+                      image: AppImage.person,
+                      title: 'الصفحه الشخصية',
                     ),
-                  ],
-                ),
-                16.verticalSpace,
-                CustomText(
-                  text: 'اخر اشعارات الشركة',
-                  fontWeight: FontWeight.w600,
-                ),
-                16.verticalSpace,
+                  ),
+                ],
+              ),
+              16.verticalSpace,
+              CustomText(
+                text: 'اخر اشعارات الشركة',
+                fontWeight: FontWeight.w600,
+              ),
+              16.verticalSpace,
 
-                ListView.separated(
-                  itemCount: 30,
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  separatorBuilder: (context, index) => 13.verticalSpace,
-                  itemBuilder: (context, index) {
-                    return NotificationCardWidget(
-                      title: 'تم الموافقة على طلب الإجازة',
-                      date: 'منذ يومين',
-                    );
-                  },
-                ),
-              ],
-            ),
+              Obx(() {
+                if (homeController.lastNotivication.value.isEmpty) {
+                  return Center(child: NoNotificationWidget(height: 30));
+                }
+                return Expanded(
+                  child: ListView.separated(
+                    itemCount: 1,
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    separatorBuilder: (context, index) => 13.verticalSpace,
+                    itemBuilder: (context, index) {
+                      return NotificationCardWidget(
+                        title: 'تم الموافقة على طلب الإجازة',
+                        date: 'منذ يومين',
+                      );
+                    },
+                  ),
+                );
+              }),
+            ],
           ),
         ),
       ),
