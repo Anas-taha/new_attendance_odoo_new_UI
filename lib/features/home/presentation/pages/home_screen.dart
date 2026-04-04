@@ -188,7 +188,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: FeatureCardWidget(
                       image: AppImage.holiday,
                       title: 'الاجازات',
-                      onTap: () => Navigator.pushNamed(context, '/team-off'),
+                      onTap: () => Get.toNamed(AppRoutes.holidays),
+                      // onTap: () => Navigator.pushNamed(context, '/team-off'),
                     ),
                   ),
                 ],

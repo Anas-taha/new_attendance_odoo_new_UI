@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/widgets/custom_appbar/custom_appbar.dart';
+import 'package:hr_app_odoo/widgets/custom_button/custom_button.dart';
 
 class CustomScreen extends StatelessWidget {
   CustomScreen({
@@ -9,16 +10,23 @@ class CustomScreen extends StatelessWidget {
     required this.body,
     this.screenPadding,
     this.appBar,
+    this.floatingActionButton,
   });
   String? appBarTitle;
 
   Widget body;
   PreferredSizeWidget? appBar;
   double? screenPadding;
+  Widget? floatingActionButton;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.appFFFFFFBackGround1,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: floatingActionButton,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: appBarTitle != null
           ? CustomAppBar(title: appBarTitle ?? '')
           : appBar,

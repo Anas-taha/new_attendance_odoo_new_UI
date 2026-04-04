@@ -24,6 +24,10 @@ class _SalariesScreenState extends State<SalariesScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
+      floatingActionButton: CustomButton(
+        text: 'تحميل كشف الراتب',
+        onTap: () {},
+      ),
       appBarTitle: "الرواتب",
       body: Column(
         children: [
@@ -122,7 +126,7 @@ class _SalariesScreenState extends State<SalariesScreen> {
                 CustomText(
                   text: 'صافي الراتب',
                   color: AppColors.app4CAF50Success,
-                  fontWeight: FontWeight.w700,     
+                  fontWeight: FontWeight.w700,
                 ),
                 Spacer(),
                 CustomText(
@@ -133,8 +137,6 @@ class _SalariesScreenState extends State<SalariesScreen> {
               ],
             ),
           ),
-          Spacer(),
-          CustomButton(text: 'تحميل كشف الراتب', onTap: () {}),
         ],
       ),
     );

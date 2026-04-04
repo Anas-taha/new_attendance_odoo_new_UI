@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/pages/attendance_screen.dart';
+import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
+import 'package:hr_app_odoo/features/holidays/presentation/pages/holidays_screen.dart';
+import 'package:hr_app_odoo/features/holidays/presentation/pages/request_holiday_screen.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
@@ -30,6 +33,8 @@ class AppRoutes {
   static const salaries = '/salaries';
   static const contracts = '/contracts';
   static const timeOff = '/time-off';
+  static const holidays = '/holidays';
+  static const requestHoliday = '/requestHoliday';
 }
 
 class AppPages {
@@ -79,5 +84,16 @@ class AppPages {
     ),
     GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),
     GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
+    GetPage(
+      name: AppRoutes.requestHoliday,
+      page: () => const RequestHolidayScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.holidays,
+      page: () => const HolidaysScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<HolidaysController>(() => HolidaysController());
+      }),
+    ),
   ];
 }

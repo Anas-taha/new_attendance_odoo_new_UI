@@ -34,6 +34,8 @@ abstract class AppColors {
   static const Color appDEDBFFCardBG6 = Color(0xFFDEDBFF);
   static const Color appFFDFAACardBG6 = Color(0xFFFFDFAA);
   static const Color appFDD0CDCardBG6 = Color(0xFFFDD0CD);
+  static const Color appF9E8E6CardBG6 = Color(0xFFF9E8E6);
+  static const Color appF9E8CACardBG6 = Color(0xFFF9E8CA);
   // system State
   static const Color app4CAF50Success = Color(0xFF4CAF50);
   static const Color appF44336Error = Color(0xFFF44336);
@@ -71,6 +73,7 @@ final MaterialColor appPrimarySwatch =
 
 /// App theme using the same colors as the original main.dart
 ThemeData get appTheme => ThemeData(
+  fontFamily: 'NotoSansArabic',
   primarySwatch: appPrimarySwatch,
   colorScheme: ColorScheme.fromSeed(
     seedColor: AppColors.primary,
