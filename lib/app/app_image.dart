@@ -11,4 +11,8 @@ class AppImage {
   static const String sun = '$imageUrl/sun.svg';
   static const String calender = '$imageUrl/calender.svg';
   static const String salaryCard = '$imageUrl/salary_card.svg';
+  static const String defaultProfile = '$imageUrl/default_profile.svg';
+  static const String changeLang = '$imageUrl/change_lang.svg';
+  static const String arabic = '$imageUrl/arabic.svg';
+  static const String english = '$imageUrl/english.svg';
 }

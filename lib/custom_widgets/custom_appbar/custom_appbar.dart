@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_button/custom_back_button.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
@@ -34,13 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: Icon(
-              Icons.arrow_forward_ios,
-              color: AppColors.app1A1A1AText1,
-            ),
-          ),
+          CustomBackButton(),
           CustomText(
             text: title,
             fontSize: 17.w,

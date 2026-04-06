@@ -8,6 +8,8 @@ import 'package:hr_app_odoo/features/home/presentation/controllers/home_controll
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
+import 'package:hr_app_odoo/features/profile/presentation/controller/profile_controller.dart';
+import 'package:hr_app_odoo/features/profile/presentation/pages/profile_screen.dart';
 import 'package:hr_app_odoo/features/salaries/presentaion/controller/salaries_controller.dart';
 import 'package:hr_app_odoo/features/salaries/presentaion/pages/salaries_screen.dart';
 import 'package:hr_app_odoo/screens/attendance_report_screen.dart';
@@ -35,6 +37,7 @@ class AppRoutes {
   static const timeOff = '/time-off';
   static const holidays = '/holidays';
   static const requestHoliday = '/requestHoliday';
+  static const profile = '/profile';
 }
 
 class AppPages {
@@ -84,9 +87,13 @@ class AppPages {
     ),
     GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),
     GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
+    GetPage(name: AppRoutes.requestHoliday, page: () => RequestHolidayScreen()),
     GetPage(
-      name: AppRoutes.requestHoliday,
-      page: () =>   RequestHolidayScreen(),
+      name: AppRoutes.profile,
+      page: () => ProfileScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<ProfileController>(() => ProfileController());
+      }),
     ),
     GetPage(
       name: AppRoutes.holidays,

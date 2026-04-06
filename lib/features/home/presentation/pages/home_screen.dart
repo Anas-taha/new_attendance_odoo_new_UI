@@ -211,6 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: FeatureCardWidget(
                       image: AppImage.person,
                       title: 'الصفحه الشخصية',
+                      onTap: ()=>Get.toNamed(AppRoutes.profile),
                     ),
                   ),
                 ],

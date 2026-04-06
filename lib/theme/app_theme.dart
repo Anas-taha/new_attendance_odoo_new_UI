@@ -8,6 +8,7 @@ abstract class AppColors {
   static const Color app5700A8Sedondary1 = Color(0xFFF8F9FF);
   static const Color app670379Sedondary2 = Color(0xFF670379);
   static const Color appC6B8FFSedondary3 = Color(0xFFC6B8FF);
+  static const Color app8A3159Sedondary4 = Color(0xFF8A3159);
   // text
   static const Color app1A1A1AText1 = Color(0xFF1A1A1A);
   static const Color appA0A0A0Text2 = Color(0xFFA0A0A0);
@@ -16,6 +17,7 @@ abstract class AppColors {
   static const Color app212529Text5 = Color(0xFF212529);
   static const Color app6C757DText5 = Color(0xFF6C757D);
   static const Color app796DFFText6 = Color(0xFF796DFF);
+  static const Color appF9F9F9Text7 = Color(0xFFF9F9F9);
   // background
   static const Color appFFFFFFBackGround1 = Color(0xFFFFFFFF);
   static const Color appFAFAFABackGround2 = Color(0xFFFAFAFA);

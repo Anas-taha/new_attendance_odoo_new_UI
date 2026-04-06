@@ -39,7 +39,8 @@ class _HrAppState extends State<HrApp> {
   void initState() {
     super.initState();
     _loadSavedLocale();
-    setLocale('ar'); // لا للنعوييم
+    Get.updateLocale(Locale('ar'));
+    // setLocale('ar'); // لا للنعوييم
   }
 
   Future<void> _loadSavedLocale() async {
