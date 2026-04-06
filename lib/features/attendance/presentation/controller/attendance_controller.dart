@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
@@ -62,7 +63,10 @@ class AttendanceController extends GetxController {
   }
 
   void selectDate() {
-    
+    CustomCalender.calenderDialog(
+      contorller: dateController,
+      title: 'اختر التاريخ',
+    );
   }
 
   Future<void> loadAttendanceData() async {

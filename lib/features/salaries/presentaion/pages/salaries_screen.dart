@@ -31,9 +31,14 @@ class _SalariesScreenState extends State<SalariesScreen> {
       appBarTitle: "الرواتب",
       body: Column(
         children: [
-          CustomTextField(
-            controller: controller.dateController,
-            enabled: false,
+          GestureDetector(
+            onTap: () => controller.selectDate(),
+            child: CustomTextField(
+              usePrefixCalender: true,
+              useSuffixArrow: true,
+              controller: controller.dateController,
+              enabled: false,
+            ),
           ),
           16.verticalSpace,
           Stack(
