@@ -5,9 +5,9 @@ import 'package:hr_app_odoo/features/attendance/presentation/controller/attendan
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_card_widget.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/weak_info_widget.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_screen/custom_screen.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
-import 'package:hr_app_odoo/widgets/custom_text_field/custom_text_field.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_screen/custom_screen.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text_field/custom_text_field.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
@@ -39,9 +39,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       appBarTitle: 'الحضور والانصراف',
       body: Column(
         children: [
-          CustomTextField(
-            controller: controller.dateController,
-            enabled: false,
+          GestureDetector(
+            onTap: () => controller.selectDate(),
+            child: CustomTextField(
+              controller: controller.dateController,
+              enabled: false,
+              usePrefixCalender: true,
+              useSuffixArrow: true,
+            ),
           ),
           16.verticalSpace,
           Row(

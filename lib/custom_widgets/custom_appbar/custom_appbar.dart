@@ -5,8 +5,8 @@ import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hr_app_odoo/widgets/custom_container/custom_container.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_container/custom_container.dart';
 
 class TimeBoxWidget extends StatelessWidget {
   TimeBoxWidget({super.key, required this.time});

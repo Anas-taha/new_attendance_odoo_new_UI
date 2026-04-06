@@ -8,7 +8,7 @@ import 'package:hr_app_odoo/features/notification/presentation/widgets/no_notif_
 import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_card_widget.dart';
 import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_state_widget.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_appbar/custom_appbar.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_appbar/custom_appbar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class NotificationScreen extends StatefulWidget {

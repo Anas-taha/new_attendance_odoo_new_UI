@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class HolidayColoredStateCardWidget extends StatelessWidget {
   HolidayColoredStateCardWidget({super.key, required this.state});

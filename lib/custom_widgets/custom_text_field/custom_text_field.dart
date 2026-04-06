@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class CustomTextField extends StatelessWidget {
   CustomTextField({
@@ -52,10 +52,7 @@ class CustomTextField extends StatelessWidget {
                 child: CustomImage(image: AppImage.calender),
               )
             : prefixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          borderSide: BorderSide(color: AppColors.appE5E5E5Border),
-        ),
+        border: _borderStyle(),
         suffixIcon: useSuffixArrow
             ? Icon(
                 Icons.keyboard_arrow_down_sharp,
@@ -64,6 +61,13 @@ class CustomTextField extends StatelessWidget {
               )
             : suffixIcon,
       ),
+    );
+  }
+
+  OutlineInputBorder _borderStyle() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide(color: AppColors.appE5E5E5Border),
     );
   }
 }

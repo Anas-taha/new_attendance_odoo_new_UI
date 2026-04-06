@@ -14,8 +14,8 @@ import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_car
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/greeting_widget.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
-import 'package:hr_app_odoo/widgets/custom_screen/custom_screen.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_screen/custom_screen.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

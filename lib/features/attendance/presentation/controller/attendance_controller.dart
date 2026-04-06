@@ -29,6 +29,7 @@ class AttendanceController extends GetxController {
   RxInt selectedWeekCard = 0.obs;
 
   void init() {
+    selectedWeekCard.value = -1;
     //  _pulseController = AnimationController(
     //   duration: const Duration(seconds: 2),
     //   vsync: this,
@@ -58,6 +59,10 @@ class AttendanceController extends GetxController {
 
   void selectWeekCard(int index) {
     selectedWeekCard.value = index;
+  }
+
+  void selectDate() {
+    
   }
 
   Future<void> loadAttendanceData() async {

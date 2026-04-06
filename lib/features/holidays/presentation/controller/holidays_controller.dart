@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_dialog/customDialog.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 enum HolidayStateEnum { all, accepted, rejected, pending }
@@ -16,49 +17,35 @@ class HolidaysController extends GetxController {
   TextEditingController holidayStartDateController = TextEditingController();
   TextEditingController holidayEndDateController = TextEditingController();
   TextEditingController holidayReasonController = TextEditingController();
+
+  void init() {
+    selectedHolidayState.value = HolidayStateEnum.all;
+    holidayTypeController.text = '';
+    holidayStartDateController.text = '';
+    holidayEndDateController.text = '';
+    holidayReasonController.text = '';
+  }
+
+  
+
   void changeHolidayState(HolidayStateEnum newState) =>
       selectedHolidayState.value = newState;
+  void selectHoolidayType(String type) {
+    holidayTypeController.text = type;
+  }
 
   void selectStartDate() {
-    showDialog(
-      context: Get.context!,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TableCalendar(
-            firstDay: DateTime(2020),
-            lastDay: DateTime(2030),
-            focusedDay: DateTime.now(),
-            locale: 'ar',
-            calendarFormat: CalendarFormat.month,
-            onDaySelected: (selectedDay, focusedDay) {
-              holidayStartDateController.text =
-                  '${selectedDay.day}/${selectedDay.month}/${selectedDay.year}';
-              Get.back();
-            },
-            calendarStyle: const CalendarStyle(
-              todayDecoration: BoxDecoration(
-                color: AppColors.appPrimaryColor,
-                shape: BoxShape.circle,
-              ),
-              selectedDecoration: BoxDecoration(
-                color: AppColors.app670379Sedondary2,
-                shape: BoxShape.circle,
-              ),
-            ),
-            headerStyle: const HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-            ),
-          ),
-        ),
-      ),
+    CustomCalender.calenderDialog(
+      contorller: holidayStartDateController,
+      title: 'تاريخ البداية',
     );
   }
 
   void selectEndDate() {
-    log(name: 'fvids', 'fvdfvfdv');
+    CustomCalender.calenderDialog(
+      contorller: holidayEndDateController,
+      title: 'تاريخ النهاية',
+    );
   }
 
   Color holidayStateColor(HolidayStateEnum state) {

@@ -4,13 +4,13 @@ import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/features/salaries/presentaion/controller/salaries_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_appbar/custom_appbar.dart';
-import 'package:hr_app_odoo/widgets/custom_button/custom_button.dart';
-import 'package:hr_app_odoo/widgets/custom_container/custom_container.dart';
-import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
-import 'package:hr_app_odoo/widgets/custom_screen/custom_screen.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
-import 'package:hr_app_odoo/widgets/custom_text_field/custom_text_field.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_appbar/custom_appbar.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_container/custom_container.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_screen/custom_screen.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text_field/custom_text_field.dart';
 
 class SalariesScreen extends StatefulWidget {
   const SalariesScreen({super.key});

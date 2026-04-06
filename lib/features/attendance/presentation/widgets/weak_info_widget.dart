@@ -5,7 +5,7 @@ import 'package:hr_app_odoo/features/attendance/presentation/controller/attendan
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_date_card_widget.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_mini_card_widget.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class WeakInfoWidget extends StatelessWidget {
   WeakInfoWidget({super.key, required this.index});
@@ -62,7 +62,7 @@ class WeakInfoWidget extends StatelessWidget {
                   children: List.generate(
                     2,
                     (index) => AttendanceInfoDateCardWidget(
-                      state: AttendanceStateEnum.leaveEarly,
+                      state: AttendanceStateEnum.holidays,
                       date: '2023-01-01',
                       value: '3 أيام (اجازه مرضية)',
                     ),

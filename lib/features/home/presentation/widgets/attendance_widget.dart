@@ -7,10 +7,10 @@ import 'package:hr_app_odoo/features/home/presentation/widgets/quick_state_widge
 import 'package:hr_app_odoo/features/home/presentation/widgets/time_box_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_button/custom_button.dart';
-import 'package:hr_app_odoo/widgets/custom_container/custom_container.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_image_text_value.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_container/custom_container.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_image_text_value.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class AttendanceWidget extends StatelessWidget {
   AttendanceWidget({super.key});
@@ -37,7 +37,13 @@ class AttendanceWidget extends StatelessWidget {
                 ),
               ),
               CustomContainer(
-                child: CustomText(text: 'حي الجامعه.منطقة الزهور'),
+                verticalPadding: 8,
+                child: CustomText(
+                  text: 'حي الجامعه.منطقة الزهور',
+                  fontSize: 13.w,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.appPrimaryColor,
+                ),
               ),
             ],
           ),

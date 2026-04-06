@@ -7,8 +7,8 @@ import 'package:hr_app_odoo/features/notification/presentation/pages/notificatio
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/main.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/widgets/custom_image/custom_image.dart';
-import 'package:hr_app_odoo/widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class GreetingWidget extends StatelessWidget {
   const GreetingWidget({super.key, required this.employeeName});
