@@ -31,36 +31,74 @@ class CustomCalender {
               child: TableCalendar(
                 firstDay: DateTime(2020),
                 lastDay: DateTime(2030),
+
                 focusedDay: contorller.text.isNotEmpty
                     ? DateFormat('d/M/yyyy').parse(contorller.text)
                     : DateTime.now(),
+
                 locale: 'ar',
                 calendarFormat: CalendarFormat.month,
+
+                selectedDayPredicate: (day) {
+                  if (contorller.text.isNotEmpty) {
+                    final selectedDate = DateFormat(
+                      'd/M/yyyy',
+                    ).parse(contorller.text);
+                    return isSameDay(day, selectedDate);
+                  }
+                  return false;
+                },
 
                 onDaySelected: (selectedDay, focusedDay) {
                   contorller.text =
                       '${selectedDay.day}/${selectedDay.month}/${selectedDay.year}';
                   Get.back();
                 },
-                calendarStyle: const CalendarStyle(
-                  // defaultDecoration: BoxDecoration(
-                  //   color: AppColors.appFFFFFFBackGround1,
-                  // ),
-                  // todayDecoration: BoxDecoration(
-                  //   color: AppColors.appPrimaryColor,
-                  //   shape: BoxShape.circle,
-                  // ),
-                  selectedDecoration: BoxDecoration(
-                    color: AppColors.app670379Sedondary2,
+
+                calendarStyle: CalendarStyle(
+                  selectedDecoration: const BoxDecoration(
+                    color: AppColors.appPrimaryColor,
                     shape: BoxShape.circle,
                   ),
+
+                  todayDecoration: contorller.text.isEmpty
+                      ? const BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        )
+                      : const BoxDecoration(color: Colors.transparent),
+
+                  todayTextStyle: TextStyle(
+                    color: contorller.text.isEmpty
+                        ? Colors.white
+                        : Colors.black,
+                  ),
                 ),
+
                 headerStyle: const HeaderStyle(
                   formatButtonVisible: false,
                   titleCentered: true,
+                  titleTextStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.app1A1A1AText1,
+                  ),
+                  leftChevronIcon: Icon(
+                    Icons.chevron_left,
+                    size: 30,
+                    color: AppColors.appPrimaryColor,
+                  ),
+                  rightChevronIcon: Icon(
+                    Icons.chevron_right,
+                    size: 30,
+                    color: AppColors.appPrimaryColor,
+                  ),
                 ),
               ),
             ),
+            CustomItem.CustomDivider(),
+            CustomItem.CustomDivider(horizontalPadding: 30),
+            CustomItem.CustomDivider(horizontalPadding: 50),
           ],
         ),
       ),
