@@ -34,6 +34,7 @@ class _SalariesScreenState extends State<SalariesScreen> {
           GestureDetector(
             onTap: () => controller.selectDate(),
             child: CustomTextField(
+              hintText: 'اختر التاريخ',
               usePrefixCalender: true,
               useSuffixArrow: true,
               controller: controller.dateController,

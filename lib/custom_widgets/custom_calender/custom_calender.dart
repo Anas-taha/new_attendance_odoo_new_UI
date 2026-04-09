@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hr_app_odoo/custom_widgets/customItem/custom_item.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_Item/custom_item.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 import 'package:intl/intl.dart';

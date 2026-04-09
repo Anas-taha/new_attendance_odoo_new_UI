@@ -42,6 +42,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           GestureDetector(
             onTap: () => controller.selectDate(),
             child: CustomTextField(
+              hintText: 'اختر التاريخ',
               controller: controller.dateController,
               enabled: false,
               usePrefixCalender: true,

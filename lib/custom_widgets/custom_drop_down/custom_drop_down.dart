@@ -59,7 +59,6 @@ class _CustomDropDownState extends State<CustomDropDown> {
           ),
         ),
 
-        // 👇 شكل القائمة
         dropdownStyleData: DropdownStyleData(
           maxHeight: 220,
           padding: const EdgeInsets.all(8), // 🔥 padding للقائمة كلها
@@ -70,12 +69,10 @@ class _CustomDropDownState extends State<CustomDropDown> {
           elevation: 4,
         ),
 
-        // 👇 شكل كل item
         menuItemStyleData: MenuItemStyleData(
           padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
 
-        // 👇 الأيقونة
         iconStyleData: const IconStyleData(
           icon: Icon(Icons.keyboard_arrow_down),
           iconSize: 28,
