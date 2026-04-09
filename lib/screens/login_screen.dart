@@ -107,10 +107,11 @@ class _LoginScreenState extends State<LoginScreen> {
           );
 
           if (!mounted) return;
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
+          Get.toNamed(AppRoutes.home);
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+          // );
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -259,8 +260,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  // onPressed: _isLoading ? null : _handleLogin,
-                  onPressed: _isLoading ? null : homeGlitch,
+                  onPressed: _isLoading ? null : _handleLogin,
+                  // onPressed: _isLoading ? null : homeGlitch,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

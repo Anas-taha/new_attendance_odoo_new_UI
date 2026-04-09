@@ -27,6 +27,7 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
     super.initState();
     controller.init();
   }
+
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
@@ -85,9 +86,11 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) {
-                return HolidayDetailWidget(
-                  state: controller.selectedHolidayState.value,
-                );
+                return Obx(() {
+                  return HolidayDetailWidget(
+                    state: controller.selectedHolidayState.value,
+                  );
+                });
               },
               separatorBuilder: (context, index) => 16.verticalSpace,
               itemCount: 2,

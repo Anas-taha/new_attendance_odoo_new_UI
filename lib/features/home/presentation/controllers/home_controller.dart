@@ -52,6 +52,9 @@ class HomeController extends GetxController {
   final HomeRepository _homeRepository;
 
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
+  void init() {
+    loadEmployeeData();
+  }
   void startTimer() {
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
