@@ -25,7 +25,7 @@ class CustomCalender {
             16.verticalSpace,
             CustomText(text: title ?? '', fontSize: 18.w),
             8.verticalSpace,
-            CustomItem.CustomDivider(),
+            CustomItem.customDivider(),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TableCalendar(
@@ -96,9 +96,9 @@ class CustomCalender {
                 ),
               ),
             ),
-            CustomItem.CustomDivider(),
-            CustomItem.CustomDivider(horizontalPadding: 30),
-            CustomItem.CustomDivider(horizontalPadding: 50),
+            CustomItem.customDivider(),
+            CustomItem.customDivider(horizontalPadding: 30),
+            CustomItem.customDivider(horizontalPadding: 50),
           ],
         ),
       ),

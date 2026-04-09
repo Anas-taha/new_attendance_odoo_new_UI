@@ -78,11 +78,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
         print('Authentication result: $result');
 
-        if (result['success'] == true) {
+        if (result.success == true) {
           final storage = LocalStorageService();
           await storage.saveLastCredentials(
             email: _emailController.text.trim(),
             password: _passwordController.text,
+            name: result.userName ?? '',
           );
 
           await OdooRPCService.instance.trackLoginTime();
@@ -117,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  result['error'] ?? AppLocalizations.of(context)!.authFailed,
+                  result.error ?? AppLocalizations.of(context)!.authFailed,
                 ),
                 backgroundColor: Colors.red,
               ),

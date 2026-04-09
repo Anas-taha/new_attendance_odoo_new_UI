@@ -13,6 +13,7 @@ class LocalStorageService {
   static const String _odooDatabaseKey = 'odoo_database';
   static const String _isFirstLoginKey = 'is_first_login';
   static const String _savedEmailKey = 'saved_email';
+  static const String _savedNameKey = 'saved_name';
   static const String _savedPasswordKey = 'saved_password';
   static const String _localeLanguageKey = 'locale_language';
   static const String _localeCountryKey = 'locale_country';
@@ -114,7 +115,10 @@ class LocalStorageService {
   Future<void> saveHolidayStatusTypes(List<Map<String, dynamic>> data) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_holidayStatusTypesKey, jsonEncode(data));
-    await prefs.setString('${_holidayStatusTypesKey}_timestamp', DateTime.now().toIso8601String());
+    await prefs.setString(
+      '${_holidayStatusTypesKey}_timestamp',
+      DateTime.now().toIso8601String(),
+    );
   }
 
   /// Get cached holiday status types
@@ -138,9 +142,9 @@ class LocalStorageService {
     final prefs = await SharedPreferences.getInstance();
     final timestampKey = '${key}_timestamp';
     final timestamp = prefs.getString(timestampKey);
-    
+
     if (timestamp == null) return false;
-    
+
     try {
       final lastSyncTime = DateTime.parse(timestamp);
       final now = DateTime.now();
@@ -156,7 +160,7 @@ class LocalStorageService {
     final prefs = await SharedPreferences.getInstance();
     final lastSync = prefs.getInt(_lastSyncKey);
     if (lastSync == null) return false;
-    
+
     final lastSyncTime = DateTime.fromMillisecondsSinceEpoch(lastSync);
     final now = DateTime.now();
     return now.difference(lastSyncTime) < _cacheDuration;
@@ -270,10 +274,12 @@ class LocalStorageService {
   Future<void> saveLastCredentials({
     required String email,
     required String password,
+    required String name,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_savedEmailKey, email);
     await prefs.setString(_savedPasswordKey, password);
+    await prefs.setString(_savedNameKey, name);
   }
 
   /// Retrieve the last saved email if available
@@ -288,11 +294,17 @@ class LocalStorageService {
     return prefs.getString(_savedPasswordKey);
   }
 
+  Future<String?> getSavedName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_savedNameKey);
+  }
+
   /// Clear stored credentials (used on logout)
   Future<void> clearSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_savedEmailKey);
     await prefs.remove(_savedPasswordKey);
+    await prefs.remove(_savedNameKey);
   }
 
   /// Save selected locale (e.g. 'en', 'ar')

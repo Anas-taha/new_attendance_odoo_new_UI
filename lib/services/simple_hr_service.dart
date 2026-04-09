@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/models/hr_leave.dart';
@@ -6,20 +10,58 @@ import 'package:hr_app_odoo/models/hr_payslip.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 
 class SimpleHrService {
-  final OdooRPCService _odooService;
-  
-  SimpleHrService(this._odooService);
+  final OdooRPCService _odooService = OdooRPCService.instance;
+
+  // SimpleHrService(this._odooService=OdooRPCService.instance);
 
   /// Get all employees
+  Future<List<HrEmployee>> getEmployeeProfile() async {
+    try {
+      final result = await _odooService.searchRead(
+        model: 'hr.employee',
+        fields: [
+          "name",
+          "job_title",
+          "department_id",
+          "work_email",
+          "work_phone",
+          "barcode",
+          "image_1920",
+          "attendance_state",
+          "last_attendance_id",
+          "work_location_id",
+        ],
+        limit: 1,
+      );
+      log(name: 'SimpleHrService', 'getEmployees result: $result');
+      if (result['success']) {
+        final data = result['data'] as List<dynamic>;
+        return data.map((item) => HrEmployee.fromOdoo(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('❌ Error getting employees: $e');
+      return [];
+    }
+  }
+
   Future<List<HrEmployee>> getEmployees() async {
     try {
       final result = await _odooService.searchRead(
         model: 'hr.employee',
-        fields: ['id', 'name', 'work_email', 'work_phone', 'job_title', 'department_id', 'work_location_id'],
+        fields: [
+          'id',
+          'name',
+          'work_email',
+          'work_phone',
+          'job_title',
+          'department_id',
+          'work_location_id',
+        ],
         domain: [],
         limit: 100,
       );
-      
+      log(name: 'SimpleHrService', 'getEmployees result: $result');
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
         return data.map((item) => HrEmployee.fromOdoo(item)).toList();
@@ -36,11 +78,19 @@ class SimpleHrService {
     try {
       final result = await _odooService.searchRead(
         model: 'hr.contract',
-        fields: ['id', 'name', 'employee_id', 'date_start', 'date_end', 'state', 'wage'],
+        fields: [
+          'id',
+          'name',
+          'employee_id',
+          'date_start',
+          'date_end',
+          'state',
+          'wage',
+        ],
         domain: [],
         limit: 100,
       );
-      
+
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
         return data.map((item) => HrContract.fromOdoo(item)).toList();
@@ -57,11 +107,21 @@ class SimpleHrService {
     try {
       final result = await _odooService.searchRead(
         model: 'hr.payslip',
-        fields: ['id', 'name', 'employee_id', 'state', 'date_from', 'date_to', 'basic_wage', 'gross_wage', 'net_wage'],
+        fields: [
+          'id',
+          'name',
+          'employee_id',
+          'state',
+          'date_from',
+          'date_to',
+          'basic_wage',
+          'gross_wage',
+          'net_wage',
+        ],
         domain: [],
         limit: 100,
       );
-      
+
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
         return data.map((item) => HrPayslip.fromOdoo(item)).toList();
@@ -78,11 +138,20 @@ class SimpleHrService {
     try {
       final result = await _odooService.searchRead(
         model: 'hr.leave',
-        fields: ['id', 'name', 'employee_id', 'holiday_status_id', 'date_from', 'date_to', 'number_of_days', 'state'],
+        fields: [
+          'id',
+          'name',
+          'employee_id',
+          'holiday_status_id',
+          'date_from',
+          'date_to',
+          'number_of_days',
+          'state',
+        ],
         domain: [],
         limit: 100,
       );
-      
+
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
         return data.map((item) => HrLeave.fromOdoo(item)).toList();
@@ -103,7 +172,7 @@ class SimpleHrService {
         domain: [],
         limit: 100,
       );
-      
+
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
         return data.map((item) => item as Map<String, dynamic>).toList();
@@ -122,7 +191,7 @@ class SimpleHrService {
         model: 'hr.leave',
         values: leaveData,
       );
-      
+
       return result['success'] ?? false;
     } catch (e) {
       print('❌ Error creating leave: $e');
@@ -138,7 +207,7 @@ class SimpleHrService {
         recordId: leaveId,
         values: values,
       );
-      
+
       return result['success'] ?? false;
     } catch (e) {
       print('❌ Error updating leave: $e');
@@ -160,7 +229,7 @@ class SimpleHrService {
         model: 'hr.leave',
         values: leaveData,
       );
-      
+
       return result['success'] ?? false;
     } catch (e) {
       print('❌ Error creating leave from object: $e');
@@ -177,7 +246,7 @@ class SimpleHrService {
         recordId: leave.id,
         values: leaveData,
       );
-      
+
       return result['success'] ?? false;
     } catch (e) {
       print('❌ Error updating leave from object: $e');

@@ -1,4 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/models/hr_login.dart';
 import 'package:http/http.dart' as http;
 import '../config/odoo_config.dart';
 
@@ -15,6 +23,7 @@ class OdooRPCService {
   String? _webSessionId; // For web API calls
   String? _username; // Store username for web session auth
   String? _password; // Store password for web session auth
+  String? _mobileToken; // Store mobile token for Odoo.sh
 
   // Getter for authentication status
   bool get isAuthenticated => _sessionId != null && _userId != null;
@@ -60,7 +69,7 @@ class OdooRPCService {
   }
 
   /// Authenticate with Odoo.sh using web session
-  Future<Map<String, dynamic>> authenticate({
+  Future<HrLogin> authenticate({
     required String username,
     required String password,
     String? database,
@@ -109,45 +118,77 @@ class OdooRPCService {
           final jsonResponse = json.decode(response.body);
 
           if (jsonResponse['error'] != null) {
-            return {
-              'success': false,
-              'error':
+            return HrLogin(
+              success: false,
+              error:
                   jsonResponse['error']['data']['message'] ??
                   'Authentication failed',
-            };
+            );
+            // return {
+            //   'success': false,
+            //   'error':
+            //       jsonResponse['error']['data']['message'] ??
+            //       'Authentication failed',
+            // };
           }
 
           // Check if authentication was successful
           if (jsonResponse['result'] == null ||
               jsonResponse['result']['uid'] == null) {
-            return {'success': false, 'error': 'Username or password is wrong'};
+            return HrLogin(
+              success: false,
+              error: 'Username or password is wrong',
+            );
+            // return {'success': false, 'error': 'Username or password is wrong'};
           }
 
           // Extract user ID from Odoo.sh web session response
           _userId = jsonResponse['result']['uid'] ?? 1;
           _sessionId = 'session_${DateTime.now().millisecondsSinceEpoch}';
-
+          _mobileToken = jsonResponse['result']['mobile_token'] ?? '';
+          OdooConfig.token = jsonResponse['result']['mobile_token'] ?? '';
+          log(
+            name: " OdooConfig_token",
+            "Received mobile token: ${OdooConfig.token}",
+          );
           print('✅ Odoo.sh web session authenticated successfully');
 
-          return {
-            'success': true,
-            'userId': _userId,
-            'sessionId': _sessionId,
-            'database': _database,
-            'message': 'Authentication successful',
-          };
+          return HrLogin(
+            success: true,
+            userId: _userId,
+            sessionId: _sessionId,
+            database: _database,
+            userName: jsonResponse['result']['name'] ?? '',
+            message: 'Authentication successful',
+            mobileToken: _mobileToken,
+          );
+
+          // return {
+          //   'success': true,
+          //   'userId': _userId,
+          //   'sessionId': _sessionId,
+          //   'database': _database,
+          //   'userName': jsonResponse['result']['name'] ?? '',
+          //   'message': 'Authentication successful',
+          // };
         } catch (e) {
-          return {'success': false, 'error': 'Failed to parse response: $e'};
+          return HrLogin(success: false, error: 'Failed to parse response: $e');
+          // return {'success': false, 'error': 'Failed to parse response: $e'};
         }
       } else {
-        return {
-          'success': false,
-          'error': 'HTTP Error: ${response.statusCode} - ${response.body}',
-        };
+        return HrLogin(
+          success: false,
+          error: 'HTTP Error: ${response.statusCode} - ${response.body}',
+        );
+        // return {
+        //   'success': false,
+        //   'error': 'HTTP Error: ${response.statusCode} - ${response.body}',
+        // };
       }
     } catch (e) {
       print('Authentication error: $e');
-      return {'success': false, 'error': e.toString()};
+      return HrLogin(success: false, error: e.toString());
+      // return {'success': false, 'error': e.toString()};
     }
   }
 
@@ -238,8 +279,11 @@ class OdooRPCService {
 
     try {
       // For Odoo.sh, we need to use the standard JSON-RPC endpoint with proper session context
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
-
+      final url = Uri.parse('${OdooConfig.baseUrl}jsonrpc');
+      log(
+        name: 'OdooRPCServiceData',
+        'database: $_database,token: $_mobileToken, model: $model, fields: $fields,limit: $limit',
+      );
       final response = await http
           .post(
             url,
@@ -257,19 +301,30 @@ class OdooRPCService {
                 'method': 'execute_kw',
                 'args': [
                   _database,
-                  _userId,
-                  _password,
+                  1,
+                  OdooConfig.token,
                   model,
-                  'search_read',
-                  [
-                    domain ?? [],
-                    fields ?? [],
-                    offset ?? 0,
-                    limit ?? OdooConfig.defaultPageSize,
-                    order ?? 'id desc',
-                  ],
-                  {},
+                  "search_read",
+                  [[]],
+                  {
+                    "fields": fields ?? [],
+                    "limit": limit ?? OdooConfig.defaultPageSize,
+                  },
                 ],
+
+                // [
+                //   _database,
+                //   _mobileToken,
+                //   model,
+                //   1,
+                //   "search_read",
+                //   [[]],
+                //   {
+                //     "fields": fields ?? [],
+                //     "order": order ?? "",
+                //     "limit": limit ?? OdooConfig.defaultPageSize,
+                //   },
+                // ],
               },
             }),
           )
@@ -283,6 +338,18 @@ class OdooRPCService {
           final jsonResponse = json.decode(response.body);
 
           if (jsonResponse['error'] != null) {
+            if (jsonResponse['error']['data']['message'] ==
+                    'Invalid mobile session' ||
+                jsonResponse['error']['message'] == 'Odoo Server Error') {
+              log(
+                name: 'OdooRPCService',
+                'Session expired or invalid. Redirecting to login.',
+              );
+              Get.offNamed(AppRoutes.login);
+              // await CustomDialog.loginAgainDialog(
+              //   jsonResponse['error']['data']['message'],
+              // );
+            }
             return {
               'success': false,
               'error':

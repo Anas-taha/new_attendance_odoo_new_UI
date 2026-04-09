@@ -7,6 +7,7 @@ import 'package:hr_app_odoo/features/home/domain/repositories/home_repository.da
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
+import 'package:hr_app_odoo/services/local_storage_service.dart';
 
 sealed class HomeUiEvent {
   const HomeUiEvent();
@@ -48,13 +49,21 @@ class HomeController extends GetxController {
   Rx<String> beforeTime = Rx<String>("00:00");
   Rxn<HomeUiEvent> uiEvent = Rxn<HomeUiEvent>();
   RxList<String> lastNotivication = RxList<String>([]);
+  RxString userName = ''.obs;
 
   final HomeRepository _homeRepository;
 
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
   void init() {
-    loadEmployeeData();
+    getUserName();
+    // loadEmployeeData();
+    // loadTodayAttendance();
   }
+
+  void getUserName() async {
+    userName.value = await LocalStorageService().getSavedName() ?? '';
+  }
+
   void startTimer() {
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {

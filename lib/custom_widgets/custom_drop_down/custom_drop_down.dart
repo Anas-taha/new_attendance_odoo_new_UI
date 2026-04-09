@@ -29,15 +29,14 @@ class _CustomDropDownState extends State<CustomDropDown> {
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         isExpanded: true,
-        // value: value,
+
         valueListenable: valueListenable,
-        // 👇 النص الافتراضي
+
         hint: Text(
           widget.hintText ?? '',
           style: const TextStyle(color: Colors.grey),
         ),
 
-        // 👇 العناصر
         items: widget.itemList.map((e) {
           return DropdownItem<String>(value: e, child: Text(e));
         }).toList(),
@@ -48,7 +47,6 @@ class _CustomDropDownState extends State<CustomDropDown> {
           valueListenable.value = val;
         },
 
-        // 👇 شكل الزرار
         buttonStyleData: ButtonStyleData(
           height: 55,
 
@@ -61,7 +59,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
 
         dropdownStyleData: DropdownStyleData(
           maxHeight: 220,
-          padding: const EdgeInsets.all(8), // 🔥 padding للقائمة كلها
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: Colors.white,

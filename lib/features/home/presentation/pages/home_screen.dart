@@ -31,13 +31,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _uiEventWorker = ever<HomeUiEvent?>(
-      homeController.uiEvent,
-      _handleControllerUiEvent,
-    );
-    homeController.loadEmployeeData();
-    homeController.loadTodayAttendance();
+    // WidgetsBinding.instance.addObserver(this);
+    // _uiEventWorker = ever<HomeUiEvent?>(
+    //   homeController.uiEvent,
+    //   _handleControllerUiEvent,
+    // );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.init();
+    });
   }
 
   @override
@@ -50,10 +51,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    homeController.loadTodayAttendance();
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
-      homeController.loadTodayAttendance();
-    }
+    if (state == AppLifecycleState.resumed) {}
   }
 
   Future<void> _handleControllerUiEvent(HomeUiEvent? event) async {
@@ -154,8 +154,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               GreetingWidget(
                 employeeName:
-                    homeController.currentEmployee.value?.name ??
-                    AppLocalizations.of(context)!.employee,
+                    // homeController.currentEmployee.value?.name
+                    homeController.userName.value,
               ),
               16.verticalSpace,
               AttendanceWidget(),
@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       },
                     ),
                   ),
-                  20.horizontalSpace,
+                  10.horizontalSpace,
                   Expanded(
                     child: FeatureCardWidget(
                       image: AppImage.holiday,
@@ -206,12 +206,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       onTap: () => Get.toNamed(AppRoutes.salaries),
                     ),
                   ),
-                  20.horizontalSpace,
+                  10.horizontalSpace,
                   Expanded(
                     child: FeatureCardWidget(
                       image: AppImage.person,
                       title: 'الصفحه الشخصية',
-                      onTap: ()=>Get.toNamed(AppRoutes.profile),
+                      onTap: () => Get.toNamed(AppRoutes.profile),
                     ),
                   ),
                 ],

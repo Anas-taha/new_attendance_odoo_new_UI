@@ -3,7 +3,7 @@ class OdooConfig {
   static const String baseUrl = 'https://al-shalawi.gulftriangle.net/mobile/';
   static const String database = 'al-shalawi';
   static const String apiVersion = '1.0';
-
+  static String token = '';
   // API endpoints
   static const String xmlRpcEndpoint = '/xmlrpc/2/';
   static const String commonEndpoint = '/xmlrpc/2/common';
