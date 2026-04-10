@@ -19,6 +19,7 @@ class WeakInfoWidget extends StatelessWidget {
       },
       child: Obx(() {
         bool isSelected = controller.selectedWeekCard.value == index;
+        WeekInfoModel weekInfo = controller.weekInfo.value[index];
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           padding: EdgeInsets.only(top: 8, bottom: 4, left: 8, right: 8),
@@ -150,7 +151,7 @@ class _weekNumberAndDate extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
-            text: 'الاسبوع الاول',
+            text: '',
             fontSize: 14.w,
             fontWeight: FontWeight.w400,
             color: AppColors.appPrimaryColor,

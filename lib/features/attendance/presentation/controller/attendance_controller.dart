@@ -18,7 +18,7 @@ class AttendanceController extends GetxController {
   final HrService hrService = HrService();
   HrEmployee? currentEmployee;
   List<HrAttendance> todayRecords = [];
-  RxBool isLoading = true.obs;
+  RxBool isLoading = false.obs;
   bool isCheckedIn = false;
   DateTime? checkInDateTime;
   String checkInTime = '--:--:--';
@@ -29,12 +29,14 @@ class AttendanceController extends GetxController {
   late AnimationController slideController;
   TextEditingController dateController = TextEditingController();
   RxList<String> weekCards = ['Week 1', 'Week 2', 'Week 3', 'Week 4'].obs;
+  //-------------------------------------------------------
   RxInt selectedWeekCard = 0.obs;
   final AttendanceReportService reportService =
       AttendanceReportService.instance;
   Rx<List<AttendanceModel>> allAttendanceRecords = Rx<List<AttendanceModel>>(
     [],
   );
+  Rx<List<WeekInfoModel>> weekInfo = Rx<List<WeekInfoModel>>([]);
 
   void init() {
     selectedWeekCard.value = -1;
@@ -68,12 +70,103 @@ class AttendanceController extends GetxController {
   }
 
   void getAttendanceRecords() async {
+    isLoading.value = true;
     final result = await reportService.getAllAttendance();
     if (result.isNotEmpty) {
       allAttendanceRecords.value = result;
+      weekInfo.value = mapToWeeks(result);
+      isLoading.value = false;
     } else {
       allAttendanceRecords.value = [];
+      isLoading.value = false;
     }
+  }
+
+  List<WeekInfoModel> mapToWeeks(List<AttendanceModel> data) {
+    try {
+      Map<int, List<AttendanceModel>> weeksMap = {};
+
+      /// 🔹 تقسيم حسب الأسبوع
+      for (var item in data) {
+        DateTime date = DateTime.parse(item.checkIn!);
+        int weekNumber = ((date.day - 1) ~/ 7) + 1;
+
+        weeksMap.putIfAbsent(weekNumber, () => []);
+        weeksMap[weekNumber]!.add(item);
+      }
+
+      /// 🔹 تحويل لـ WeekInfoModel
+      List<WeekInfoModel> result = [];
+
+      weeksMap.forEach((week, items) {
+        items.sort(
+          (a, b) =>
+              DateTime.parse(a.checkIn!).compareTo(DateTime.parse(b.checkIn!)),
+        );
+
+        DateTime start = DateTime.parse(items.first.checkIn!);
+        DateTime end = DateTime.parse(items.last.checkIn!);
+
+        List<DayInfoModel> days = items.map((item) {
+          DateTime date = DateTime.parse(item.checkIn!);
+
+          return DayInfoModel(
+            date: _formatDate(date),
+            description: _getDescription(item),
+          );
+        }).toList();
+
+        /// 🔥 counters (تقدر تطورهم بعدين حسب business logic)
+        int late = 0;
+        int early = 0;
+        int absence = 0;
+        int holidays = 0;
+
+        for (var item in items) {
+          num hours = item.workedHours ?? 0;
+
+          if (hours == 0) {
+            absence++;
+          } else if (hours < 1) {
+            early++;
+          } else if (hours < 8) {
+            late++;
+          }
+        }
+
+        result.add(
+          WeekInfoModel(
+            weekNum: "Week $week",
+            startDate: _formatDate(start),
+            endDate: _formatDate(end),
+            leaveEarlyNum: early,
+            absencesNum: absence,
+            holidaysNum: holidays,
+            lateArrivalNum: late,
+            days: days,
+          ),
+        );
+      });
+
+      return result;
+    } catch (e) {
+      log(name: 'weeksInfoList', 'mapToWeeks error: $e');
+      return [];
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.year}-${date.month}-${date.day}";
+  }
+
+  String _getDescription(AttendanceModel item) {
+    num hours = item.workedHours ?? 0;
+
+    if (hours == 0) return "Absent ❌";
+    if (hours < 1) return "Left Early ⚠️";
+    if (hours < 8) return "Late ⏰";
+
+    return "Full Day ✅";
   }
 
   void selectWeekCard(int index) {
@@ -280,4 +373,33 @@ class AttendanceController extends GetxController {
 
     seconds = 0;
   }
+}
+
+class WeekInfoModel {
+  final String weekNum;
+  final String startDate;
+  final String endDate;
+  final int leaveEarlyNum;
+  final int absencesNum;
+  final int holidaysNum;
+  final int lateArrivalNum;
+  final List<DayInfoModel> days;
+
+  const WeekInfoModel({
+    required this.weekNum,
+    required this.startDate,
+    required this.endDate,
+    required this.leaveEarlyNum,
+    required this.absencesNum,
+    required this.holidaysNum,
+    required this.lateArrivalNum,
+    required this.days,
+  });
+}
+
+class DayInfoModel {
+  final String date;
+  final String description;
+
+  const DayInfoModel({required this.date, required this.description});
 }

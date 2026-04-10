@@ -26,23 +26,22 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Refresh attendance data when screen becomes visible
-    controller.refreshAttendanceState();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   // Refresh attendance data when screen becomes visible
+  //   controller.refreshAttendanceState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
+      loading: controller.isLoading,
       appBarTitle: 'الحضور والانصراف',
       body: Column(
         children: [
           Obx(
-            () => CustomText(
-              text: controller.allAttendanceRecords.value.length.toString(),
-            ),
+            () => CustomText(text: controller.weekInfo.value.length.toString()),
           ),
           GestureDetector(
             onTap: () => controller.selectDate(),
@@ -79,17 +78,34 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             ],
           ),
           16.verticalSpace,
-          Expanded(
-            child: ListView.separated(
-              itemCount: controller.weekCards.value.length,
-              itemBuilder: (context, index) {
-                {
-                  return WeakInfoWidget(index: index);
-                }
-              },
-              separatorBuilder: (context, index) => 8.verticalSpace,
-            ),
-          ),
+          // GetBuilder(
+          //   builder: (con) {
+          //     return Expanded(
+          //       child: ListView.separated(
+          //         itemCount: 5,
+          //         itemBuilder: (context, index) {
+          //           {
+          //             return WeakInfoWidget(index: index);
+          //           }
+          //         },
+          //         separatorBuilder: (context, index) => 8.verticalSpace,
+          //       ),
+          //     );
+          //   },
+          // ),
+          Obx(() {
+            return Expanded(
+              child: ListView.separated(
+                itemCount: controller.weekInfo.value.length,
+                itemBuilder: (context, index) {
+                  {
+                    return WeakInfoWidget(index: index);
+                  }
+                },
+                separatorBuilder: (context, index) => 8.verticalSpace,
+              ),
+            );
+          }),
         ],
       ),
     );
