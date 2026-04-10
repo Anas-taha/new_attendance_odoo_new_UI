@@ -102,37 +102,6 @@ class SimpleHrService {
     }
   }
 
-  /// Get employee payslips
-  Future<List<HrPayslip>> getEmployeePayslips() async {
-    try {
-      final result = await _odooService.searchRead(
-        model: 'hr.payslip',
-        fields: [
-          'id',
-          'name',
-          'employee_id',
-          'state',
-          'date_from',
-          'date_to',
-          'basic_wage',
-          'gross_wage',
-          'net_wage',
-        ],
-        domain: [],
-        limit: 100,
-      );
-
-      if (result['success']) {
-        final data = result['data'] as List<dynamic>;
-        return data.map((item) => HrPayslip.fromOdoo(item)).toList();
-      }
-      return [];
-    } catch (e) {
-      print('❌ Error getting payslips: $e');
-      return [];
-    }
-  }
-
   /// Get employee leaves
   Future<List<HrLeave>> getLeaves() async {
     try {
@@ -255,6 +224,36 @@ class SimpleHrService {
   }
 
   /// get Salary --------------------------------------------------------
+  Future<List<HrPayslip>> getEmployeePayslips() async {
+    try {
+      final result = await _odooService.searchRead(
+        model: 'hr.payslip',
+        fields: [
+          'id',
+          'name',
+          'employee_id',
+          'state',
+          'date_from',
+          'date_to',
+          'basic_wage',
+          'gross_wage',
+          'net_wage',
+        ],
+        domain: [],
+        limit: 100,
+      );
+
+      if (result['success']) {
+        final data = result['data'] as List<dynamic>;
+        return data.map((item) => HrPayslip.fromOdoo(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('❌ Error getting payslips: $e');
+      return [];
+    }
+  }
+
   Future<bool> getPayslip() async {
     try {
       final result = await _odooService.searchRead(

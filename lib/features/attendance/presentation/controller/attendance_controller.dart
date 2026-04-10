@@ -4,9 +4,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
+import 'package:hr_app_odoo/features/attendance/data/model/attendance_model.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
+import 'package:hr_app_odoo/services/attendance_report_service.dart';
 import 'package:hr_app_odoo/services/hr_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
@@ -28,9 +30,16 @@ class AttendanceController extends GetxController {
   TextEditingController dateController = TextEditingController();
   RxList<String> weekCards = ['Week 1', 'Week 2', 'Week 3', 'Week 4'].obs;
   RxInt selectedWeekCard = 0.obs;
+  final AttendanceReportService reportService =
+      AttendanceReportService.instance;
+  Rx<List<AttendanceModel>> allAttendanceRecords = Rx<List<AttendanceModel>>(
+    [],
+  );
 
   void init() {
     selectedWeekCard.value = -1;
+    getAttendanceRecords();
+
     //  _pulseController = AnimationController(
     //   duration: const Duration(seconds: 2),
     //   vsync: this,
@@ -56,6 +65,15 @@ class AttendanceController extends GetxController {
 
     // loadAttendanceData();
     // slideController.forward();
+  }
+
+  void getAttendanceRecords() async {
+    final result = await reportService.getAllAttendance();
+    if (result.isNotEmpty) {
+      allAttendanceRecords.value = result;
+    } else {
+      allAttendanceRecords.value = [];
+    }
   }
 
   void selectWeekCard(int index) {

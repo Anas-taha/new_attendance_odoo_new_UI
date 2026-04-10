@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hr_app_odoo/features/attendance/data/model/attendance_model.dart';
 import 'package:http/http.dart' as http;
 import '../config/odoo_config.dart';
 import '../models/hr_attendance.dart';
@@ -17,6 +18,31 @@ class AttendanceReportService {
 
   /// Fetch attendance report data from Odoo
   /// Uses the /attendance_location/objects endpoint
+  Future<List<AttendanceModel>> getAllAttendance() async {
+    final result = await _odooService.searchRead(
+      model: 'hr.attendance',
+      fields: [
+        "check_in",
+        "check_out",
+        "worked_hours",
+        "in_latitude",
+        "in_longitude",
+        "in_address",
+        "geofence_status",
+        "distance_from_location",
+      ],
+      order: "check_in desc",
+      limit: 30,
+    );
+
+    if (result['success']) {
+      final data = result['data'] as List<dynamic>;
+      return data.map((item) => AttendanceModel.fromOdoo(item)).toList();
+    } else {
+      return [];
+    }
+  }
+
   Future<Map<String, dynamic>> getAttendanceReport({
     int? employeeId,
     DateTime? startDate,
@@ -86,10 +112,7 @@ class AttendanceReportService {
       };
     } catch (e) {
       print('❌ Error fetching attendance report: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -157,7 +180,7 @@ class AttendanceReportService {
 
       if (result['success']) {
         final records = result['records'] as List;
-        
+
         // Calculate total worked hours for the day
         double totalWorkedHours = 0;
         int completedSessions = 0;
@@ -187,10 +210,7 @@ class AttendanceReportService {
       return result;
     } catch (e) {
       print('❌ Error getting daily summary: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -213,15 +233,16 @@ class AttendanceReportService {
 
       if (result['success']) {
         final records = result['records'] as List;
-        
+
         // Group records by day
         final dailyBreakdown = <String, Map<String, dynamic>>{};
         double totalWeeklyHours = 0;
 
         for (final record in records) {
           final checkIn = DateTime.parse(record['check_in']);
-          final dayKey = '${checkIn.year}-${checkIn.month.toString().padLeft(2, '0')}-${checkIn.day.toString().padLeft(2, '0')}';
-          
+          final dayKey =
+              '${checkIn.year}-${checkIn.month.toString().padLeft(2, '0')}-${checkIn.day.toString().padLeft(2, '0')}';
+
           if (!dailyBreakdown.containsKey(dayKey)) {
             dailyBreakdown[dayKey] = {
               'date': dayKey,
@@ -232,7 +253,8 @@ class AttendanceReportService {
 
           final workedHours = record['worked_hours'];
           if (workedHours != null && workedHours != false) {
-            dailyBreakdown[dayKey]!['total_hours'] += (workedHours as num).toDouble();
+            dailyBreakdown[dayKey]!['total_hours'] += (workedHours as num)
+                .toDouble();
             totalWeeklyHours += (workedHours as num).toDouble();
           }
           dailyBreakdown[dayKey]!['sessions'] += 1;
@@ -252,10 +274,7 @@ class AttendanceReportService {
       return result;
     } catch (e) {
       print('❌ Error getting weekly summary: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -282,7 +301,7 @@ class AttendanceReportService {
 
       if (result['success']) {
         final records = result['records'] as List;
-        
+
         double totalMonthlyHours = 0;
         int workingDays = 0;
         final uniqueDays = <String>{};
@@ -299,7 +318,9 @@ class AttendanceReportService {
         }
 
         workingDays = uniqueDays.length;
-        final averageDailyHours = workingDays > 0 ? totalMonthlyHours / workingDays : 0.0;
+        final averageDailyHours = workingDays > 0
+            ? totalMonthlyHours / workingDays
+            : 0.0;
 
         return {
           'success': true,
@@ -318,10 +339,7 @@ class AttendanceReportService {
       return result;
     } catch (e) {
       print('❌ Error getting monthly summary: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -381,16 +399,18 @@ class AttendanceReportService {
       }
 
       // Check for location data
-      if (record['in_latitude'] != null && 
+      if (record['in_latitude'] != null &&
           record['in_latitude'] != false &&
-          record['in_longitude'] != null && 
+          record['in_longitude'] != null &&
           record['in_longitude'] != false) {
         recordsWithLocation++;
       }
     }
 
     final totalSessions = records.length;
-    final averageHours = completedSessions > 0 ? totalHours / completedSessions : 0.0;
+    final averageHours = completedSessions > 0
+        ? totalHours / completedSessions
+        : 0.0;
 
     return {
       'total_hours': totalHours,
@@ -402,7 +422,9 @@ class AttendanceReportService {
       'late_count': lateCount,
       'early_checkout_count': earlyCheckoutCount,
       'records_with_location': recordsWithLocation,
-      'on_time_percentage': totalSessions > 0 ? (onTimeCount / totalSessions * 100).toStringAsFixed(1) : '0.0',
+      'on_time_percentage': totalSessions > 0
+          ? (onTimeCount / totalSessions * 100).toStringAsFixed(1)
+          : '0.0',
     };
   }
 
@@ -439,17 +461,18 @@ class AttendanceReportService {
 
       if (result['success']) {
         final records = result['records'] as List;
-        
+
         // Create daily trends
         final dailyTrends = <String, double>{};
-        
+
         for (final record in records) {
           final checkIn = DateTime.parse(record['check_in']);
           final dayKey = '${checkIn.month}/${checkIn.day}';
-          
+
           final workedHours = record['worked_hours'];
           if (workedHours != null && workedHours != false) {
-            dailyTrends[dayKey] = (dailyTrends[dayKey] ?? 0) + (workedHours as num).toDouble();
+            dailyTrends[dayKey] =
+                (dailyTrends[dayKey] ?? 0) + (workedHours as num).toDouble();
           }
         }
 
@@ -464,11 +487,7 @@ class AttendanceReportService {
       return result;
     } catch (e) {
       print('❌ Error getting attendance trends: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 }
-

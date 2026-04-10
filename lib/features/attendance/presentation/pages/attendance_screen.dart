@@ -39,6 +39,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       appBarTitle: 'الحضور والانصراف',
       body: Column(
         children: [
+          Obx(
+            () => CustomText(
+              text: controller.allAttendanceRecords.value.length.toString(),
+            ),
+          ),
           GestureDetector(
             onTap: () => controller.selectDate(),
             child: CustomTextField(

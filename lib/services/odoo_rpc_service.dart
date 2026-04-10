@@ -314,20 +314,6 @@ class OdooRPCService {
                     "limit": limit ?? OdooConfig.defaultPageSize,
                   },
                 ],
-
-                // [
-                //   _database,
-                //   _mobileToken,
-                //   model,
-                //   1,
-                //   "search_read",
-                //   [[]],
-                //   {
-                //     "fields": fields ?? [],
-                //     "order": order ?? "",
-                //     "limit": limit ?? OdooConfig.defaultPageSize,
-                //   },
-                // ],
               },
             }),
           )
