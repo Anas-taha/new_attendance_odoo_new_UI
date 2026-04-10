@@ -19,7 +19,7 @@ import 'package:hr_app_odoo/screens/expense_create_screen.dart';
 import 'package:hr_app_odoo/screens/expense_screen.dart';
 import 'package:hr_app_odoo/screens/face_attendance_screen.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
-import 'package:hr_app_odoo/features/salaries/presentaion/pages/payslip_screen.dart';
+import 'package:hr_app_odoo/features/salaries/presentaion/pages/old_salary_screen.dart';
 import 'package:hr_app_odoo/screens/team_off_screen.dart';
 
 class AppRoutes {

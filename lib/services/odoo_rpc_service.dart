@@ -272,6 +272,7 @@ class OdooRPCService {
     int? limit,
     int? offset,
     String? order,
+    List<dynamic>? listInsideArgs,
   }) async {
     if (!isAuthenticated) {
       throw Exception('Not authenticated. Please login first.');
@@ -305,7 +306,9 @@ class OdooRPCService {
                   OdooConfig.token,
                   model,
                   "search_read",
-                  [[]],
+                  [
+                    listInsideArgs != null ? [listInsideArgs] : [],
+                  ],
                   {
                     "fields": fields ?? [],
                     "limit": limit ?? OdooConfig.defaultPageSize,
@@ -331,7 +334,7 @@ class OdooRPCService {
           .timeout(Duration(milliseconds: OdooConfig.readTimeout));
 
       print('🔍 Odoo.sh searchRead response status: ${response.statusCode}');
-      print('🔍 Odoo.sh searchRead response body: ${response.body}');
+      print('🔍 Odoo.sh searchRead response body < $model >: ${response.body}');
 
       if (response.statusCode == 200) {
         try {

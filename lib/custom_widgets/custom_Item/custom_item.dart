@@ -24,7 +24,7 @@ class CustomItem {
         return Container(
           height: double.infinity,
           width: double.infinity,
-          color: AppColors.app9F9F9FText4.withValues(alpha: 0.1),
+          color: AppColors.app9F9F9FText4.withValues(alpha: 0.5),
           child: Center(child: CircularProgressIndicator()),
         );
       } else {

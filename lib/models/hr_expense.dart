@@ -1,3 +1,48 @@
+class HrExpenseModel {
+  num? id;
+  String? name;
+  String? date;
+  num? totalAmount;
+  String? state;
+  bool? productId;
+  bool? description;
+  String? paymentMode;
+
+  HrExpenseModel({
+    this.id,
+    this.name,
+    this.date,
+    this.totalAmount,
+    this.state,
+    this.productId,
+    this.description,
+    this.paymentMode,
+  });
+
+  HrExpenseModel.fromOdoo(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    date = json['date'];
+    totalAmount = json['total_amount'];
+    state = json['state'];
+    productId = json['product_id'];
+    description = json['description'];
+    paymentMode = json['payment_mode'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['date'] = this.date;
+    data['total_amount'] = this.totalAmount;
+    data['state'] = this.state;
+    data['product_id'] = this.productId;
+    data['description'] = this.description;
+    data['payment_mode'] = this.paymentMode;
+    return data;
+  }
+}
 class HrExpense {
   final int? id;
   final String description;

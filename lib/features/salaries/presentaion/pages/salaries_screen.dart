@@ -22,128 +22,144 @@ class SalariesScreen extends StatefulWidget {
 class _SalariesScreenState extends State<SalariesScreen> {
   final controller = Get.find<SalariesController>();
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.init();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return CustomScreen(
-      floatingActionButton: CustomButton(
-        text: 'تحميل كشف الراتب',
-        onTap: () {},
-      ),
-      appBarTitle: "الرواتب",
-      body: Column(
-        children: [
-          GestureDetector(
-            onTap: () => controller.selectDate(),
-            child: CustomTextField(
-              hintText: 'اختر التاريخ',
-              usePrefixCalender: true,
-              useSuffixArrow: true,
-              controller: controller.dateController,
-              enabled: false,
+    return Obx(
+      () => CustomScreen(
+        loading: controller.isLoading,
+        floatingActionButton: CustomButton(
+          text: 'تحميل كشف الراتب',
+          onTap: () {},
+        ),
+        appBarTitle: "الرواتب",
+        body: Column(
+          children: [
+            GestureDetector(
+              onTap: () => controller.selectDate(),
+              child: CustomTextField(
+                hintText: 'اختر التاريخ',
+                usePrefixCalender: true,
+                useSuffixArrow: true,
+                controller: controller.dateController,
+                enabled: false,
+              ),
             ),
-          ),
-          16.verticalSpace,
-          Stack(
-            alignment: AlignmentGeometry.center,
-            children: [
-              Container(
-                height: 130.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CustomImage(
-                    image: AppImage.salaryCard,
-                    fit: BoxFit.cover,
+            16.verticalSpace,
+            Stack(
+              alignment: AlignmentGeometry.center,
+              children: [
+                Container(
+                  height: 130.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CustomImage(
+                      image: AppImage.salaryCard,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    CustomText(
+                      text: controller.salary.value.toString(),
+                      color: AppColors.appFFFFFFBackGround1,
+                      fontSize: 30.w,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    10.verticalSpace,
+                    CustomText(
+                      text: 'الراتب الاساسي',
+                      color: AppColors.appFFFFFFBackGround1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            16.verticalSpace,
+            GestureDetector(
+              onTap: () {
+                controller.getPayslipLine();
+              },
+              child: CustomContainer(
+                horizontalPadding: 16,
+                verticalPadding: 16,
+                color: AppColors.appFAFAFABackGround2,
+                borderColor: AppColors.appE5E5E5Border,
+                child: Row(
+                  children: [
+                    CustomText(
+                      text: 'البدلات',
+                      color: AppColors.appPrimaryColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    Spacer(),
+                    CustomText(
+                      text: '0',
+                      color: AppColors.appPrimaryColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ],
                 ),
               ),
-              Column(
+            ),
+            16.verticalSpace,
+            CustomContainer(
+              horizontalPadding: 16,
+              verticalPadding: 16,
+              color: AppColors.appFDD9D7CardBG2,
+
+              child: Row(
                 children: [
                   CustomText(
-                    text: '50.000',
-                    color: AppColors.appFFFFFFBackGround1,
-                    fontSize: 30.w,
+                    text: 'الخصومات',
+                    color: AppColors.appF44336Error,
                     fontWeight: FontWeight.w700,
                   ),
-                  10.verticalSpace,
+                  Spacer(),
                   CustomText(
-                    text: 'الراتب الاساسي',
-                    color: AppColors.appFFFFFFBackGround1,
+                    text: '2000',
+                    color: AppColors.appF44336Error,
                     fontWeight: FontWeight.w700,
                   ),
                 ],
               ),
-            ],
-          ),
-          16.verticalSpace,
-          CustomContainer(
-            horizontalPadding: 16,
-            verticalPadding: 16,
-            color: AppColors.appFAFAFABackGround2,
-            borderColor: AppColors.appE5E5E5Border,
-            child: Row(
-              children: [
-                CustomText(
-                  text: 'البدلات',
-                  color: AppColors.appPrimaryColor,
-                  fontWeight: FontWeight.w700,
-                ),
-                Spacer(),
-                CustomText(
-                  text: '0',
-                  color: AppColors.appPrimaryColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ],
             ),
-          ),
-          16.verticalSpace,
-          CustomContainer(
-            horizontalPadding: 16,
-            verticalPadding: 16,
-            color: AppColors.appFDD9D7CardBG2,
+            16.verticalSpace,
+            CustomContainer(
+              horizontalPadding: 16,
+              verticalPadding: 16,
+              color: AppColors.appEEF7EECardBG3,
 
-            child: Row(
-              children: [
-                CustomText(
-                  text: 'الخصومات',
-                  color: AppColors.appF44336Error,
-                  fontWeight: FontWeight.w700,
-                ),
-                Spacer(),
-                CustomText(
-                  text: '2000',
-                  color: AppColors.appF44336Error,
-                  fontWeight: FontWeight.w700,
-                ),
-              ],
+              child: Row(
+                children: [
+                  CustomText(
+                    text: 'صافي الراتب',
+                    color: AppColors.app4CAF50Success,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  Spacer(),
+                  CustomText(
+                    text: '30.000',
+                    color: AppColors.app4CAF50Success,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ],
+              ),
             ),
-          ),
-          16.verticalSpace,
-          CustomContainer(
-            horizontalPadding: 16,
-            verticalPadding: 16,
-            color: AppColors.appEEF7EECardBG3,
-
-            child: Row(
-              children: [
-                CustomText(
-                  text: 'صافي الراتب',
-                  color: AppColors.app4CAF50Success,
-                  fontWeight: FontWeight.w700,
-                ),
-                Spacer(),
-                CustomText(
-                  text: '30.000',
-                  color: AppColors.app4CAF50Success,
-                  fontWeight: FontWeight.w700,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

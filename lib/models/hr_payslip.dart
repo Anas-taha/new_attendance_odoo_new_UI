@@ -1,7 +1,10 @@
+
+
 class HrPayslip {
-  final int id;
-  final String name;
-  final int employeeId;
+  final int? id;
+  final String? name;
+  final int? employeeId;
+  final int? totalAmount;
   final String? employeeName;
   final String? state;
   final DateTime? dateFrom;
@@ -12,11 +15,14 @@ class HrPayslip {
   final double? netWage;
   final DateTime? createDate;
   final DateTime? writeDate;
+  final bool? productId;
+  final bool? description;
+  final String? paymentMode;
 
   HrPayslip({
-    required this.id,
-    required this.name,
-    required this.employeeId,
+    this.id,
+    this.name,
+    this.employeeId,
     this.employeeName,
     this.state,
     this.dateFrom,
@@ -27,6 +33,10 @@ class HrPayslip {
     this.netWage,
     this.createDate,
     this.writeDate,
+    this.totalAmount,
+    this.productId,
+    this.description,
+    this.paymentMode,
   });
 
   factory HrPayslip.fromOdoo(Map<String, dynamic> data) {
@@ -46,31 +56,31 @@ class HrPayslip {
           ? DateTime.tryParse(data['date'])
           : null,
       basicWage: data['basic_wage'] != null && data['basic_wage'] != false
-          ? (data['basic_wage'] is String 
-              ? double.tryParse(data['basic_wage']) 
-              : data['basic_wage'] is double 
-                  ? data['basic_wage'] 
-                  : null)
+          ? (data['basic_wage'] is String
+                ? double.tryParse(data['basic_wage'])
+                : data['basic_wage'] is double
+                ? data['basic_wage']
+                : null)
           : null,
       grossWage: data['gross_wage'] != null && data['gross_wage'] != false
-          ? (data['gross_wage'] is String 
-              ? double.tryParse(data['gross_wage']) 
-              : data['gross_wage'] is double 
-                  ? data['gross_wage'] 
-                  : null)
+          ? (data['gross_wage'] is String
+                ? double.tryParse(data['gross_wage'])
+                : data['gross_wage'] is double
+                ? data['gross_wage']
+                : null)
           : null,
       netWage: data['net_wage'] != null && data['net_wage'] != false
-          ? (data['net_wage'] is String 
-              ? double.tryParse(data['net_wage']) 
-              : data['net_wage'] is double 
-                  ? data['net_wage'] 
-                  : null)
+          ? (data['net_wage'] is String
+                ? double.tryParse(data['net_wage'])
+                : data['net_wage'] is double
+                ? data['net_wage']
+                : null)
           : null,
-      createDate: data['create_date'] != null 
-          ? DateTime.tryParse(data['create_date']) 
+      createDate: data['create_date'] != null
+          ? DateTime.tryParse(data['create_date'])
           : null,
-      writeDate: data['write_date'] != null 
-          ? DateTime.tryParse(data['write_date']) 
+      writeDate: data['write_date'] != null
+          ? DateTime.tryParse(data['write_date'])
           : null,
     );
   }
@@ -181,8 +191,18 @@ class HrPayslip {
   String get periodDisplay {
     if (dateFrom == null) return 'N/A';
     final months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     final month = months[dateFrom!.month - 1];
     final year = dateFrom!.year;

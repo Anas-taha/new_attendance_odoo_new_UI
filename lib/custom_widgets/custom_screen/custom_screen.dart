@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_Item/custom_item.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_appbar/custom_appbar.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
 
 class CustomScreen extends StatelessWidget {
-  CustomScreen({
+  const CustomScreen({
     super.key,
     this.appBarTitle,
     required this.body,
-    this.loading = false,
+    this.loading,
     this.screenPadding,
     this.appBar,
     this.floatingActionButton,
   });
-  String? appBarTitle;
-  bool loading;
-  Widget body;
-  PreferredSizeWidget? appBar;
-  double? screenPadding;
-  Widget? floatingActionButton;
+  final String? appBarTitle;
+  final RxBool? loading;
+  final Widget body;
+  final PreferredSizeWidget? appBar;
+  final double? screenPadding;
+  final Widget? floatingActionButton;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -41,13 +43,15 @@ class CustomScreen extends StatelessWidget {
               child: body,
             ),
           ),
-          if (loading)
-            Container(
-              height: double.infinity,
-              width: double.infinity,
-              color: AppColors.app9F9F9FText4.withValues(alpha: 0.1),
-              child: Center(child: CircularProgressIndicator()),
-            ),
+          CustomItem.customLoading(loading: loading ?? false.obs),
+          // Obx(() {
+          //   return Container(
+          //     height: double.infinity,
+          //     width: double.infinity,
+          //     color: AppColors.app9F9F9FText4.withValues(alpha: 0.1),
+          //     child: Center(child: CircularProgressIndicator()),
+          //   );
+          // }),
         ],
       ),
     );

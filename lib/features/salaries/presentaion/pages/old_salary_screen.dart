@@ -59,21 +59,27 @@ class _PayslipScreenState extends State<PayslipScreen> {
       } catch (e) {
         print('❌ Error loading payslips: $e');
         setState(() {
-          _errorMessage = AppLocalizations.of(context)!.failedToLoadPayslips(e.toString());
+          _errorMessage = AppLocalizations.of(
+            context,
+          )!.failedToLoadPayslips(e.toString());
           _isLoading = false;
         });
       }
     } catch (e) {
       print('❌ Error loading employee data: $e');
       setState(() {
-        _errorMessage = AppLocalizations.of(context)!.failedToLoadEmployeeData(e.toString());
+        _errorMessage = AppLocalizations.of(
+          context,
+        )!.failedToLoadEmployeeData(e.toString());
         _isLoading = false;
       });
     }
   }
 
   /// Calculate payslip statistics for the current employee only
-  Map<String, dynamic> _calculateEmployeePayslipStatistics(List<HrPayslip> payslips) {
+  Map<String, dynamic> _calculateEmployeePayslipStatistics(
+    List<HrPayslip> payslips,
+  ) {
     if (payslips.isEmpty) {
       return {
         'total_payslips': 0,
@@ -115,23 +121,23 @@ class _PayslipScreenState extends State<PayslipScreen> {
 
   List<HrPayslip> get _filteredPayslips {
     if (_selectedFilter == 'all') return _payslips;
-    
+
     try {
       if (_selectedFilter == 'paid') {
         return _payslips.where((p) => p.state == 'done').toList();
       }
-      
+
       if (_selectedFilter == 'verified') {
         return _payslips.where((p) => p.state == 'verify').toList();
       }
-      
+
       if (_selectedFilter == 'draft') {
         return _payslips.where((p) => p.state == 'draft').toList();
       }
     } catch (e) {
       print('⚠️ Error filtering payslips: $e');
     }
-    
+
     return _payslips;
   }
 
@@ -140,7 +146,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.payslips),
-       
+
         actions: [
           if (_isAdmin)
             IconButton(
@@ -152,20 +158,18 @@ class _PayslipScreenState extends State<PayslipScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? _buildErrorState()
-              : _payslips.isEmpty
-                  ? _buildEmptyState()
-                  : _filteredPayslips.isEmpty
-                      ? _buildNoFilteredResults()
-                      : Column(
-                          children: [
-                            _buildStatisticsCard(),
-                            _buildFilterChips(),
-                            Expanded(
-                              child: _buildPayslipsList(),
-                            ),
-                          ],
-                        ),
+          ? _buildErrorState()
+          : _payslips.isEmpty
+          ? _buildEmptyState()
+          : _filteredPayslips.isEmpty
+          ? _buildNoFilteredResults()
+          : Column(
+              children: [
+                _buildStatisticsCard(),
+                _buildFilterChips(),
+                Expanded(child: _buildPayslipsList()),
+              ],
+            ),
     );
   }
 
@@ -174,11 +178,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 64,
-            color: Colors.red[300],
-          ),
+          Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.errorLoadingPayslips,
@@ -228,11 +228,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.payment,
-                color: Colors.white,
-                size: 24,
-              ),
+              Icon(Icons.payment, color: Colors.white, size: 24),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.employeePayslipOverview,
@@ -285,14 +281,15 @@ class _PayslipScreenState extends State<PayslipScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, {Color? color}) {
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon, {
+    Color? color,
+  }) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: color ?? Colors.white,
-          size: 20,
-        ),
+        Icon(icon, color: color ?? Colors.white, size: 20),
         const SizedBox(height: 4),
         Text(
           value,
@@ -304,10 +301,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
         ),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
-            fontSize: 12,
-          ),
+          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
         ),
       ],
     );
@@ -320,19 +314,41 @@ class _PayslipScreenState extends State<PayslipScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildFilterChip('all', AppLocalizations.of(context)!.all, Icons.all_inclusive, _payslips.length),
-          _buildFilterChip('paid', AppLocalizations.of(context)!.paid, Icons.check_circle,
-            _payslips.where((p) => p.state == 'done').length),
-          _buildFilterChip('verified', AppLocalizations.of(context)!.verified, Icons.verified,
-            _payslips.where((p) => p.state == 'verify').length),
-          _buildFilterChip('draft', AppLocalizations.of(context)!.draft, Icons.edit, 
-            _payslips.where((p) => p.state == 'draft').length),
+          _buildFilterChip(
+            'all',
+            AppLocalizations.of(context)!.all,
+            Icons.all_inclusive,
+            _payslips.length,
+          ),
+          _buildFilterChip(
+            'paid',
+            AppLocalizations.of(context)!.paid,
+            Icons.check_circle,
+            _payslips.where((p) => p.state == 'done').length,
+          ),
+          _buildFilterChip(
+            'verified',
+            AppLocalizations.of(context)!.verified,
+            Icons.verified,
+            _payslips.where((p) => p.state == 'verify').length,
+          ),
+          _buildFilterChip(
+            'draft',
+            AppLocalizations.of(context)!.draft,
+            Icons.edit,
+            _payslips.where((p) => p.state == 'draft').length,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterChip(String value, String label, IconData icon, int count) {
+  Widget _buildFilterChip(
+    String value,
+    String label,
+    IconData icon,
+    int count,
+  ) {
     final isSelected = _selectedFilter == value;
     return Container(
       margin: const EdgeInsets.only(right: 8),
@@ -382,11 +398,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.payment_outlined,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.payment_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noPayslipsFound,
@@ -399,9 +411,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           const SizedBox(height: 8),
           Text(
             AppLocalizations.of(context)!.payslipsWillAppear,
-            style: TextStyle(
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(color: Colors.grey[500]),
           ),
         ],
       ),
@@ -413,11 +423,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.filter_list_off,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.filter_list_off, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noPayslipsMatchingFilter,
@@ -430,9 +436,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
           const SizedBox(height: 8),
           Text(
             AppLocalizations.of(context)!.tryAdjustingFilterPayslip,
-            style: TextStyle(
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(color: Colors.grey[500]),
           ),
         ],
       ),
@@ -458,17 +462,11 @@ class _PayslipScreenState extends State<PayslipScreen> {
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
           backgroundColor: _getStatusColor(payslip.state),
-          child: Icon(
-            _getStatusIcon(payslip.state),
-            color: Colors.white,
-          ),
+          child: Icon(_getStatusIcon(payslip.state), color: Colors.white),
         ),
         title: Text(
-          payslip.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          payslip.name ?? '',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,7 +545,9 @@ class _PayslipScreenState extends State<PayslipScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: _getStatusColor(payslip.state),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
             child: Row(
               children: [
@@ -562,7 +562,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        payslip.name,
+                        payslip.name ?? '',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -597,17 +597,35 @@ class _PayslipScreenState extends State<PayslipScreen> {
                   _buildDetailRow('Date Range', payslip.dateRangeDisplay),
                   _buildDetailRow('Status', payslip.statusDisplay),
                   const Divider(height: 32),
-                  _buildDetailRow('Basic Wage', 
-                    payslip.basicWage != null ? '\$${payslip.basicWage!.toStringAsFixed(2)}' : 'N/A'),
-                  _buildDetailRow('Gross Wage', 
-                    payslip.grossWage != null ? '\$${payslip.grossWage!.toStringAsFixed(2)}' : 'N/A'),
-                  _buildDetailRow('Net Wage', 
-                    payslip.netWage != null ? '\$${payslip.netWage!.toStringAsFixed(2)}' : 'N/A'),
+                  _buildDetailRow(
+                    'Basic Wage',
+                    payslip.basicWage != null
+                        ? '\$${payslip.basicWage!.toStringAsFixed(2)}'
+                        : 'N/A',
+                  ),
+                  _buildDetailRow(
+                    'Gross Wage',
+                    payslip.grossWage != null
+                        ? '\$${payslip.grossWage!.toStringAsFixed(2)}'
+                        : 'N/A',
+                  ),
+                  _buildDetailRow(
+                    'Net Wage',
+                    payslip.netWage != null
+                        ? '\$${payslip.netWage!.toStringAsFixed(2)}'
+                        : 'N/A',
+                  ),
                   const Divider(height: 32),
-                  _buildDetailRow('Created', 
-                    payslip.createDate?.toLocal().toString().split(' ')[0] ?? 'N/A'),
-                  _buildDetailRow('Last Updated', 
-                    payslip.writeDate?.toLocal().toString().split(' ')[0] ?? 'N/A'),
+                  _buildDetailRow(
+                    'Created',
+                    payslip.createDate?.toLocal().toString().split(' ')[0] ??
+                        'N/A',
+                  ),
+                  _buildDetailRow(
+                    'Last Updated',
+                    payslip.writeDate?.toLocal().toString().split(' ')[0] ??
+                        'N/A',
+                  ),
                 ],
               ),
             ),
@@ -634,7 +652,13 @@ class _PayslipScreenState extends State<PayslipScreen> {
                         Navigator.pop(context);
                         // TODO: Implement payslip actions
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(AppLocalizations.of(context)!.payslipActionsComingSoon)),
+                          SnackBar(
+                            content: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.payslipActionsComingSoon,
+                            ),
+                          ),
                         );
                       },
                       icon: const Icon(Icons.check),
@@ -665,14 +689,7 @@ class _PayslipScreenState extends State<PayslipScreen> {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 16))),
         ],
       ),
     );
@@ -681,14 +698,18 @@ class _PayslipScreenState extends State<PayslipScreen> {
   void _showCreatePayslipDialog() {
     // TODO: Implement create payslip dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.createPayslipComingSoon)),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.createPayslipComingSoon),
+      ),
     );
   }
 
   void _showEditPayslipDialog(HrPayslip payslip) {
     // TODO: Implement edit payslip dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.editPayslipComingSoon)),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.editPayslipComingSoon),
+      ),
     );
   }
 }

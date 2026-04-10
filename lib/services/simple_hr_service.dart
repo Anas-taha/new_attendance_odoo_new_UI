@@ -253,4 +253,61 @@ class SimpleHrService {
       return false;
     }
   }
+
+  /// get Salary --------------------------------------------------------
+  Future<bool> getPayslip() async {
+    try {
+      final result = await _odooService.searchRead(
+        model: 'hr.payslip',
+        fields: [
+          "number",
+          "name",
+          "date_from",
+          "date_to",
+          "state",
+          "net_wage",
+          "basic_wage",
+          "struct_id",
+        ],
+        order: "date_from desc",
+        limit: 12,
+      );
+      if (result['success']) {
+        return true;
+        // final data = result['data'] as List<dynamic>;
+        // return data.map((item) => HrSalaryModel.fromOdoo(item)).toList();
+      }
+      return false;
+    } catch (e) {
+      print('❌ Error getting salary: $e');
+      return false;
+    }
+  }
+
+  Future<bool> getPayslipLine() async {
+    try {
+      final result = await _odooService.searchRead(
+        model: 'hr.payslip.line',
+        listInsideArgs: ["slip_id", "=", 1],
+        fields: [
+          "name",
+          "code",
+          "category_id",
+          "quantity",
+          "rate",
+          "amount",
+          "total",
+        ],
+      );
+      if (result['success']) {
+        return true;
+        // final data = result['data'] as List<dynamic>;
+        // return data.map((item) => HrSalaryModel.fromOdoo(item)).toList();
+      }
+      return false;
+    } catch (e) {
+      print('❌ Error getting salary: $e');
+      return false;
+    }
+  }
 }
