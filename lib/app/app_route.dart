@@ -46,16 +46,19 @@ class AppPages {
     GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
     GetPage(
       name: AppRoutes.home,
-      page: () => HomeScreen(),
+      page: () => const HomeScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<HomeController>(() => HomeController());
+        Get.put(HomeController(), permanent: true);
       }),
     ),
     GetPage(
       name: AppRoutes.notifications,
       page: () => NotificationScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<NotificationController>(() => NotificationController());
+        Get.lazyPut<NotificationController>(
+          () => NotificationController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
@@ -93,7 +96,7 @@ class AppPages {
       name: AppRoutes.profile,
       page: () => ProfileScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<ProfileController>(() => ProfileController());
+        Get.lazyPut<ProfileController>(() => ProfileController(), fenix: true);
       }),
     ),
     GetPage(

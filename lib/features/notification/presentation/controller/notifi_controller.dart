@@ -8,10 +8,24 @@ class NotificationController extends GetxController {
   Rx<NotifiState> selectedNotifiState = Rx<NotifiState>(NotifiState.all);
   RxList<String> notificationList = RxList<String>([]);
 
-  void init() {
+  @override
+  void onReady() {
+    super.onReady();
+    log(name: 'NotificationControllerState', 'onReady');
+    getAllNotification();
     selectedNotifiState.value = NotifiState.all;
     notificationList.value = [];
   }
+
+  @override
+  void onClose() {
+    super.onClose();
+    log(name: 'NotificationControllerState', 'onClose');
+  }
+  // void initData() {
+  //   selectedNotifiState.value = NotifiState.all;
+  //   notificationList.value = [];
+  // }
 
   void changeNotifiState(NotifiState state) {
     selectedNotifiState.value = state;

@@ -16,12 +16,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackTap,
     this.onHomeTap,
     this.onNotificationTap,
+    this.showNotivication = true,
   });
 
   final String title;
   final VoidCallback? onBackTap;
   final VoidCallback? onHomeTap;
   final VoidCallback? onNotificationTap;
+  final bool showNotivication;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -47,21 +49,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
           // _buildIconButton(image: AppImage.notifications),
           // 4.horizontalSpace,
+          (showNotivication)
+              ? _buildIconButton(
+                  height: 30,
+                  image: AppImage.notificationIcon,
+                  onTap: () => Get.toNamed(AppRoutes.notifications),
+                )
+              : SizedBox.shrink(),
+          5.horizontalSpace,
           _buildIconButton(
             image: AppImage.home,
-            onTap: () => Get.toNamed(AppRoutes.home),
+            onTap: () => Get.offAllNamed(AppRoutes.home),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildIconButton({required String image, VoidCallback? onTap}) {
+  Widget _buildIconButton({
+    required String image,
+    VoidCallback? onTap,
+    double height = 24,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 24.h,
-        width: 24.w,
+        height: height.h,
+        width: 30.w,
         // padding: const EdgeInsets.all(4),
         child: CustomImage(fit: BoxFit.contain, image: image),
       ),

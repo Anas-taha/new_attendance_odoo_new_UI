@@ -11,28 +11,21 @@ import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_appbar/custom_appbar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationScreen extends StatelessWidget {
   NotificationScreen({super.key});
 
-  @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
-}
-
-class _NotificationScreenState extends State<NotificationScreen> {
   final notifController = Get.find<NotificationController>();
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notifController.init();
-    });
-  }
 
+  // @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.appFFFFFFBackGround1,
-      appBar: CustomAppBar(title: 'الاشعارات', onBackTap: () => Get.back()),
+      appBar: CustomAppBar(
+        title: 'الاشعارات',
+        onBackTap: () => Get.back(),
+        showNotivication: false,
+      ),
       body: Padding(
         padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
         child: Column(

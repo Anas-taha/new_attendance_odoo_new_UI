@@ -38,32 +38,19 @@ class GreetingWidget extends StatelessWidget {
           ],
         ),
         const Spacer(),
-        Row(
-          children: [
-            InkWell(
-              onTap: () {},
-              child: Container(
-                height: 24.h,
-                width: 24.w,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: CustomImage(fit: BoxFit.contain, image: AppImage.home),
-              ),
+        InkWell(
+          onTap: () {
+            Get.toNamed(AppRoutes.notifications);
+          },
+          child: Container(
+            height: 24.h,
+            width: 30.w,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: CustomImage(
+              fit: BoxFit.contain,
+              image: AppImage.notificationIcon,
             ),
-            InkWell(
-              onTap: () {
-                Get.toNamed(AppRoutes.notifications);
-              },
-              child: Container(
-                height: 24.h,
-                width: 30.w,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: CustomImage(
-                  fit: BoxFit.contain,
-                  image: AppImage.notificationIcon,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

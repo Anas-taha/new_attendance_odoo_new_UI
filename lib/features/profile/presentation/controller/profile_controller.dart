@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,19 +12,30 @@ import 'package:hr_app_odoo/theme/app_theme.dart';
 class ProfileController extends GetxController {
   // ignore: prefer_typing_uninitialized_variables
   SimpleHrService hrService = SimpleHrService();
-  Rx<HrEmployee> profileData = HrEmployee(id: 0, name: '').obs;
+  HrEmployee profileData = HrEmployee(id: 0, name: '');
   RxBool loading = false.obs;
-
-  void init() {
+  @override
+  void onReady() {
+    log(name: "ProfileControllerState", "onReady");
     getProfileData();
+    super.onReady();
   }
+
+  @override
+  void onClose() {
+    log(name: "ProfileControllerState", "onClose");
+    super.onClose();
+  }
+  // void initData() {
+  //   getProfileData();
+  // }
 
   void getProfileData() async {
     loading.value = true;
     final result = await hrService.getEmployeeProfile();
     if (result.isNotEmpty) {
-      profileData.value = result.first;
-
+      profileData = result.first;
+      update();
       loading.value = false;
     } else {
       loading.value = false;
