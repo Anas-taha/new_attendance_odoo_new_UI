@@ -53,7 +53,7 @@ class CustomTextValueAndImage extends StatelessWidget {
         image != null ? 4.horizontalSpace : SizedBox.shrink(),
 
         CustomText(
-          text: value != null ? text : "$text : ",
+          text: value != null ? text : "$text ",
           color: textColor ?? AppColors.app1A1A1AText1,
           fontSize: textSize ?? 16,
         ),

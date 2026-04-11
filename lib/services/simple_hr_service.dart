@@ -254,7 +254,7 @@ class SimpleHrService {
     }
   }
 
-  Future<bool> getPayslip() async {
+  Future<List<HrPayslip>> getPayslip() async {
     try {
       final result = await _odooService.searchRead(
         model: 'hr.payslip',
@@ -272,14 +272,13 @@ class SimpleHrService {
         limit: 12,
       );
       if (result['success']) {
-        return true;
-        // final data = result['data'] as List<dynamic>;
-        // return data.map((item) => HrSalaryModel.fromOdoo(item)).toList();
+        final data = result['data'] as List<dynamic>;
+        return data.map((item) => HrPayslip.fromOdoo(item)).toList();
       }
-      return false;
+      return [];
     } catch (e) {
       print('❌ Error getting salary: $e');
-      return false;
+      return [];
     }
   }
 

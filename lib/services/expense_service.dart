@@ -8,7 +8,8 @@ import 'odoo_rpc_service.dart';
 /// Service for handling expense management in Odoo
 class ExpenseService {
   static ExpenseService? _instance;
-  static ExpenseService get instance => _instance ??= ExpenseService._internal();
+  static ExpenseService get instance =>
+      _instance ??= ExpenseService._internal();
 
   ExpenseService._internal();
 
@@ -22,15 +23,9 @@ class ExpenseService {
       final result = await _odooService.searchRead(
         model: 'product.product',
         domain: [
-          ['can_be_expensed', '=', true]
+          ['can_be_expensed', '=', true],
         ],
-        fields: [
-          'id',
-          'name',
-          'standard_price',
-          'default_code',
-          'categ_id',
-        ],
+        fields: ['id', 'name', 'standard_price', 'default_code', 'categ_id'],
         limit: 100,
       );
 
@@ -58,7 +53,7 @@ class ExpenseService {
       print('💰 Fetching expenses for employee $employeeId...');
 
       final domain = <List<dynamic>>[
-        ['employee_id', '=', employeeId]
+        ['employee_id', '=', employeeId],
       ];
 
       if (state != null) {
@@ -74,7 +69,7 @@ class ExpenseService {
       }
 
       final result = await _odooService.searchRead(
-        model: 'hr.expense',
+        model: OdooConfig.hrExpenseModel,
         domain: domain,
         fields: [
           'id',
@@ -182,10 +177,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error creating expense: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -215,10 +207,7 @@ class ExpenseService {
 
       if (result['success']) {
         print('✅ Receipt uploaded successfully');
-        return {
-          'success': true,
-          'attachment_id': result['data'],
-        };
+        return {'success': true, 'attachment_id': result['data']};
       }
 
       return {
@@ -227,10 +216,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error uploading receipt: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -264,10 +250,7 @@ class ExpenseService {
 
       if (result['success']) {
         print('✅ Expense updated successfully');
-        return {
-          'success': true,
-          'message': 'Expense updated successfully',
-        };
+        return {'success': true, 'message': 'Expense updated successfully'};
       }
 
       return {
@@ -276,10 +259,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error updating expense: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -295,10 +275,7 @@ class ExpenseService {
 
       if (result['success']) {
         print('✅ Expense deleted successfully');
-        return {
-          'success': true,
-          'message': 'Expense deleted successfully',
-        };
+        return {'success': true, 'message': 'Expense deleted successfully'};
       }
 
       return {
@@ -307,10 +284,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error deleting expense: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -323,16 +297,13 @@ class ExpenseService {
         model: 'hr.expense',
         method: 'action_submit_expenses',
         args: [
-          [expenseId]
+          [expenseId],
         ],
       );
 
       if (result['success']) {
         print('✅ Expense submitted successfully');
-        return {
-          'success': true,
-          'message': 'Expense submitted for approval',
-        };
+        return {'success': true, 'message': 'Expense submitted for approval'};
       }
 
       return {
@@ -341,10 +312,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error submitting expense: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -357,7 +325,9 @@ class ExpenseService {
     try {
       print('📋 Creating expense sheet...');
 
-      final sheetName = name ?? 'Expense Report ${DateTime.now().toIso8601String().split('T')[0]}';
+      final sheetName =
+          name ??
+          'Expense Report ${DateTime.now().toIso8601String().split('T')[0]}';
 
       final result = await _odooService.create(
         model: 'hr.expense.sheet',
@@ -365,7 +335,7 @@ class ExpenseService {
           'name': sheetName,
           'employee_id': employeeId,
           'expense_line_ids': [
-            [6, 0, expenseIds]
+            [6, 0, expenseIds],
           ], // Many2many set command
         },
       );
@@ -385,10 +355,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error creating expense sheet: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -402,7 +369,7 @@ class ExpenseService {
       print('📋 Fetching expense sheets for employee $employeeId...');
 
       final domain = <List<dynamic>>[
-        ['employee_id', '=', employeeId]
+        ['employee_id', '=', employeeId],
       ];
 
       if (state != null) {
@@ -410,7 +377,7 @@ class ExpenseService {
       }
 
       final result = await _odooService.searchRead(
-        model: 'hr.expense.sheet',
+        model: OdooConfig.hrExpenseSheetModel,
         domain: domain,
         fields: [
           'id',
@@ -518,10 +485,7 @@ class ExpenseService {
       };
     } catch (e) {
       print('❌ Error fetching expense statistics: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -550,7 +514,7 @@ class ExpenseService {
       }
 
       final result = await _odooService.searchRead(
-        model: 'hr.expense',
+        model: OdooConfig.hrExpenseModel,
         domain: domain,
         fields: [
           'id',
@@ -622,4 +586,3 @@ class ExpenseService {
     }
   }
 }
-

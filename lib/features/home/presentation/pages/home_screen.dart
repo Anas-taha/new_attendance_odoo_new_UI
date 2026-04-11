@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     //   _handleControllerUiEvent,
     // );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      homeController.init();
+      homeController.initData();
     });
   }
 
@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       // title: AppLocalizations.of(context)!.payslip,
                       title: "الرواتب",
 
-                      onTap: () => Get.toNamed(AppRoutes.salaries),
+                      onTap: () => Get.toNamed(AppRoutes.payslips),
                     ),
                   ),
                   10.horizontalSpace,

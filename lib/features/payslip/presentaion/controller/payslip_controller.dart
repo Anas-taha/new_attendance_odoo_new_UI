@@ -6,7 +6,7 @@ import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart'
 import 'package:hr_app_odoo/models/hr_payslip.dart';
 import 'package:hr_app_odoo/services/simple_hr_service.dart';
 
-class SalariesController extends GetxController {
+class PayslipController extends GetxController {
   TextEditingController dateController = TextEditingController();
   SimpleHrService hrService = SimpleHrService();
   Rx<bool> salary = false.obs;
@@ -19,7 +19,7 @@ class SalariesController extends GetxController {
   void getSalaries() async {
     isLoading.value = true;
     final result = await hrService.getPayslip();
-    if (result) {
+    if (result.isNotEmpty) {
       // salary.value = result.first;
       salary.value = true;
       log(name: 'iscbisducbds', 'result: $result');

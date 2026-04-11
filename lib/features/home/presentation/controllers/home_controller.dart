@@ -54,16 +54,104 @@ class HomeController extends GetxController {
   final HomeRepository _homeRepository;
 
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
-  void init() {
+  RxString currentDate = ''.obs;
+  RxBool isAm = true.obs;
+  
+  @override
+  void onInit() {
+    super.onInit();
+    _stopTimer();
+  }
+
+  void initData() {
     getUserName();
+    getCurrentDate();
+    timeIsAm();
     // loadEmployeeData();
     // loadTodayAttendance();
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
   }
 
   void getUserName() async {
     userName.value = await LocalStorageService().getSavedName() ?? '';
   }
 
+  //--------------------- Date Handling ---------------------
+  void getCurrentDate() {
+    final now = DateTime.now();
+
+    const months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+
+    currentDate.value = '${now.day} ${months[now.month - 1]} ${now.year}';
+  }
+
+  void timeIsAm() {
+    final now = DateTime.now();
+    if (now.hour < 12) {
+      isAm.value = true;
+    } else {
+      isAm.value = false;
+    }
+  }
+
+  //--------------------- Timer Handling ---------------------
+  final elapsed = Duration.zero.obs;
+  final isRunning = false.obs;
+
+  Timer? _timer;
+
+  void timerSwitchButton() {
+    if (isRunning.value) {
+      _stopTimer();
+    } else {
+      _startTimer();
+    }
+  }
+
+  void _startTimer() {
+    isRunning.value = true;
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
+      elapsed.value += const Duration(milliseconds: 10);
+    });
+  }
+
+  void _stopTimer() {
+    isRunning.value = false;
+    _timer?.cancel();
+  }
+
+  void reset() {
+    _stopTimer();
+    elapsed.value = Duration.zero;
+  }
+
+  String get formattedTime {
+    final ms = elapsed.value.inMilliseconds;
+    final minutes = (ms ~/ 60000).toString().padLeft(2, '0');
+    final seconds = ((ms % 60000) ~/ 1000).toString().padLeft(2, '0');
+    final centis = ((ms % 1000) ~/ 10).toString().padLeft(2, '0');
+    return '$minutes:$seconds.$centis';
+  }
+
+  //============================================================//
   void startTimer() {
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -81,11 +169,11 @@ class HomeController extends GetxController {
     seconds.value = 0;
   }
 
-  @override
-  void onClose() {
-    timer?.cancel();
-    super.onClose();
-  }
+  // @override
+  // void onClose() {
+  //   timer?.cancel();
+  //   super.onClose();
+  // }
 
   Future<void> loadEmployeeData() async {
     try {

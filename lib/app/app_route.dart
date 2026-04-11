@@ -10,8 +10,8 @@ import 'package:hr_app_odoo/features/notification/presentation/controller/notifi
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
 import 'package:hr_app_odoo/features/profile/presentation/controller/profile_controller.dart';
 import 'package:hr_app_odoo/features/profile/presentation/pages/profile_screen.dart';
-import 'package:hr_app_odoo/features/salaries/presentaion/controller/salaries_controller.dart';
-import 'package:hr_app_odoo/features/salaries/presentaion/pages/salaries_screen.dart';
+import 'package:hr_app_odoo/features/payslip/presentaion/controller/payslip_controller.dart';
+import 'package:hr_app_odoo/features/payslip/presentaion/pages/payslip_screen.dart';
 import 'package:hr_app_odoo/screens/attendance_report_screen.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/pages/old_attendance_screen.dart';
 import 'package:hr_app_odoo/screens/contracts_screen.dart';
@@ -19,7 +19,8 @@ import 'package:hr_app_odoo/screens/expense_create_screen.dart';
 import 'package:hr_app_odoo/screens/expense_screen.dart';
 import 'package:hr_app_odoo/screens/face_attendance_screen.dart';
 import 'package:hr_app_odoo/screens/login_screen.dart';
-import 'package:hr_app_odoo/features/salaries/presentaion/pages/old_salary_screen.dart';
+import 'package:hr_app_odoo/features/payslip/presentaion/pages/old_payslip_screen.dart'
+    hide PayslipScreen;
 import 'package:hr_app_odoo/screens/team_off_screen.dart';
 
 class AppRoutes {
@@ -77,12 +78,12 @@ class AppPages {
       name: AppRoutes.expenseCreate,
       page: () => const ExpenseCreateScreen(),
     ),
-    GetPage(name: AppRoutes.payslips, page: () => const PayslipScreen()),
+    // GetPage(name: AppRoutes.payslips, page: () => const PayslipScreen()),
     GetPage(
-      name: AppRoutes.salaries,
-      page: () => const SalariesScreen(),
+      name: AppRoutes.payslips,
+      page: () => PayslipScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<SalariesController>(() => SalariesController());
+        Get.lazyPut<PayslipController>(() => PayslipController());
       }),
     ),
     GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),

@@ -21,11 +21,16 @@ class OdooConfig {
   static const String hrEmployeeModel = 'hr.employee';
   static const String hrAttendanceModel = 'hr.attendance';
   static const String hrExpenseModel = 'hr.expense';
+  static const String hrExpenseSheetModel = 'hr.expense.sheet';
   static const String hrContractModel = 'hr.contract';
   static const String hrPayslipModel = 'hr.payslip';
   static const String hrLeaveModel = 'hr.leave';
   static const String hrExpenseCategoryModel = 'hr.expense.category';
   static const String hrWorkScheduleModel = 'hr.work.schedule';
+  static const String hrProductProductModel = 'product.product';
+  // Hr Model
+  static const String methodSearchRead = "search_read";
+  static const String methodcreate = 'create';
 
   /// Get the full URL for a specific endpoint
   static String getEndpointUrl(String endpoint) {

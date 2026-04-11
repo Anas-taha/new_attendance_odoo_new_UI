@@ -27,13 +27,17 @@ class AttendanceWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(
-                child: CustomTextValueAndImage(
-                  text: '3 مايو 2024',
-                  textSize: 14.w,
-                  textColor: AppColors.appPrimaryColor,
-                  image: AppImage.sun,
-                  imageSize: 32.w,
+              Obx(
+                () => Expanded(
+                  child: CustomTextValueAndImage(
+                    text: homeController.currentDate.value,
+                    textSize: 14.w,
+                    textColor: AppColors.appPrimaryColor,
+                    image: homeController.isAm.value
+                        ? AppImage.moon
+                        : AppImage.sun,
+                    imageSize: 32.w,
+                  ),
                 ),
               ),
               CustomContainer(
@@ -48,27 +52,34 @@ class AttendanceWidget extends StatelessWidget {
             ],
           ),
           8.verticalSpace,
-          Row(
-            children: [
-              CustomText(
-                text: '${homeController.beforeTime.value} / ',
-                fontSize: 18.w,
-                color: AppColors.app1A1A1AText1,
-                fontWeight: FontWeight.w500,
-              ),
-              CustomText(
-                text: homeController.totalToday.value,
-                color: AppColors.appA0A0A0Text2,
-                fontSize: 13.w,
-              ),
-              // TimeBoxWidget(
-              //   time:
-              //       '${homeController.beforeTime.value} / ${homeController.totalToday.value}',
-              // ),
-            ],
-          ),
+          Obx(() {
+            return Row(
+              children: [
+                CustomText(
+                  text: '${homeController.formattedTime} / ',
+                  fontSize: 18.w,
+                  color: AppColors.app1A1A1AText1,
+                  fontWeight: FontWeight.w500,
+                ),
+                CustomText(
+                  text: homeController.totalToday.value,
+                  color: AppColors.appA0A0A0Text2,
+                  fontSize: 13.w,
+                ),
+              ],
+            );
+          }),
           8.verticalSpace,
-          CustomButton(text: 'تسجيل حضور', onTap: () {}),
+          Obx(
+            () => CustomButton(
+              text: homeController.isRunning.value
+                  ? 'تسجيل الانصراف'
+                  : 'تسجيل الحضور',
+              onTap: () {
+                homeController.timerSwitchButton();
+              },
+            ),
+          ),
         ],
       ),
 

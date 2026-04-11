@@ -20,7 +20,7 @@ class AttendanceReportService {
   /// Uses the /attendance_location/objects endpoint
   Future<List<AttendanceModel>> getAllAttendance() async {
     final result = await _odooService.searchRead(
-      model: 'hr.attendance',
+      model: OdooConfig.hrAttendanceModel,
       fields: [
         "check_in",
         "check_out",
@@ -70,7 +70,7 @@ class AttendanceReportService {
       }
 
       final result = await _odooService.searchRead(
-        model: 'hr.attendance',
+        model: OdooConfig.hrAttendanceModel,
         domain: domain,
         fields: [
           'id',
@@ -133,7 +133,7 @@ class AttendanceReportService {
       domain.add(['in_longitude', '!=', false]);
 
       final result = await _odooService.searchRead(
-        model: 'hr.attendance',
+        model: OdooConfig.hrAttendanceModel,
         domain: domain,
         fields: [
           'id',
