@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/pages/attendance_screen.dart';
+import 'package:hr_app_odoo/features/auth/presentation/controller/login_controller.dart';
+import 'package:hr_app_odoo/features/auth/presentation/pages/login_screen.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/pages/holidays_screen.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/pages/request_holiday_screen.dart';
@@ -18,7 +20,7 @@ import 'package:hr_app_odoo/screens/contracts_screen.dart';
 import 'package:hr_app_odoo/screens/expense_create_screen.dart';
 import 'package:hr_app_odoo/screens/expense_screen.dart';
 import 'package:hr_app_odoo/screens/face_attendance_screen.dart';
-import 'package:hr_app_odoo/screens/login_screen.dart';
+import 'package:hr_app_odoo/features/auth/presentation/pages/old_login_screen.dart';
 import 'package:hr_app_odoo/features/payslip/presentaion/pages/old_payslip_screen.dart'
     hide PayslipScreen;
 import 'package:hr_app_odoo/screens/team_off_screen.dart';
@@ -43,7 +45,13 @@ class AppRoutes {
 
 class AppPages {
   static final pages = [
-    GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
+    GetPage(
+      name: AppRoutes.login,
+      page: () => OldLoginScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
+      }),
+    ),
     GetPage(
       name: AppRoutes.home,
       page: () => const HomeScreen(),

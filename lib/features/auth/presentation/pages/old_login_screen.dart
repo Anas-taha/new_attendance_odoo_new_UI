@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 
-import '../generated/l10n/app_localizations.dart';
-import '../services/odoo_rpc_service.dart';
+import '../../../../generated/l10n/app_localizations.dart';
+import '../../../../services/odoo_rpc_service.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
-import '../services/hr_service.dart';
-import '../services/local_storage_service.dart';
-import '../config/odoo_config.dart';
+import '../../../../services/hr_service.dart';
+import '../../../../services/local_storage_service.dart';
+import '../../../../config/odoo_config.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class OldLoginScreen extends StatefulWidget {
+  const OldLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<OldLoginScreen> createState() => _OldLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _OldLoginScreenState extends State<OldLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();

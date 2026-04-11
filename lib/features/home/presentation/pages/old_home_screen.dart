@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
-import 'package:hr_app_odoo/screens/login_screen.dart';
+import 'package:hr_app_odoo/features/auth/presentation/pages/old_login_screen.dart';
 import 'package:hr_app_odoo/services/hr_service.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
@@ -14,7 +14,8 @@ class OldHomeScreen extends StatefulWidget {
   State<OldHomeScreen> createState() => _OldHomeScreenState();
 }
 
-class _OldHomeScreenState extends State<OldHomeScreen> with WidgetsBindingObserver {
+class _OldHomeScreenState extends State<OldHomeScreen>
+    with WidgetsBindingObserver {
   Timer? _timer;
   int _seconds = 0;
   bool _isCheckedIn = false;
@@ -218,7 +219,7 @@ class _OldHomeScreenState extends State<OldHomeScreen> with WidgetsBindingObserv
           // Navigate to login screen
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            MaterialPageRoute(builder: (context) => const OldLoginScreen()),
             (route) => false,
           );
         }

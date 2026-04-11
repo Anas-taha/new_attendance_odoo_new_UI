@@ -56,7 +56,7 @@ class HomeController extends GetxController {
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
   RxString currentDate = ''.obs;
   RxBool isAm = true.obs;
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -145,10 +145,11 @@ class HomeController extends GetxController {
 
   String get formattedTime {
     final ms = elapsed.value.inMilliseconds;
+    final hours = (ms ~/ 3600000).toString().padLeft(2, '0');
     final minutes = (ms ~/ 60000).toString().padLeft(2, '0');
     final seconds = ((ms % 60000) ~/ 1000).toString().padLeft(2, '0');
     final centis = ((ms % 1000) ~/ 10).toString().padLeft(2, '0');
-    return '$minutes:$seconds.$centis';
+    return '$hours:$minutes:$seconds.$centis';
   }
 
   //============================================================//

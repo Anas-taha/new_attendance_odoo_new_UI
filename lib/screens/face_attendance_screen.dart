@@ -10,7 +10,7 @@ import '../services/face_attendance_service.dart';
 import '../services/hr_service.dart';
 import '../services/odoo_rpc_service.dart';
 import '../theme/app_theme.dart';
-import 'login_screen.dart';
+import '../features/auth/presentation/pages/old_login_screen.dart';
 
 class FaceAttendanceScreen extends StatefulWidget {
   const FaceAttendanceScreen({super.key});
@@ -143,7 +143,9 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       final imageData = await _pickImageFromGallery();
       log('imageData: $imageData');
       if (imageData == null || imageData['success'] != true) {
-        final error = imageData?['error'] ?? AppLocalizations.of(context)!.couldNotSelectImage;
+        final error =
+            imageData?['error'] ??
+            AppLocalizations.of(context)!.couldNotSelectImage;
         log('❌ Error: $error');
         _setFeedback(error.toString(), success: false);
         return;
@@ -173,20 +175,25 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       if (result['success'] == true) {
         await _refreshAttendanceStatus();
         final action = result['action'] ?? '';
-        final message = result['message'] ??
+        final message =
+            result['message'] ??
             (action == 'check_out' || currentlyCheckedIn
                 ? AppLocalizations.of(context)!.checkoutCompletedSuccess
                 : AppLocalizations.of(context)!.checkinCompletedSuccess);
         _setFeedback(message, success: true);
       } else {
         _setFeedback(
-          result['error']?.toString() ?? AppLocalizations.of(context)!.attendanceActionFailed,
+          result['error']?.toString() ??
+              AppLocalizations.of(context)!.attendanceActionFailed,
           success: false,
         );
       }
     } catch (e, stackTrace) {
       log('❌ Stack trace: $stackTrace');
-      _setFeedback(AppLocalizations.of(context)!.unexpectedError('$e, $stackTrace'), success: false);
+      _setFeedback(
+        AppLocalizations.of(context)!.unexpectedError('$e, $stackTrace'),
+        success: false,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -202,7 +209,10 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       return result;
     } catch (e) {
       log('❌ Error picking image: $e');
-      return {'success': false, 'error': AppLocalizations.of(context)!.errorPickingImage(e.toString())};
+      return {
+        'success': false,
+        'error': AppLocalizations.of(context)!.errorPickingImage(e.toString()),
+      };
     }
   }
 
@@ -226,7 +236,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => const OldLoginScreen()),
       (route) => false,
     );
   }
@@ -243,7 +253,7 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
       backgroundColor: const Color(0xFFF8F9FF),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.smartAttendance),
-       
+
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -252,7 +262,10 @@ class _FaceAttendanceScreenState extends State<FaceAttendanceScreen> {
               }
             },
             itemBuilder: (context) => [
-              PopupMenuItem<String>(value: 'logout', child: Text(AppLocalizations.of(context)!.logout)),
+              PopupMenuItem<String>(
+                value: 'logout',
+                child: Text(AppLocalizations.of(context)!.logout),
+              ),
             ],
             icon: const Icon(Icons.person_outline),
           ),
@@ -480,9 +493,15 @@ class _LocationCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _LocationChip(label: AppLocalizations.of(context)!.latitude, value: latitude),
+              _LocationChip(
+                label: AppLocalizations.of(context)!.latitude,
+                value: latitude,
+              ),
               const SizedBox(width: 12),
-              _LocationChip(label: AppLocalizations.of(context)!.longitude, value: longitude),
+              _LocationChip(
+                label: AppLocalizations.of(context)!.longitude,
+                value: longitude,
+              ),
             ],
           ),
           const SizedBox(height: 16),

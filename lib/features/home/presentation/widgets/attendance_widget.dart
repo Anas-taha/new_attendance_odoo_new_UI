@@ -34,8 +34,8 @@ class AttendanceWidget extends StatelessWidget {
                     textSize: 14.w,
                     textColor: AppColors.appPrimaryColor,
                     image: homeController.isAm.value
-                        ? AppImage.moon
-                        : AppImage.sun,
+                        ? AppImage.sun
+                        : AppImage.moon,
                     imageSize: 32.w,
                   ),
                 ),
