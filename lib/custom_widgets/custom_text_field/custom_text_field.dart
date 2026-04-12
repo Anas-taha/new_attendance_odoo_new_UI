@@ -19,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.useSuffixArrow = false,
     this.maxLines,
+    this.hintLocationTop = false,
   });
   TextEditingController controller;
 
@@ -29,38 +30,50 @@ class CustomTextField extends StatelessWidget {
   bool useSuffixArrow;
   String? hintText;
   int? maxLines;
+  bool hintLocationTop;
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-
-      enabled: enabled,
-
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        filled: true,
-        hint: CustomText(
-          text: hintText ?? '',
-          color: AppColors.appA0A0A0Text2,
-          fontSize: 14.w,
-          fontWeight: FontWeight.w500,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (hintLocationTop == true)
+          CustomText(
+            text: hintText ?? '',
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: AppColors.app1A1A1AText1,
+          ),
+        8.verticalSpace,
+        TextFormField(
+          controller: controller,
+          enabled: enabled,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            filled: true,
+            hint: CustomText(
+              text: hintLocationTop ? '' : hintText ?? '',
+              color: AppColors.appA0A0A0Text2,
+              fontSize: 14.w,
+              fontWeight: FontWeight.w500,
+            ),
+            fillColor: AppColors.appFAFAFABackGround2,
+            prefixIcon: usePrefixCalender
+                ? Container(
+                    padding: EdgeInsets.all(10),
+                    child: CustomImage(image: AppImage.calender),
+                  )
+                : prefixIcon,
+            border: _borderStyle(),
+            suffixIcon: useSuffixArrow
+                ? Icon(
+                    Icons.keyboard_arrow_down_sharp,
+                    color: AppColors.appA0A0A0Text2,
+                    size: 30,
+                  )
+                : suffixIcon,
+          ),
         ),
-        fillColor: AppColors.appFAFAFABackGround2,
-        prefixIcon: usePrefixCalender
-            ? Container(
-                padding: EdgeInsets.all(10),
-                child: CustomImage(image: AppImage.calender),
-              )
-            : prefixIcon,
-        border: _borderStyle(),
-        suffixIcon: useSuffixArrow
-            ? Icon(
-                Icons.keyboard_arrow_down_sharp,
-                color: AppColors.appA0A0A0Text2,
-                size: 30,
-              )
-            : suffixIcon,
-      ),
+      ],
     );
   }
 
