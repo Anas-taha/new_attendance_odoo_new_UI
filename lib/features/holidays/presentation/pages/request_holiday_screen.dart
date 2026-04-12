@@ -28,7 +28,10 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
-      floatingActionButton: CustomButton(text: 'ارسال', onTap: () {}),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: CustomButton(text: 'ارسال', onTap: () {}),
+      ),
       appBarTitle: 'طلب اجازة',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,20 +49,14 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
               controller.selectHoolidayType(type);
             },
           ),
-
           16.verticalSpace,
-          CustomText(
-            text: 'تاريخ البداية',
-            fontSize: 14.w,
-            fontWeight: FontWeight.w500,
-            color: AppColors.app1A1A1AText1,
-          ),
-          8.verticalSpace,
           GestureDetector(
             onTap: () {
               controller.selectStartDate();
             },
             child: CustomTextField(
+              hintText: 'تاريخ البداية',
+              hintLocationTop: true,
               controller: controller.holidayStartDateController,
               enabled: false,
               usePrefixCalender: true,
@@ -67,18 +64,14 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
             ),
           ),
           16.verticalSpace,
-          CustomText(
-            text: 'تاريخ النهاية',
-            fontSize: 14.w,
-            fontWeight: FontWeight.w500,
-            color: AppColors.app1A1A1AText1,
-          ),
-          8.verticalSpace,
+
           GestureDetector(
             onTap: () {
               controller.selectEndDate();
             },
             child: CustomTextField(
+              hintText: 'تاريخ النهاية',
+              hintLocationTop: true,
               controller: controller.holidayEndDateController,
               enabled: false,
               usePrefixCalender: true,
@@ -86,14 +79,13 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
             ),
           ),
           16.verticalSpace,
-          CustomText(
-            text: 'سبب الاجازة',
-            fontSize: 14.w,
-            fontWeight: FontWeight.w500,
-            color: AppColors.app1A1A1AText1,
+
+          CustomTextField(
+            controller: TextEditingController(),
+            maxLines: 2,
+            hintLocationTop: true,
+            hintText: 'سبب الاجازة',
           ),
-          8.verticalSpace,
-          CustomTextField(controller: TextEditingController(), maxLines: 2),
         ],
       ),
     );

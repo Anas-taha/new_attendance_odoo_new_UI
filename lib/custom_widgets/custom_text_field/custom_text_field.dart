@@ -20,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.useSuffixArrow = false,
     this.maxLines,
     this.hintLocationTop = false,
+    this.hintFontWeight,
   });
   TextEditingController controller;
 
@@ -31,6 +32,7 @@ class CustomTextField extends StatelessWidget {
   String? hintText;
   int? maxLines;
   bool hintLocationTop;
+  FontWeight? hintFontWeight;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -40,7 +42,7 @@ class CustomTextField extends StatelessWidget {
           CustomText(
             text: hintText ?? '',
             fontSize: 14,
-            fontWeight: FontWeight.w400,
+            fontWeight: hintFontWeight ?? FontWeight.w500,
             color: AppColors.app1A1A1AText1,
           ),
         8.verticalSpace,
@@ -53,7 +55,7 @@ class CustomTextField extends StatelessWidget {
             hint: CustomText(
               text: hintLocationTop ? '' : hintText ?? '',
               color: AppColors.appA0A0A0Text2,
-              fontSize: 14.w,
+              fontSize: 12.w,
               fontWeight: FontWeight.w500,
             ),
             fillColor: AppColors.appFAFAFABackGround2,

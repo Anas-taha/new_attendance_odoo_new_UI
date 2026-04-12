@@ -3,9 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/app/app_route.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_app_odoo/features/profile/presentation/widgets/change_lang_widget.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
+import 'package:hr_app_odoo/services/local_storage_service.dart';
 import 'package:hr_app_odoo/services/simple_hr_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
@@ -68,6 +72,35 @@ class ProfileController extends GetxController {
         ),
       ),
       isScrollControlled: true,
+    );
+  }
+
+  void logOut() async {
+    CustomDialog.dialog(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomText(
+            text: 'هل أنت متأكد من تسجيل الخروج؟',
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: AppColors.app1A1A1AText1,
+          ),
+          16.verticalSpace,
+          CustomButton(
+            text: 'تسجيل الخروج',
+            onTap: () async {
+              final storage = LocalStorageService();
+              await storage.saveLastCredentials(
+                email: '',
+                password: '',
+                name: '',
+              );
+              Get.offAllNamed(AppRoutes.login);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

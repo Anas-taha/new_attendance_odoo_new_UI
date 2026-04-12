@@ -31,17 +31,21 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
-      floatingActionButton: CustomButton(
-        text: 'طلب اجازه',
-        onTap: () {
-          Get.toNamed(AppRoutes.requestHoliday);
-        },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: CustomButton(
+          text: 'طلب اجازه',
+          onTap: () {
+            Get.toNamed(AppRoutes.requestHoliday);
+          },
+        ),
       ),
       appBarTitle: 'الاجازات',
 
       body: Column(
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: CustomDropDown(

@@ -10,10 +10,18 @@ class CustomDialog {
     bool barrierDismissible = false,
   }) {
     return showDialog(
-      barrierDismissible: barrierDismissible,
       context: Get.context!,
       builder: (_) {
-        return child;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              content: child,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -21,13 +29,14 @@ class CustomDialog {
   static Future loginAgainDialog(String? message) async {
     await dialog(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           CustomText(text: message ?? ''),
           CustomText(text: 'Your session has expired. Please log in again.'),
           CustomButton(
             text: 'Login Again',
             onTap: () {
-              Get.offAll(AppRoutes.login);
+              Get.offAllNamed(AppRoutes.login);
             },
           ),
         ],

@@ -19,6 +19,13 @@ class LoginController extends GetxController {
     prefillSavedCredentials();
   }
 
+  @override
+  void onClose() {
+    super.onClose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
+
   Future<void> prefillSavedCredentials() async {
     final storage = LocalStorageService();
     final savedEmail = await storage.getSavedEmail();
@@ -74,7 +81,7 @@ class LoginController extends GetxController {
           //   ),
           // );
           isLoading.value = false;
-          Get.toNamed(AppRoutes.home);
+          Get.offAllNamed(AppRoutes.home);
         } else {
           isLoading.value = false;
           ScaffoldMessenger.of(Get.context!).showSnackBar(

@@ -27,20 +27,23 @@ class CustomScreen extends StatelessWidget {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Stack(
         children: [
-          Scaffold(
-            backgroundColor: AppColors.appFFFFFFBackGround1,
-            floatingActionButton: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: floatingActionButton,
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-            appBar: appBarTitle != null
-                ? CustomAppBar(title: appBarTitle ?? '')
-                : appBar,
-            body: Padding(
-              padding: EdgeInsets.all(screenPadding ?? 20),
-              child: body,
+          SafeArea(
+            top: false,
+            child: Scaffold(
+              backgroundColor: AppColors.appFFFFFFBackGround1,
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: floatingActionButton,
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              appBar: appBarTitle != null
+                  ? CustomAppBar(title: appBarTitle ?? '')
+                  : appBar,
+              body: Padding(
+                padding: EdgeInsets.all(screenPadding ?? 20),
+                child: body,
+              ),
             ),
           ),
           CustomItem.customLoading(loading: loading ?? false.obs),

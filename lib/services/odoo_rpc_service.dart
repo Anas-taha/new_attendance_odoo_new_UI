@@ -334,10 +334,10 @@ class OdooRPCService {
                 name: 'OdooRPCService',
                 'Session expired or invalid. Redirecting to login.',
               );
-              Get.offNamed(AppRoutes.login);
-              // await CustomDialog.loginAgainDialog(
-              //   jsonResponse['error']['data']['message'],
-              // );
+              await CustomDialog.loginAgainDialog(
+                jsonResponse['error']['data']['message'],
+              );
+              // Get.offNamed(AppRoutes.login);
             }
             return {
               'success': false,

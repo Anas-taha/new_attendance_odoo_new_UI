@@ -32,9 +32,11 @@ class _CustomDropDownState extends State<CustomDropDown> {
 
         valueListenable: valueListenable,
 
-        hint: Text(
-          widget.hintText ?? '',
-          style: const TextStyle(color: Colors.grey),
+        hint: CustomText(
+          text: widget.hintText ?? '',
+          color: AppColors.appA0A0A0Text2,
+          fontSize: 12.w,
+          fontWeight: FontWeight.w500,
         ),
 
         items: widget.itemList.map((e) {
@@ -53,7 +55,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.grey),
-            color: Colors.white,
+            color: AppColors.appFAFAFABackGround2,
           ),
         ),
 
@@ -62,7 +64,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
+            color: AppColors.appFAFAFABackGround2,
           ),
           elevation: 4,
         ),
@@ -74,7 +76,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
         iconStyleData: const IconStyleData(
           icon: Icon(Icons.keyboard_arrow_down),
           iconSize: 28,
-          iconEnabledColor: Colors.grey,
+          iconEnabledColor: AppColors.appA0A0A0Text2,
         ),
       ),
     );

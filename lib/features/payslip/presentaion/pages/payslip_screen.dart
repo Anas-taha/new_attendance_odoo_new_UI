@@ -34,9 +34,9 @@ class _PayslipScreenState extends State<PayslipScreen> {
     return Obx(
       () => CustomScreen(
         loading: controller.isLoading,
-        floatingActionButton: CustomButton(
-          text: 'تحميل كشف الراتب',
-          onTap: () {},
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: CustomButton(text: 'تحميل كشف الراتب', onTap: () {}),
         ),
         appBarTitle: "الرواتب",
         body: Column(
