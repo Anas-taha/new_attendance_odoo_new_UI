@@ -1,10 +1,8 @@
-
-
 class HrPayslip {
-  final int? id;
+  final num? id;
   final String? name;
-  final int? employeeId;
-  final int? totalAmount;
+  final num? employeeId;
+  final num? totalAmount;
   final String? employeeName;
   final String? state;
   final DateTime? dateFrom;
@@ -114,9 +112,9 @@ class HrPayslip {
   }
 
   HrPayslip copyWith({
-    int? id,
+    num? id,
     String? name,
-    int? employeeId,
+    num? employeeId,
     String? employeeName,
     String? state,
     DateTime? dateFrom,

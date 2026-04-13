@@ -94,7 +94,7 @@ class AppPages {
       name: AppRoutes.payslips,
       page: () => PayslipScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<PayslipController>(() => PayslipController());
+        Get.lazyPut<PayslipController>(() => PayslipController(), fenix: true);
       }),
     ),
     GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),

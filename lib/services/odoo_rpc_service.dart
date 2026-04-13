@@ -696,7 +696,7 @@ class OdooRPCService {
   /// Update an existing record in Odoo
   Future<Map<String, dynamic>> write({
     required String model,
-    required int recordId,
+    required num recordId,
     required Map<String, dynamic> values,
   }) async {
     return await executeRPC(
