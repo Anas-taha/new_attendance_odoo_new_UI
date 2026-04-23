@@ -7,6 +7,7 @@ import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_c
 import 'package:hr_app_odoo/features/holidays/presentation/widgets/HolidayColoredStateCardWidget.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/widgets/holiday_detail_widget.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/widgets/holiday_select_state_card_widget.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_screen/custom_screen.dart';
@@ -34,22 +35,22 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: CustomButton(
-          text: 'طلب اجازه',
+          text: context.appWords.leaveRequest,
           onTap: () {
             Get.toNamed(AppRoutes.requestHoliday);
           },
         ),
       ),
-      appBarTitle: 'الاجازات',
+      appBarTitle: context.appWords.holidays,
 
       body: Column(
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: CustomDropDown(
-                  hintText: 'نوع الاجازة',
+                  hintText: context.appWords.leaveType,
                   itemList: ['1', '2', '3'],
                   onSelect: (type) {
                     controller.selectHoolidayType(type);
@@ -59,13 +60,14 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
               7.horizontalSpace,
               Expanded(
                 child: GestureDetector(
-                  onTap: () => controller.selectStartDate(),
+                  onTap: () =>
+                      controller.selectStartDate(context.appWords.startDate),
                   child: CustomTextField(
                     controller: controller.holidayStartDateController,
                     enabled: false,
                     usePrefixCalender: true,
                     useSuffixArrow: true,
-                    hintText: 'تاريخ البداية',
+                    hintText: context.appWords.startDate,
                   ),
                 ),
               ),

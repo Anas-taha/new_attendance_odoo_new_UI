@@ -380,6 +380,12 @@ abstract class AppLocalizations {
   /// **'What do you need?'**
   String get whatDoYouNeed;
 
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
   /// No description provided for @contracts.
   ///
   /// In en, this message translates to:
@@ -451,6 +457,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'phone'**
   String get phone;
+
+  /// No description provided for @leaveRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Request'**
+  String get leaveRequest;
+
+  /// No description provided for @leaveType.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Type'**
+  String get leaveType;
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDate;
+
+  /// No description provided for @sickLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Sick Leave'**
+  String get sickLeave;
+
+  /// No description provided for @leaveReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Reason'**
+  String get leaveReason;
+
+  /// No description provided for @rejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectionReason;
+
+  /// No description provided for @allStatuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get allStatuses;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get approved;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
 
   /// No description provided for @noNotification.
   ///
@@ -1549,12 +1615,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contract Period'**
   String get contractPeriod;
-
-  /// No description provided for @startDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Date'**
-  String get startDate;
 
   /// No description provided for @endDate.
   ///

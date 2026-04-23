@@ -163,6 +163,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatDoYouNeed => 'What do you need?';
 
   @override
+  String get send => 'Send';
+
+  @override
   String get contracts => 'Contracts';
 
   @override
@@ -197,6 +200,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phone => 'phone';
+
+  @override
+  String get leaveRequest => 'Leave Request';
+
+  @override
+  String get leaveType => 'Leave Type';
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get sickLeave => 'Sick Leave';
+
+  @override
+  String get leaveReason => 'Leave Reason';
+
+  @override
+  String get rejectionReason => 'Rejection Reason';
+
+  @override
+  String get allStatuses => 'All Statuses';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get approved => 'Approved';
+
+  @override
+  String get rejected => 'Rejected';
 
   @override
   String get noNotification => 'No Notification';
@@ -799,9 +832,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contractPeriod => 'Contract Period';
-
-  @override
-  String get startDate => 'Start Date';
 
   @override
   String get endDate => 'End Date';

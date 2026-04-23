@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_drop_down/custom_drop_down.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_screen/custom_screen.dart';
@@ -30,14 +31,14 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
     return CustomScreen(
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
-        child: CustomButton(text: 'ارسال', onTap: () {}),
+        child: CustomButton(text: context.appWords.send, onTap: () {}),
       ),
-      appBarTitle: 'طلب اجازة',
+      appBarTitle: context.appWords.leaveRequest,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
-            text: 'نوع الاجازة',
+            text: context.appWords.leaveEarly,
             fontSize: 14.w,
             fontWeight: FontWeight.w500,
             color: AppColors.app1A1A1AText1,
@@ -52,10 +53,10 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
           16.verticalSpace,
           GestureDetector(
             onTap: () {
-              controller.selectStartDate();
+              controller.selectStartDate(context.appWords.startDate);
             },
             child: CustomTextField(
-              hintText: 'تاريخ البداية',
+              hintText: context.appWords.startDate,
               hintLocationTop: true,
               controller: controller.holidayStartDateController,
               enabled: false,
@@ -67,10 +68,10 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
 
           GestureDetector(
             onTap: () {
-              controller.selectEndDate();
+              controller.selectEndDate(context.appWords.endDate);
             },
             child: CustomTextField(
-              hintText: 'تاريخ النهاية',
+              hintText: context.appWords.endDate,
               hintLocationTop: true,
               controller: controller.holidayEndDateController,
               enabled: false,
@@ -84,7 +85,7 @@ class _RequestHolidayScreenState extends State<RequestHolidayScreen> {
             controller: TextEditingController(),
             maxLines: 2,
             hintLocationTop: true,
-            hintText: 'سبب الاجازة',
+            hintText: context.appWords.leaveReason,
           ),
         ],
       ),

@@ -162,6 +162,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whatDoYouNeed => 'ماذا تحتاج؟';
 
   @override
+  String get send => 'إرسال';
+
+  @override
   String get contracts => 'العقود';
 
   @override
@@ -196,6 +199,36 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get phone => 'رقم الهاتف';
+
+  @override
+  String get leaveRequest => 'طلب إجازة';
+
+  @override
+  String get leaveType => 'نوع الإجازة';
+
+  @override
+  String get startDate => 'تاريخ البدء';
+
+  @override
+  String get sickLeave => 'إجازة مرضية';
+
+  @override
+  String get leaveReason => 'سبب الإجازة';
+
+  @override
+  String get rejectionReason => 'سبب الرفض';
+
+  @override
+  String get allStatuses => 'كل الحالات';
+
+  @override
+  String get pending => 'قيد المعالجة';
+
+  @override
+  String get approved => 'تمت الموافقة';
+
+  @override
+  String get rejected => 'مرفوضة';
 
   @override
   String get noNotification => 'لا يوجد إشعارات';
@@ -791,9 +824,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contractPeriod => 'فترة العقد';
-
-  @override
-  String get startDate => 'تاريخ البدء';
 
   @override
   String get endDate => 'تاريخ الانتهاء';
