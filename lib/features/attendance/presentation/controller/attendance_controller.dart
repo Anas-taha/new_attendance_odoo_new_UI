@@ -174,10 +174,7 @@ class AttendanceController extends GetxController {
   }
 
   void selectDate() {
-    CustomCalender.calenderDialog(
-      contorller: dateController,
-      title: 'اختر التاريخ',
-    );
+    CustomCalender.calenderDialog(contorller: dateController);
   }
 
   Future<void> loadAttendanceData() async {

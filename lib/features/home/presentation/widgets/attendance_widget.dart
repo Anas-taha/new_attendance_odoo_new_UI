@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/widgets/quick_state_widget.dart';
@@ -73,8 +74,8 @@ class AttendanceWidget extends StatelessWidget {
           Obx(
             () => CustomButton(
               text: homeController.isRunning.value
-                  ? 'تسجيل الانصراف'
-                  : 'تسجيل الحضور',
+                  ? context.appWords.checkOut
+                  : context.appWords.checkIn,
               onTap: () {
                 homeController.timerSwitchButton();
               },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
@@ -58,13 +60,13 @@ class AttendanceInfoCardWidget extends StatelessWidget {
   String text() {
     switch (state) {
       case AttendanceStateEnum.leaveEarly:
-        return 'مغادرة مبكره';
+        return Get.context!.appWords.leaveEarly;
       case AttendanceStateEnum.absences:
-        return 'غيابات';
+        return Get.context!.appWords.absences;
       case AttendanceStateEnum.holidays:
-        return 'الاجازات';
+        return Get.context!.appWords.holidays;
       case AttendanceStateEnum.lateArrival:
-        return 'تأخير';
+        return Get.context!.appWords.lateArrival;
     }
   }
 

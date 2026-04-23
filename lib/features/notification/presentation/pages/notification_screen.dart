@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/instance_manager.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
 import 'package:hr_app_odoo/features/notification/presentation/widgets/no_notif_widget.dart';
 import 'package:hr_app_odoo/features/notification/presentation/widgets/notif_card_widget.dart';
@@ -22,7 +23,7 @@ class NotificationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.appFFFFFFBackGround1,
       appBar: CustomAppBar(
-        title: 'الاشعارات',
+        title: context.appWords.notifications,
         onBackTap: () => Get.back(),
         showNotivication: false,
       ),

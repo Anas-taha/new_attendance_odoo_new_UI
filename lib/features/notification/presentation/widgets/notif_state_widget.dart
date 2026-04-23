@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
+import 'package:path/path.dart';
 
 class NotificationStateWidget extends StatelessWidget {
   NotificationStateWidget({super.key, required this.state});
@@ -37,7 +39,7 @@ class NotificationStateWidget extends StatelessWidget {
           ),
           child: CustomText(
             textAlign: TextAlign.center,
-            text: stateTitle(state),
+             text: stateTitle(state),
             color: isSelected
                 ? AppColors.app670379Sedondary2
                 : AppColors.appA0A0A0Text2,
@@ -53,10 +55,10 @@ class NotificationStateWidget extends StatelessWidget {
 String stateTitle(NotifiState state) {
   switch (state) {
     case NotifiState.all:
-      return 'الكل';
+      return Get.context!.appWords.all;
     case NotifiState.readed:
-      return 'مقروءة';
+      return Get.context!.appWords.readed;
     case NotifiState.unReaded:
-      return 'غير مقروءة';
+      return Get.context!.appWords.unReaded;
   }
 }

@@ -84,20 +84,20 @@ class HomeController extends GetxController {
   //--------------------- Date Handling ---------------------
   void getCurrentDate() {
     final now = DateTime.now();
-
-    const months = [
-      'يناير',
-      'فبراير',
-      'مارس',
-      'أبريل',
-      'مايو',
-      'يونيو',
-      'يوليو',
-      'أغسطس',
-      'سبتمبر',
-      'أكتوبر',
-      'نوفمبر',
-      'ديسمبر',
+    var locale = AppLocalizations.of(Get.context!)!;
+    List<String> months = [
+      locale.january,
+      locale.february,
+      locale.march,
+      locale.april,
+      locale.may,
+      locale.june,
+      locale.july,
+      locale.august,
+      locale.september,
+      locale.october,
+      locale.november,
+      locale.december,
     ];
 
     currentDate.value = '${now.day} ${months[now.month - 1]} ${now.year}';

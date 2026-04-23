@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/features/payslip/presentaion/controller/payslip_controller.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
@@ -24,19 +25,19 @@ class PayslipScreen extends StatelessWidget {
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: CustomButton(
-              text: 'تحميل كشف الراتب',
+              text:context.appWords.downloadPayslip ,
               onTap: () {
                 controller.generatePdf();
               },
             ),
           ),
-          appBarTitle: "الرواتب",
+          appBarTitle: context.appWords.salary,
           body: Column(
             children: [
               GestureDetector(
                 onTap: () => controller.selectDate(),
                 child: CustomTextField(
-                  hintText: 'اختر التاريخ',
+                  hintText: context.appWords.selectDate,
                   usePrefixCalender: true,
                   useSuffixArrow: true,
                   controller: controller.dateController,
@@ -71,7 +72,7 @@ class PayslipScreen extends StatelessWidget {
                       ),
                       10.verticalSpace,
                       CustomText(
-                        text: 'الراتب الاساسي',
+                        text: context.appWords.mainSalary,
                         color: AppColors.appFFFFFFBackGround1,
                         fontWeight: FontWeight.w700,
                       ),
@@ -92,7 +93,7 @@ class PayslipScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       CustomText(
-                        text: 'البدلات',
+                        text: context.appWords.allowances,
                         color: AppColors.appPrimaryColor,
                         fontWeight: FontWeight.w700,
                       ),
@@ -115,7 +116,7 @@ class PayslipScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     CustomText(
-                      text: 'الخصومات',
+                      text: context.appWords.deductions,
                       color: AppColors.appF44336Error,
                       fontWeight: FontWeight.w700,
                     ),
@@ -137,7 +138,7 @@ class PayslipScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     CustomText(
-                      text: 'صافي الراتب',
+                      text:context.appWords.netSalary,
                       color: AppColors.app4CAF50Success,
                       fontWeight: FontWeight.w700,
                     ),

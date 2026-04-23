@@ -36,6 +36,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordRequired => 'كلمة المرور مطلوبة';
 
   @override
+  String get loginDes => 'سجّل دخولك للوصول إلى حسابك وإدارة عملك بسهولة';
+
+  @override
   String get passwordMinLength => 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
 
   @override
@@ -168,6 +171,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String get expenses => 'المصروفات';
 
   @override
+  String get profile => 'الصفحة الشخصية';
+
+  @override
+  String get holidays => 'الأجازات';
+
+  @override
+  String get lateArrival => 'تأخير';
+
+  @override
+  String get absences => 'غيابات';
+
+  @override
+  String get leaveEarly => 'مغادرة مبكره';
+
+  @override
+  String get noNotification => 'لا يوجد إشعارات';
+
+  @override
+  String get noNotificationDescription => 'سنخبرك عندما يكون هناك شيء لتحديثك';
+
+  @override
+  String get salary => 'الرواتب';
+
+  @override
+  String get lastNotifications => 'اخر اشعارات الشركة';
+
+  @override
+  String get attendanceAndLeaves => 'الحضور والانصراف';
+
+  @override
   String get attendance => 'الحضور';
 
   @override
@@ -287,7 +320,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkIn => 'تسجيل الحضور';
 
   @override
-  String get checkOut => 'تسجيل الخروج';
+  String get checkOut => 'تسجيل الانصراف';
 
   @override
   String get duration => 'المدة';
@@ -559,7 +592,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get smartAttendance => 'الحضور الذكي';
 
   @override
-  String get welcome => 'مرحباً!';
+  String get welcome => 'مرحباً بك';
 
   @override
   String get whatWouldYouLikeToDo => 'ماذا تريد أن تفعل اليوم؟';
@@ -825,6 +858,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notes => 'ملاحظات';
 
   @override
+  String get mainSalary => 'الراتب الاساسي';
+
+  @override
+  String get notifications => 'الاشعارات';
+
+  @override
   String get employeeId => 'معرف الموظف';
 
   @override
@@ -840,6 +879,63 @@ class AppLocalizationsAr extends AppLocalizations {
   String errorProcessingExpenses(String error) {
     return 'خطأ في معالجة المصروفات: $error';
   }
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get allowances => 'البدلات';
+
+  @override
+  String get deductions => 'الخصومات';
+
+  @override
+  String get netSalary => 'صافي المرتب';
+
+  @override
+  String get downloadPayslip => 'تحميل كشف الراتب';
+
+  @override
+  String get readed => 'مقروءة';
+
+  @override
+  String get unReaded => 'غير مقروءة';
+
+  @override
+  String get january => 'يناير';
+
+  @override
+  String get february => 'فبراير';
+
+  @override
+  String get march => 'مارس';
+
+  @override
+  String get april => 'أبريل';
+
+  @override
+  String get may => 'مايو';
+
+  @override
+  String get june => 'يونيو';
+
+  @override
+  String get july => 'يوليو';
+
+  @override
+  String get august => 'أغسطس';
+
+  @override
+  String get september => 'سبتمبر';
+
+  @override
+  String get october => 'أكتوبر';
+
+  @override
+  String get november => 'نوفمبر';
+
+  @override
+  String get december => 'ديسمبر';
 
   @override
   String get language => 'اللغة';

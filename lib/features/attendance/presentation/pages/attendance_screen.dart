@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_card_widget.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/weak_info_widget.dart';
@@ -37,7 +38,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Widget build(BuildContext context) {
     return CustomScreen(
       loading: controller.isLoading,
-      appBarTitle: 'الحضور والانصراف',
+      appBarTitle: context.appWords.attendanceAndLeaves,
       body: Column(
         children: [
           Obx(
@@ -46,7 +47,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           GestureDetector(
             onTap: () => controller.selectDate(),
             child: CustomTextField(
-              hintText: 'اختر التاريخ',
+              hintText: context.appWords.selectDate,
               controller: controller.dateController,
               enabled: false,
               usePrefixCalender: true,

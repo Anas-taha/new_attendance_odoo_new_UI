@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
+import 'package:hr_app_odoo/app/app_locale.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
 import 'package:hr_app_odoo/models/hr_payslip.dart';
 import 'package:hr_app_odoo/services/simple_hr_service.dart';
@@ -26,6 +28,7 @@ class PayslipController extends GetxController {
     super.onReady();
     dateController.text = '';
     getSalaries();
+    log(name: 'isArabic', Get.find<AppLocaleController>().isArabic.toString());
   }
 
   void getSalaries() async {
@@ -35,7 +38,6 @@ class PayslipController extends GetxController {
       // salary.value = result.first;
       salary = true;
       update();
-      log(name: 'iscbisducbds', 'result: $result');
     } else {
       salary = false;
       update();
@@ -59,7 +61,7 @@ class PayslipController extends GetxController {
   void selectDate() {
     CustomCalender.calenderDialog(
       contorller: dateController,
-      title: 'اختر التاريخ',
+      title: Get.context!.appWords.selectDate,
     );
   }
 

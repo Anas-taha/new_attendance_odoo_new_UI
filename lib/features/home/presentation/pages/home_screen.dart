@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/app/locale_scope.dart';
@@ -166,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Expanded(
                     child: FeatureCardWidget(
                       image: AppImage.attendance,
-                      title: 'الحضور والانصراف',
+                      title: context.appWords.attendanceAndLeaves,
                       onTap: () {
                         Get.toNamed(AppRoutes.attendance);
                         // Navigator.pushNamed(
@@ -187,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Expanded(
                     child: FeatureCardWidget(
                       image: AppImage.holiday,
-                      title: 'الاجازات',
+                      title: context.appWords.holidays,
                       onTap: () => Get.toNamed(AppRoutes.holidays),
                       // onTap: () => Navigator.pushNamed(context, '/team-off'),
                     ),
@@ -201,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     child: FeatureCardWidget(
                       image: AppImage.money,
                       // title: AppLocalizations.of(context)!.payslip,
-                      title: "الرواتب",
+                      title: context.appWords.salary,
 
                       onTap: () => Get.toNamed(AppRoutes.payslips),
                     ),
@@ -210,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Expanded(
                     child: FeatureCardWidget(
                       image: AppImage.person,
-                      title: 'الصفحه الشخصية',
+                      title: context.appWords.profile,
                       onTap: () => Get.toNamed(AppRoutes.profile),
                     ),
                   ),
@@ -218,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
               16.verticalSpace,
               CustomText(
-                text: 'اخر اشعارات الشركة',
+                text: context.appWords.lastNotifications,
                 fontWeight: FontWeight.w600,
               ),
               16.verticalSpace,

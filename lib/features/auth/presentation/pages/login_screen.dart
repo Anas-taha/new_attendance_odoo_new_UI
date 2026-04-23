@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
@@ -48,7 +49,7 @@ class LoginScreen extends StatelessWidget {
             80.verticalSpace,
 
             CustomText(
-              text: 'تسجيل الدخول',
+              text: context.appWords.logIn,
               fontSize: 16.w,
               color: AppColors.app1A1A1AText1,
               fontWeight: FontWeight.w700,
@@ -56,7 +57,7 @@ class LoginScreen extends StatelessWidget {
             ),
             8.verticalSpace,
             CustomText(
-              text: 'سجّل دخولك للوصول إلى حسابك وإدارة عملك بسهولة',
+              text: context.appWords.loginDes,
               fontSize: 13.w,
               color: AppColors.appA0A0A0Text2,
               fontWeight: FontWeight.w500,
@@ -65,18 +66,18 @@ class LoginScreen extends StatelessWidget {
             16.verticalSpace,
             CustomTextField(
               controller: loginController.emailController,
-              hintText: 'البريد الالكتروني',
+              hintText: context.appWords.email,
               hintLocationTop: true,
             ),
             16.verticalSpace,
             CustomTextField(
               controller: loginController.passwordController,
-              hintText: 'كلمة المرور',
+              hintText: context.appWords.password,
               hintLocationTop: true,
             ),
             28.verticalSpace,
             CustomButton(
-              text: 'تسجيل الدخول',
+              text: context.appWords.logIn,
               onTap: () {
                 loginController.handleLogin();
               },

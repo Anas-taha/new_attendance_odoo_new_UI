@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
@@ -12,6 +13,7 @@ import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
 import 'package:hr_app_odoo/services/simple_hr_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
+import 'package:path/path.dart';
 
 class ProfileController extends GetxController {
   // ignore: prefer_typing_uninitialized_variables
@@ -59,7 +61,7 @@ class ProfileController extends GetxController {
           children: [
             10.verticalSpace,
             CustomText(
-              text: 'اللغه',
+              text: Get.context!.appWords.language,
               fontSize: 16.w,
               fontWeight: FontWeight.w700,
               color: AppColors.appPrimaryColor,

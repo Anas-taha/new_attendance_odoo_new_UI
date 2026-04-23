@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_Item/custom_item.dart';
@@ -136,7 +137,7 @@ class ProfileScreen extends StatelessWidget {
                                           ),
                                           5.horizontalSpace,
                                           CustomText(
-                                            text: 'اللغة',
+                                            text: context.appWords.language,
                                             fontSize: 13.w,
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.app1A1A1AText1,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
@@ -24,7 +25,7 @@ class GreetingWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             CustomText(
-              text: 'مرحباً بك',
+              text: context.appWords.welcome,
               color: AppColors.appA0A0A0Text2,
               fontSize: 14,
               fontWeight: FontWeight.w400,

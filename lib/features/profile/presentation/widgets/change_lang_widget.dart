@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
+import 'package:hr_app_odoo/app/app_locale.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
@@ -15,7 +16,8 @@ class ChangeLangWidget extends StatelessWidget {
     bool isSelected = lang == Get.locale!.languageCode;
     return GestureDetector(
       onTap: () {
-        Get.updateLocale(Locale(lang));
+        Get.find<AppLocaleController>().changeLang(lang);
+        // Get.updateLocale(Locale(lang));
         Get.back();
       },
       child: Container(
