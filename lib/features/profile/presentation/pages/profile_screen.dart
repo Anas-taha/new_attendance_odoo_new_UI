@@ -75,15 +75,16 @@ class ProfileScreen extends StatelessWidget {
                                       child: Column(
                                         children: [
                                           ProfileItemInfoWidget(
-                                            title: 'المدير المباشر',
+                                            title:
+                                                context.appWords.directManeger,
                                             value: 'سالم عبد الحكيم صابر',
                                           ),
                                           ProfileItemInfoWidget(
-                                            title: 'تابع الي قسم',
+                                            title: context.appWords.belongToDepartment,
                                             value: 'قسم الانتاج',
                                           ),
                                           ProfileItemInfoWidget(
-                                            title: 'فرع',
+                                            title: context.appWords.branch,
                                             value: 'الفرع الرئيسي بالرياض',
                                           ),
                                         ],
@@ -96,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
                                     child: Column(
                                       children: [
                                         ProfileItemInfoWidget(
-                                          title: 'رقم الهاتف',
+                                          title: context.appWords.phone,
                                           value:
                                               controller
                                                   .profileData
@@ -104,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                                               '',
                                         ),
                                         ProfileItemInfoWidget(
-                                          title: 'البريد الالكرتوني',
+                                          title: context.appWords.email,
                                           value:
                                               controller
                                                   .profileData
@@ -174,7 +175,7 @@ class ProfileScreen extends StatelessWidget {
                                           ),
                                           5.horizontalSpace,
                                           CustomText(
-                                            text: 'تسجيل الخروج',
+                                            text: context.appWords.logOut,
                                             fontSize: 13.w,
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.app1A1A1AText1,

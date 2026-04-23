@@ -186,6 +186,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get leaveEarly => 'مغادرة مبكره';
 
   @override
+  String get directManeger => 'المدير المباشر';
+
+  @override
+  String get belongToDepartment => 'تابع الي قسم';
+
+  @override
+  String get branch => 'فرع';
+
+  @override
+  String get phone => 'رقم الهاتف';
+
+  @override
   String get noNotification => 'لا يوجد إشعارات';
 
   @override

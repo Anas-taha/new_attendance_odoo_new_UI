@@ -187,6 +187,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leaveEarly => 'LeaveEarly';
 
   @override
+  String get directManeger => 'Direct Maneger';
+
+  @override
+  String get belongToDepartment => 'Department';
+
+  @override
+  String get branch => 'branch';
+
+  @override
+  String get phone => 'phone';
+
+  @override
   String get noNotification => 'No Notification';
 
   @override

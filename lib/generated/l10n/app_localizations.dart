@@ -428,6 +428,30 @@ abstract class AppLocalizations {
   /// **'LeaveEarly'**
   String get leaveEarly;
 
+  /// No description provided for @directManeger.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Maneger'**
+  String get directManeger;
+
+  /// No description provided for @belongToDepartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get belongToDepartment;
+
+  /// No description provided for @branch.
+  ///
+  /// In en, this message translates to:
+  /// **'branch'**
+  String get branch;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'phone'**
+  String get phone;
+
   /// No description provided for @noNotification.
   ///
   /// In en, this message translates to:
