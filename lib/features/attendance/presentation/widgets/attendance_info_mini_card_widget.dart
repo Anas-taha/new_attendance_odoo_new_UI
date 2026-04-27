@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
@@ -27,25 +29,21 @@ class AttendanceInfoMiniCardWidget extends StatelessWidget {
         ),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    text: value ?? '0',
-                    fontSize: 13.w,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.app1A1A1AText1,
-                  ),
-                  2.horizontalSpace,
-                ],
+              5.verticalSpace,
+              CustomText(
+                text: value ?? '0',
+                fontSize: 13.w,
+                fontWeight: FontWeight.w500,
+                color: AppColors.app1A1A1AText1,
               ),
               3.verticalSpace,
               CustomText(
+                overflow: TextOverflow.ellipsis,
                 text: text(),
                 color: AppColors.app1A1A1AText1,
-                fontSize: 13.w,
+                fontSize: 10.w,
                 fontWeight: FontWeight.w400,
               ),
             ],
@@ -58,13 +56,13 @@ class AttendanceInfoMiniCardWidget extends StatelessWidget {
   String text() {
     switch (state) {
       case AttendanceStateEnum.leaveEarly:
-        return 'مغادرة';
+        return Get.context!.appWords.departure;
       case AttendanceStateEnum.absences:
-        return 'غياب';
+        return Get.context!.appWords.absence;
       case AttendanceStateEnum.holidays:
-        return 'الاجازات';
+        return Get.context!.appWords.leaves;
       case AttendanceStateEnum.lateArrival:
-        return 'تأخير';
+        return Get.context!.appWords.late;
     }
   }
 

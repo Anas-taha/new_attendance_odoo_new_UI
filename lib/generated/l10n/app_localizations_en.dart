@@ -325,6 +325,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startYourShift => 'Start Your Shift';
 
   @override
+  String get days => 'Days';
+
+  @override
   String get checkedInClickLogout =>
       'You are currently checked in. Click Log Out to end your work session.';
 
@@ -334,6 +337,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logOut => 'Log Out';
+
+  @override
+  String get departure => 'Departure';
+
+  @override
+  String get absence => 'Absence';
+
+  @override
+  String get leaves => 'Leaves';
+
+  @override
+  String get late => 'Late';
 
   @override
   String get logIn => 'Log In';
@@ -448,9 +463,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get punctualityAnalysis => 'Punctuality Analysis';
-
-  @override
-  String get late => 'Late';
 
   @override
   String get earlyLeave => 'Early Leave';

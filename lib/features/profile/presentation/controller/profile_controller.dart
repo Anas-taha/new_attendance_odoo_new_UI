@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/features/profile/presentation/widgets/change_japanese_widget.dart';
 import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
@@ -69,7 +70,9 @@ class ProfileController extends GetxController {
             24.verticalSpace,
             ChangeLangWidget(lang: 'ar'),
             ChangeLangWidget(lang: 'en'),
+            ChangeJapaneseWidget(),
             const SizedBox(height: 10),
+
           ],
         ),
       ),

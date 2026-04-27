@@ -31,13 +31,13 @@ class AttendanceInfoCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomText(
-                  text: value??'0',
+                  text: value ?? '0',
                   fontWeight: FontWeight.w700,
                   color: textColor(),
                 ),
                 2.horizontalSpace,
                 CustomText(
-                  text: 'أيام',
+                  text: Get.context!.appWords.days,
                   fontSize: 10.w,
                   color: AppColors.appA0A0A0Text2,
                   fontWeight: FontWeight.w500,

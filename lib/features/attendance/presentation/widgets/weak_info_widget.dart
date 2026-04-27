@@ -151,7 +151,7 @@ class _weekNumberAndDate extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
-            text: '',
+            text: 'الاسبوع الاول',
             fontSize: 14.w,
             fontWeight: FontWeight.w400,
             color: AppColors.appPrimaryColor,

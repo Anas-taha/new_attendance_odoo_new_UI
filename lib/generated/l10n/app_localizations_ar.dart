@@ -321,6 +321,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get startYourShift => 'بدء الدوام';
 
   @override
+  String get days => 'أيام';
+
+  @override
   String get checkedInClickLogout =>
       'لقد قمت بتسجيل الحضور. انقر على تسجيل الخروج لإنهاء جلسة العمل.';
 
@@ -330,6 +333,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get logOut => 'تسجيل الخروج';
+
+  @override
+  String get departure => 'مغادرة';
+
+  @override
+  String get absence => 'غياب';
+
+  @override
+  String get leaves => 'إجازات';
+
+  @override
+  String get late => 'متأخر';
 
   @override
   String get logIn => 'تسجيل الدخول';
@@ -444,9 +459,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get punctualityAnalysis => 'تحليل الالتزام بالوقت';
-
-  @override
-  String get late => 'متأخر';
 
   @override
   String get earlyLeave => 'مغادرة مبكرة';

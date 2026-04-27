@@ -674,6 +674,12 @@ abstract class AppLocalizations {
   /// **'Start Your Shift'**
   String get startYourShift;
 
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get days;
+
   /// No description provided for @checkedInClickLogout.
   ///
   /// In en, this message translates to:
@@ -691,6 +697,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log Out'**
   String get logOut;
+
+  /// No description provided for @departure.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get departure;
+
+  /// No description provided for @absence.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence'**
+  String get absence;
+
+  /// No description provided for @leaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaves'**
+  String get leaves;
+
+  /// No description provided for @late.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get late;
 
   /// No description provided for @logIn.
   ///
@@ -919,12 +949,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Punctuality Analysis'**
   String get punctualityAnalysis;
-
-  /// No description provided for @late.
-  ///
-  /// In en, this message translates to:
-  /// **'Late'**
-  String get late;
 
   /// No description provided for @earlyLeave.
   ///
