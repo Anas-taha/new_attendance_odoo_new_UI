@@ -1,5 +1,1 @@
-import 'package:hr_app_odoo/models/hr_employee.dart';
-
-abstract class ProfileRepository {
-  Future<HrEmployee?> getProfileData();
-}
+export 'package:hr_app_odoo/features/profile/domain/repositories/profile_repository.dart';

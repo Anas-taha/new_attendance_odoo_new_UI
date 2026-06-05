@@ -45,7 +45,7 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
       body: Column(
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: CustomDropDown(

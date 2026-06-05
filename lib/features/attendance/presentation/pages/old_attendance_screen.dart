@@ -11,7 +11,7 @@ import '../../../../services/hr_service.dart';
 import '../../../../theme/app_theme.dart';
 
 class OldAttendanceScreen extends StatefulWidget {
-  final bool? initialIsCheckedIn; 
+  final bool? initialIsCheckedIn;
   final DateTime? initialCheckInDateTime;
   final String? initialCheckInTime;
   final String? initialTotalWorkedHours;
@@ -462,7 +462,6 @@ class _OldAttendanceScreenState extends State<OldAttendanceScreen>
 
           // // Today's Records
           // _buildTodayRecords(),
-
           const SizedBox(height: 24),
 
           // View Reports Button

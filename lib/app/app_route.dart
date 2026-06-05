@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
+import 'package:hr_app_odoo/features/attendance/presentation/controllers/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/pages/attendance_screen.dart';
 import 'package:hr_app_odoo/features/auth/presentation/controller/login_controller.dart';
 import 'package:hr_app_odoo/features/auth/presentation/pages/login_screen.dart';
@@ -8,21 +8,17 @@ import 'package:hr_app_odoo/features/holidays/presentation/pages/holidays_screen
 import 'package:hr_app_odoo/features/holidays/presentation/pages/request_holiday_screen.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
-import 'package:hr_app_odoo/features/notification/presentation/controller/notifi_controller.dart';
+import 'package:hr_app_odoo/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
-import 'package:hr_app_odoo/features/profile/presentation/controller/profile_controller.dart';
+import 'package:hr_app_odoo/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:hr_app_odoo/features/profile/presentation/pages/profile_screen.dart';
-import 'package:hr_app_odoo/features/payslip/presentaion/controller/payslip_controller.dart';
-import 'package:hr_app_odoo/features/payslip/presentaion/pages/payslip_screen.dart';
+import 'package:hr_app_odoo/features/payslip/presentation/controllers/payslip_controller.dart';
+import 'package:hr_app_odoo/features/payslip/presentation/pages/payslip_screen.dart';
 import 'package:hr_app_odoo/screens/attendance_report_screen.dart';
-import 'package:hr_app_odoo/features/attendance/presentation/pages/old_attendance_screen.dart';
 import 'package:hr_app_odoo/screens/contracts_screen.dart';
 import 'package:hr_app_odoo/screens/expense_create_screen.dart';
 import 'package:hr_app_odoo/screens/expense_screen.dart';
 import 'package:hr_app_odoo/screens/face_attendance_screen.dart';
-import 'package:hr_app_odoo/features/auth/presentation/pages/old_login_screen.dart';
-import 'package:hr_app_odoo/features/payslip/presentaion/pages/old_payslip_screen.dart'
-    hide PayslipScreen;
 import 'package:hr_app_odoo/screens/team_off_screen.dart';
 
 class AppRoutes {

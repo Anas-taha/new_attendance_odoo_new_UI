@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
+import 'package:hr_app_odoo/features/attendance/presentation/controllers/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/quick_state_widget.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/time_box_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
