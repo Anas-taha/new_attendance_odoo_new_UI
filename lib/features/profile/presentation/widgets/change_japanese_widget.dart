@@ -7,16 +7,13 @@ import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
-class ChangeLangWidget extends StatelessWidget {
-  const ChangeLangWidget({super.key, required this.lang});
-  final String lang;
+class ChangeJapaneseWidget extends StatelessWidget {
+  const ChangeJapaneseWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isSelected = lang == Get.locale!.languageCode;
     return GestureDetector(
       onTap: () {
-        Get.find<AppLocaleController>().changeLang(lang);
         // Get.updateLocale(Locale(lang));
         Get.back();
       },
@@ -35,12 +32,7 @@ class ChangeLangWidget extends StatelessWidget {
               width: 19.h,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.app8A3159Sedondary4
-                      : AppColors.app6C757DText5,
-                  width: 1,
-                ),
+                border: Border.all(color: AppColors.app6C757DText5, width: 1),
               ),
               child: Container(
                 padding: EdgeInsets.all(3),
@@ -48,19 +40,15 @@ class ChangeLangWidget extends StatelessWidget {
                 width: 19.h,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isSelected
-                      ? AppColors.app8A3159Sedondary4
-                      : AppColors.appFFFFFFBackGround1,
+                  color: AppColors.appFFFFFFBackGround1,
                 ),
               ),
             ),
             12.horizontalSpace,
-            CustomImage(
-              image: lang == 'ar' ? AppImage.arabic : AppImage.english,
-            ),
+            CustomImage(image: AppImage.animeflag, height: 40),
             8.horizontalSpace,
             CustomText(
-              text: lang == 'ar' ? 'اللغه العربية' : 'English',
+              text: '言語を日本語に変更します',
               fontSize: 14.w,
               color: AppColors.app6C757DText5,
             ),

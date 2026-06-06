@@ -39,10 +39,13 @@ class FeatureCardWidget extends StatelessWidget {
               child: CustomImage(image: image),
             ),
             8.horizontalSpace,
-            CustomText(
-              text: title,
-              fontSize: 13.w,
-              fontWeight: FontWeight.w600,
+            Flexible(
+              child: CustomText(
+                overflow: TextOverflow.ellipsis,
+                text: title,
+                fontSize: 13.w,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

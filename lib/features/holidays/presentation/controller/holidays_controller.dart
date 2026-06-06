@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
@@ -26,32 +27,30 @@ class HolidaysController extends GetxController {
     holidayReasonController.text = '';
   }
 
-  
-
   void changeHolidayState(HolidayStateEnum newState) =>
       selectedHolidayState.value = newState;
   void selectHoolidayType(String type) {
     holidayTypeController.text = type;
   }
 
-  void selectStartDate() {
+  void selectStartDate(String title) {
     CustomCalender.calenderDialog(
       contorller: holidayStartDateController,
-      title: 'تاريخ البداية',
+      title: title,
     );
   }
 
-  void selectEndDate() {
+  void selectEndDate(String title) {
     CustomCalender.calenderDialog(
       contorller: holidayEndDateController,
-      title: 'تاريخ النهاية',
+      title: title,
     );
   }
 
   Color holidayStateColor(HolidayStateEnum state) {
     switch (state) {
       case HolidayStateEnum.all:
-        return Colors.transparent;
+        return AppColors.appE5E5E5Border;
       case HolidayStateEnum.pending:
         return AppColors.appF59E0BWorning;
       case HolidayStateEnum.accepted:
@@ -77,13 +76,13 @@ class HolidaysController extends GetxController {
   String holidaySwitchTitle(HolidayStateEnum state) {
     switch (state) {
       case HolidayStateEnum.all:
-        return 'كل الحالات';
+        return Get.context!.appWords.allStatuses;
       case HolidayStateEnum.pending:
-        return 'قيد المعالجة';
+        return Get.context!.appWords.pending;
       case HolidayStateEnum.accepted:
-        return 'تم الموافقه';
+        return Get.context!.appWords.approved;
       case HolidayStateEnum.rejected:
-        return 'مرفوضة';
+        return Get.context!.appWords.rejected;
     }
   }
 }

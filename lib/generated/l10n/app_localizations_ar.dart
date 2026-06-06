@@ -36,6 +36,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordRequired => 'كلمة المرور مطلوبة';
 
   @override
+  String get loginDes => 'سجّل دخولك للوصول إلى حسابك وإدارة عملك بسهولة';
+
+  @override
   String get passwordMinLength => 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
 
   @override
@@ -159,6 +162,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whatDoYouNeed => 'ماذا تحتاج؟';
 
   @override
+  String get send => 'إرسال';
+
+  @override
   String get contracts => 'العقود';
 
   @override
@@ -166,6 +172,78 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get expenses => 'المصروفات';
+
+  @override
+  String get profile => 'الصفحة الشخصية';
+
+  @override
+  String get holidays => 'الأجازات';
+
+  @override
+  String get lateArrival => 'تأخير';
+
+  @override
+  String get absences => 'غيابات';
+
+  @override
+  String get leaveEarly => 'مغادرة مبكره';
+
+  @override
+  String get directManeger => 'المدير المباشر';
+
+  @override
+  String get belongToDepartment => 'تابع الي قسم';
+
+  @override
+  String get branch => 'فرع';
+
+  @override
+  String get phone => 'رقم الهاتف';
+
+  @override
+  String get leaveRequest => 'طلب إجازة';
+
+  @override
+  String get leaveType => 'نوع الإجازة';
+
+  @override
+  String get startDate => 'تاريخ البدء';
+
+  @override
+  String get sickLeave => 'إجازة مرضية';
+
+  @override
+  String get leaveReason => 'سبب الإجازة';
+
+  @override
+  String get rejectionReason => 'سبب الرفض';
+
+  @override
+  String get allStatuses => 'كل الحالات';
+
+  @override
+  String get pending => 'قيد المعالجة';
+
+  @override
+  String get approved => 'تمت الموافقة';
+
+  @override
+  String get rejected => 'مرفوضة';
+
+  @override
+  String get noNotification => 'لا يوجد إشعارات';
+
+  @override
+  String get noNotificationDescription => 'سنخبرك عندما يكون هناك شيء لتحديثك';
+
+  @override
+  String get salary => 'الرواتب';
+
+  @override
+  String get lastNotifications => 'اخر اشعارات الشركة';
+
+  @override
+  String get attendanceAndLeaves => 'الحضور والانصراف';
 
   @override
   String get attendance => 'الحضور';
@@ -243,6 +321,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get startYourShift => 'بدء الدوام';
 
   @override
+  String get days => 'أيام';
+
+  @override
   String get checkedInClickLogout =>
       'لقد قمت بتسجيل الحضور. انقر على تسجيل الخروج لإنهاء جلسة العمل.';
 
@@ -252,6 +333,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get logOut => 'تسجيل الخروج';
+
+  @override
+  String get departure => 'مغادرة';
+
+  @override
+  String get absence => 'غياب';
+
+  @override
+  String get leaves => 'إجازات';
+
+  @override
+  String get late => 'متأخر';
 
   @override
   String get logIn => 'تسجيل الدخول';
@@ -287,7 +380,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkIn => 'تسجيل الحضور';
 
   @override
-  String get checkOut => 'تسجيل الخروج';
+  String get checkOut => 'تسجيل الانصراف';
 
   @override
   String get duration => 'المدة';
@@ -366,9 +459,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get punctualityAnalysis => 'تحليل الالتزام بالوقت';
-
-  @override
-  String get late => 'متأخر';
 
   @override
   String get earlyLeave => 'مغادرة مبكرة';
@@ -559,7 +649,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get smartAttendance => 'الحضور الذكي';
 
   @override
-  String get welcome => 'مرحباً!';
+  String get welcome => 'مرحباً بك';
 
   @override
   String get whatWouldYouLikeToDo => 'ماذا تريد أن تفعل اليوم؟';
@@ -748,9 +838,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contractPeriod => 'فترة العقد';
 
   @override
-  String get startDate => 'تاريخ البدء';
-
-  @override
   String get endDate => 'تاريخ الانتهاء';
 
   @override
@@ -825,6 +912,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notes => 'ملاحظات';
 
   @override
+  String get mainSalary => 'الراتب الاساسي';
+
+  @override
+  String get notifications => 'الاشعارات';
+
+  @override
   String get employeeId => 'معرف الموظف';
 
   @override
@@ -840,6 +933,63 @@ class AppLocalizationsAr extends AppLocalizations {
   String errorProcessingExpenses(String error) {
     return 'خطأ في معالجة المصروفات: $error';
   }
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get allowances => 'البدلات';
+
+  @override
+  String get deductions => 'الخصومات';
+
+  @override
+  String get netSalary => 'صافي المرتب';
+
+  @override
+  String get downloadPayslip => 'تحميل كشف الراتب';
+
+  @override
+  String get readed => 'مقروءة';
+
+  @override
+  String get unReaded => 'غير مقروءة';
+
+  @override
+  String get january => 'يناير';
+
+  @override
+  String get february => 'فبراير';
+
+  @override
+  String get march => 'مارس';
+
+  @override
+  String get april => 'أبريل';
+
+  @override
+  String get may => 'مايو';
+
+  @override
+  String get june => 'يونيو';
+
+  @override
+  String get july => 'يوليو';
+
+  @override
+  String get august => 'أغسطس';
+
+  @override
+  String get september => 'سبتمبر';
+
+  @override
+  String get october => 'أكتوبر';
+
+  @override
+  String get november => 'نوفمبر';
+
+  @override
+  String get december => 'ديسمبر';
 
   @override
   String get language => 'اللغة';

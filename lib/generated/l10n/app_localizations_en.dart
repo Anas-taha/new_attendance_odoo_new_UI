@@ -36,6 +36,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordRequired => 'Password is required';
 
   @override
+  String get loginDes =>
+      'Log in to access your account and manage your work easily';
+
+  @override
   String get passwordMinLength => 'Password must be at least 4 characters';
 
   @override
@@ -159,6 +163,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatDoYouNeed => 'What do you need?';
 
   @override
+  String get send => 'Send';
+
+  @override
   String get contracts => 'Contracts';
 
   @override
@@ -166,6 +173,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expenses => 'Expenses';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get holidays => 'Holidays';
+
+  @override
+  String get lateArrival => 'Lates';
+
+  @override
+  String get absences => 'Absences';
+
+  @override
+  String get leaveEarly => 'LeaveEarly';
+
+  @override
+  String get directManeger => 'Direct Maneger';
+
+  @override
+  String get belongToDepartment => 'Department';
+
+  @override
+  String get branch => 'branch';
+
+  @override
+  String get phone => 'phone';
+
+  @override
+  String get leaveRequest => 'Leave Request';
+
+  @override
+  String get leaveType => 'Leave Type';
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get sickLeave => 'Sick Leave';
+
+  @override
+  String get leaveReason => 'Leave Reason';
+
+  @override
+  String get rejectionReason => 'Rejection Reason';
+
+  @override
+  String get allStatuses => 'All Statuses';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get approved => 'Approved';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get noNotification => 'No Notification';
+
+  @override
+  String get noNotificationDescription =>
+      'We’ll notify you when there’s something new';
+
+  @override
+  String get salary => 'Salary';
+
+  @override
+  String get lastNotifications => 'last Company Notifications';
+
+  @override
+  String get attendanceAndLeaves => 'Attendance And Leaves';
 
   @override
   String get attendance => 'Attendance';
@@ -245,6 +325,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startYourShift => 'Start Your Shift';
 
   @override
+  String get days => 'Days';
+
+  @override
   String get checkedInClickLogout =>
       'You are currently checked in. Click Log Out to end your work session.';
 
@@ -254,6 +337,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logOut => 'Log Out';
+
+  @override
+  String get departure => 'Departure';
+
+  @override
+  String get absence => 'Absence';
+
+  @override
+  String get leaves => 'Leaves';
+
+  @override
+  String get late => 'Late';
 
   @override
   String get logIn => 'Log In';
@@ -368,9 +463,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get punctualityAnalysis => 'Punctuality Analysis';
-
-  @override
-  String get late => 'Late';
 
   @override
   String get earlyLeave => 'Early Leave';
@@ -754,9 +846,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contractPeriod => 'Contract Period';
 
   @override
-  String get startDate => 'Start Date';
-
-  @override
   String get endDate => 'End Date';
 
   @override
@@ -834,6 +923,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notes => 'Notes';
 
   @override
+  String get mainSalary => 'Main Salary';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
   String get employeeId => 'Employee ID';
 
   @override
@@ -849,6 +944,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorProcessingExpenses(String error) {
     return 'Error processing expenses: $error';
   }
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get allowances => 'Allowances';
+
+  @override
+  String get deductions => 'Deductions';
+
+  @override
+  String get netSalary => 'Net Salary';
+
+  @override
+  String get downloadPayslip => 'Download Payslip';
+
+  @override
+  String get readed => 'Readed';
+
+  @override
+  String get unReaded => 'Not Readed';
+
+  @override
+  String get january => 'January';
+
+  @override
+  String get february => 'February';
+
+  @override
+  String get march => 'March';
+
+  @override
+  String get april => 'April';
+
+  @override
+  String get may => 'May';
+
+  @override
+  String get june => 'June';
+
+  @override
+  String get july => 'July';
+
+  @override
+  String get august => 'August';
+
+  @override
+  String get september => 'September';
+
+  @override
+  String get october => 'October';
+
+  @override
+  String get november => 'November';
+
+  @override
+  String get december => 'December';
 
   @override
   String get language => 'Language';

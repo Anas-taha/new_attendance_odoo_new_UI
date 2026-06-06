@@ -19,7 +19,9 @@ class ProfileAppBar extends StatelessWidget {
           CustomBackButton(color: AppColors.appFAFAFABackGround2),
           Spacer(),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Get.offAllNamed(AppRoutes.home);
+            },
             child: Container(
               height: 24.h,
               width: 24.w,

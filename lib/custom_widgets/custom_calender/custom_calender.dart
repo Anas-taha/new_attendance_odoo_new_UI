@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_Item/custom_item.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
@@ -23,7 +24,10 @@ class CustomCalender {
           mainAxisSize: MainAxisSize.min,
           children: [
             16.verticalSpace,
-            CustomText(text: title ?? '', fontSize: 18.w),
+            CustomText(
+              text: title ?? Get.context!.appWords.selectDate,
+              fontSize: 18.w,
+            ),
             8.verticalSpace,
             CustomItem.customDivider(),
             Padding(
@@ -36,7 +40,7 @@ class CustomCalender {
                     ? DateFormat('d/M/yyyy').parse(contorller.text)
                     : DateTime.now(),
 
-                locale: 'ar',
+                locale: Get.locale!.languageCode,
                 calendarFormat: CalendarFormat.month,
 
                 selectedDayPredicate: (day) {
@@ -97,8 +101,7 @@ class CustomCalender {
               ),
             ),
             CustomItem.customDivider(),
-            CustomItem.customDivider(horizontalPadding: 30),
-            CustomItem.customDivider(horizontalPadding: 50),
+            16.verticalSpace,
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_Item/custom_item.dart';
@@ -74,15 +75,16 @@ class ProfileScreen extends StatelessWidget {
                                       child: Column(
                                         children: [
                                           ProfileItemInfoWidget(
-                                            title: 'المدير المباشر',
+                                            title:
+                                                context.appWords.directManeger,
                                             value: 'سالم عبد الحكيم صابر',
                                           ),
                                           ProfileItemInfoWidget(
-                                            title: 'تابع الي قسم',
+                                            title: context.appWords.belongToDepartment,
                                             value: 'قسم الانتاج',
                                           ),
                                           ProfileItemInfoWidget(
-                                            title: 'فرع',
+                                            title: context.appWords.branch,
                                             value: 'الفرع الرئيسي بالرياض',
                                           ),
                                         ],
@@ -95,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
                                     child: Column(
                                       children: [
                                         ProfileItemInfoWidget(
-                                          title: 'رقم الهاتف',
+                                          title: context.appWords.phone,
                                           value:
                                               controller
                                                   .profileData
@@ -103,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                                               '',
                                         ),
                                         ProfileItemInfoWidget(
-                                          title: 'البريد الالكرتوني',
+                                          title: context.appWords.email,
                                           value:
                                               controller
                                                   .profileData
@@ -136,7 +138,7 @@ class ProfileScreen extends StatelessWidget {
                                           ),
                                           5.horizontalSpace,
                                           CustomText(
-                                            text: 'اللغة',
+                                            text: context.appWords.language,
                                             fontSize: 13.w,
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.app1A1A1AText1,
@@ -173,7 +175,7 @@ class ProfileScreen extends StatelessWidget {
                                           ),
                                           5.horizontalSpace,
                                           CustomText(
-                                            text: 'تسجيل الخروج',
+                                            text: context.appWords.logOut,
                                             fontSize: 13.w,
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.app1A1A1AText1,
