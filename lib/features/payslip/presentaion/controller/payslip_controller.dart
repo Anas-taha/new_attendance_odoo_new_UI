@@ -14,11 +14,14 @@ import 'package:printing/printing.dart';
 class PayslipController extends GetxController {
   TextEditingController dateController = TextEditingController();
   SimpleHrService hrService = SimpleHrService();
-  bool salary = false;
+  HrPayslip salary = HrPayslip();
   RxBool isLoading = false.obs;
-  String allSalary = '30.000';
+
+  String basicSalary = '30.000';
   String netSalary = '1.000';
   String grossSalary = '25.000';
+  String remainingSalary = '25.000';
+
   Uint8List? pdfBytes;
 
   @override
@@ -32,12 +35,16 @@ class PayslipController extends GetxController {
     isLoading.value = true;
     final result = await hrService.getPayslip();
     if (result.isNotEmpty) {
-      // salary.value = result.first;
-      salary = true;
+      salary = result.first;
+      basicSalary = salary.basicWage.toString();
+      netSalary = (salary.basicWage??0 - (salary.netWage??0)).toString();
+      grossSalary = (salary.grossWage??0 -( salary.netWage??0)).toString();
+      remainingSalary = salary.netWage.toString();
+      // salary = true;
       update();
       log(name: 'iscbisducbds', 'result: $result');
     } else {
-      salary = false;
+      salary = HrPayslip();
       update();
       // salary.value = HrSalaryModel();
       log(name: 'iscbisducbds', 'result: $result');
@@ -72,7 +79,7 @@ class PayslipController extends GetxController {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Name: ${allSalary}'),
+              pw.Text('Name: ${basicSalary}'),
               pw.Text('Age: ${netSalary}'),
               pw.Text('Address: ${grossSalary}'),
             ],

@@ -1,48 +1,31 @@
 class HrPayslip {
   final num? id;
+  final String? number;
   final String? name;
-  final num? employeeId;
-  final num? totalAmount;
-  final String? employeeName;
   final String? state;
   final DateTime? dateFrom;
   final DateTime? dateTo;
-  final DateTime? date;
   final double? basicWage;
   final double? grossWage;
   final double? netWage;
-  final DateTime? createDate;
-  final DateTime? writeDate;
-  final bool? productId;
-  final bool? description;
-  final String? paymentMode;
 
   HrPayslip({
     this.id,
+    this.number,
     this.name,
-    this.employeeId,
-    this.employeeName,
     this.state,
     this.dateFrom,
     this.dateTo,
-    this.date,
     this.basicWage,
     this.grossWage,
     this.netWage,
-    this.createDate,
-    this.writeDate,
-    this.totalAmount,
-    this.productId,
-    this.description,
-    this.paymentMode,
   });
 
   factory HrPayslip.fromOdoo(Map<String, dynamic> data) {
     return HrPayslip(
-      id: data['id'] ?? 0,
-      name: data['name'] ?? '',
-      employeeId: data['employee_id']?[0] ?? 0,
-      employeeName: data['employee_id']?[1],
+      id: data['id'],
+      number: data['number'],
+      name: data['name'],
       state: data['state'],
       dateFrom: data['date_from'] != null && data['date_from'] != false
           ? DateTime.tryParse(data['date_from'])
@@ -50,100 +33,62 @@ class HrPayslip {
       dateTo: data['date_to'] != null && data['date_to'] != false
           ? DateTime.tryParse(data['date_to'])
           : null,
-      date: data['date'] != null && data['date'] != false
-          ? DateTime.tryParse(data['date'])
-          : null,
-      basicWage: data['basic_wage'] != null && data['basic_wage'] != false
-          ? (data['basic_wage'] is String
-                ? double.tryParse(data['basic_wage'])
-                : data['basic_wage'] is double
-                ? data['basic_wage']
-                : null)
-          : null,
-      grossWage: data['gross_wage'] != null && data['gross_wage'] != false
-          ? (data['gross_wage'] is String
-                ? double.tryParse(data['gross_wage'])
-                : data['gross_wage'] is double
-                ? data['gross_wage']
-                : null)
-          : null,
-      netWage: data['net_wage'] != null && data['net_wage'] != false
-          ? (data['net_wage'] is String
-                ? double.tryParse(data['net_wage'])
-                : data['net_wage'] is double
-                ? data['net_wage']
-                : null)
-          : null,
-      createDate: data['create_date'] != null
-          ? DateTime.tryParse(data['create_date'])
-          : null,
-      writeDate: data['write_date'] != null
-          ? DateTime.tryParse(data['write_date'])
-          : null,
+      basicWage: _toDouble(data['basic_wage']),
+      grossWage: _toDouble(data['gross_wage']),
+      netWage: _toDouble(data['net_wage']),
     );
+  }
+
+  static double? _toDouble(dynamic value) {
+    if (value == null || value == false) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'number': number,
       'name': name,
-      'employee_id': employeeId,
-      'employee_name': employeeName,
       'state': state,
       'date_from': dateFrom?.toIso8601String(),
       'date_to': dateTo?.toIso8601String(),
-      'date': date?.toIso8601String(),
       'basic_wage': basicWage,
       'gross_wage': grossWage,
       'net_wage': netWage,
-      'create_date': createDate?.toIso8601String(),
-      'write_date': writeDate?.toIso8601String(),
-    };
-  }
-
-  Map<String, dynamic> toOdoo() {
-    return {
-      'name': name,
-      'employee_id': employeeId,
-      'date_from': dateFrom?.toIso8601String(),
-      'date_to': dateTo?.toIso8601String(),
-      'date': date?.toIso8601String(),
     };
   }
 
   HrPayslip copyWith({
     num? id,
+    String? number,
     String? name,
-    num? employeeId,
-    String? employeeName,
     String? state,
     DateTime? dateFrom,
     DateTime? dateTo,
-    DateTime? date,
     double? basicWage,
     double? grossWage,
     double? netWage,
-    DateTime? createDate,
-    DateTime? writeDate,
   }) {
     return HrPayslip(
       id: id ?? this.id,
+      number: number ?? this.number,
       name: name ?? this.name,
-      employeeId: employeeId ?? this.employeeId,
-      employeeName: employeeName ?? this.employeeName,
       state: state ?? this.state,
       dateFrom: dateFrom ?? this.dateFrom,
       dateTo: dateTo ?? this.dateTo,
-      date: date ?? this.date,
       basicWage: basicWage ?? this.basicWage,
       grossWage: grossWage ?? this.grossWage,
       netWage: netWage ?? this.netWage,
-      createDate: createDate ?? this.createDate,
-      writeDate: writeDate ?? this.writeDate,
     );
   }
 
-  /// Get payslip status display text
+  // ---------------------------------------------------------------------------
+  // Computed getters
+  // ---------------------------------------------------------------------------
+
   String get statusDisplay {
     switch (state) {
       case 'draft':
@@ -159,24 +104,13 @@ class HrPayslip {
     }
   }
 
-  /// Check if payslip is paid
   bool get isPaid => state == 'done';
-
-  /// Check if payslip is verified
   bool get isVerified => state == 'verify';
-
-  /// Check if payslip is draft
   bool get isDraft => state == 'draft';
 
-  /// Get formatted salary display
-  String get salaryDisplay {
-    if (basicWage != null) {
-      return '${basicWage!.toStringAsFixed(2)}';
-    }
-    return 'N/A';
-  }
+  String get salaryDisplay =>
+      basicWage != null ? basicWage!.toStringAsFixed(2) : 'N/A';
 
-  /// Get formatted date range
   String get dateRangeDisplay {
     if (dateFrom == null) return 'N/A';
     final start = dateFrom!.toLocal().toString().split(' ')[0];
@@ -185,10 +119,9 @@ class HrPayslip {
     return '$start to $end';
   }
 
-  /// Get payslip period (e.g., "August 2025")
   String get periodDisplay {
     if (dateFrom == null) return 'N/A';
-    final months = [
+    const months = [
       'January',
       'February',
       'March',
@@ -202,8 +135,6 @@ class HrPayslip {
       'November',
       'December',
     ];
-    final month = months[dateFrom!.month - 1];
-    final year = dateFrom!.year;
-    return '$month $year';
+    return '${months[dateFrom!.month - 1]} ${dateFrom!.year}';
   }
 }

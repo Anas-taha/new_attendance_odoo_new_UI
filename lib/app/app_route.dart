@@ -10,6 +10,8 @@ import 'package:hr_app_odoo/features/home/presentation/controllers/home_controll
 import 'package:hr_app_odoo/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_app_odoo/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:hr_app_odoo/features/notification/presentation/pages/notification_screen.dart';
+import 'package:hr_app_odoo/features/payslip/presentaion/controller/payslip_controller.dart';
+import 'package:hr_app_odoo/features/payslip/presentaion/pages/payslip_screen.dart';
 import 'package:hr_app_odoo/features/profile/presentation/controller/profile_controller.dart';
 import 'package:hr_app_odoo/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:hr_app_odoo/features/profile/presentation/pages/profile_screen.dart';
@@ -87,13 +89,13 @@ class AppPages {
       page: () => const ExpenseCreateScreen(),
     ),
     // GetPage(name: AppRoutes.payslips, page: () => const PayslipScreen()),
-    // GetPage(
-    //   name: AppRoutes.payslips,
-    //   page: () => PayslipScreen(),
-    //   binding: BindingsBuilder(() {
-    //     Get.lazyPut<PayslipController>(() => PayslipController(), fenix: true);
-    //   }),
-    // ),
+    GetPage(
+      name: AppRoutes.payslips,
+      page: () => PayslipScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<PayslipController>(() => PayslipController(), fenix: true);
+      }),
+    ),
     GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),
     GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
     GetPage(name: AppRoutes.requestHoliday, page: () => RequestHolidayScreen()),

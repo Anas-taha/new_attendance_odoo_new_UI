@@ -795,49 +795,49 @@ class HrService {
   }
 
   /// Create a new payslip
-  Future<Map<String, dynamic>> createPayslip(HrPayslip payslip) async {
-    try {
-      print('🔍 Creating new payslip...');
-      final result = await _odooService.create(
-        model: OdooConfig.hrPayslipModel,
-        values: payslip.toOdoo(),
-      );
+  // Future<Map<String, dynamic>> createPayslip(HrPayslip payslip) async {
+  //   try {
+  //     print('🔍 Creating new payslip...');
+  //     final result = await _odooService.create(
+  //       model: OdooConfig.hrPayslipModel,
+  //       values: payslip.toOdoo(),
+  //     );
 
-      if (result['success']) {
-        print('✅ Payslip created successfully');
-        return result;
-      } else {
-        print('❌ Failed to create payslip: ${result['error']}');
-        return result;
-      }
-    } catch (e) {
-      print('❌ Error creating payslip: $e');
-      return {'success': false, 'error': e.toString()};
-    }
-  }
+  //     if (result['success']) {
+  //       print('✅ Payslip created successfully');
+  //       return result;
+  //     } else {
+  //       print('❌ Failed to create payslip: ${result['error']}');
+  //       return result;
+  //     }
+  //   } catch (e) {
+  //     print('❌ Error creating payslip: $e');
+  //     return {'success': false, 'error': e.toString()};
+  //   }
+  // }
 
   /// Update an existing payslip
-  Future<Map<String, dynamic>> updatePayslip(HrPayslip payslip) async {
-    try {
-      print('🔍 Updating payslip ${payslip.id}...');
-      final result = await _odooService.write(
-        model: OdooConfig.hrPayslipModel,
-        recordId: payslip.id ?? 0,
-        values: payslip.toOdoo(),
-      );
+  // Future<Map<String, dynamic>> updatePayslip(HrPayslip payslip) async {
+  //   try {
+  //     print('🔍 Updating payslip ${payslip.id}...');
+  //     final result = await _odooService.write(
+  //       model: OdooConfig.hrPayslipModel,
+  //       recordId: payslip.id ?? 0,
+  //       values: payslip.toOdoo(),
+  //     );
 
-      if (result['success']) {
-        print('✅ Payslip updated successfully');
-        return result;
-      } else {
-        print('❌ Failed to update payslip: ${result['error']}');
-        return result;
-      }
-    } catch (e) {
-      print('❌ Error updating payslip: $e');
-      return {'success': false, 'error': e.toString()};
-    }
-  }
+  //     if (result['success']) {
+  //       print('✅ Payslip updated successfully');
+  //       return result;
+  //     } else {
+  //       print('❌ Failed to update payslip: ${result['error']}');
+  //       return result;
+  //     }
+  //   } catch (e) {
+  //     print('❌ Error updating payslip: $e');
+  //     return {'success': false, 'error': e.toString()};
+  //   }
+  // }
 
   /// Get payslip statistics
   Future<Map<String, dynamic>> getPayslipStatistics() async {
