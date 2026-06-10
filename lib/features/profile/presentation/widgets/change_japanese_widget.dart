@@ -48,7 +48,7 @@ class ChangeJapaneseWidget extends StatelessWidget {
             CustomImage(image: AppImage.animeflag, height: 40),
             8.horizontalSpace,
             CustomText(
-              text: '言語を日本語に変更します',
+              text: 'こんばんは、美しいです',
               fontSize: 14.w,
               color: AppColors.app6C757DText5,
             ),

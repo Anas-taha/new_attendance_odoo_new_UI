@@ -80,7 +80,9 @@ class ProfileScreen extends StatelessWidget {
                                             value: 'سالم عبد الحكيم صابر',
                                           ),
                                           ProfileItemInfoWidget(
-                                            title: context.appWords.belongToDepartment,
+                                            title: context
+                                                .appWords
+                                                .belongToDepartment,
                                             value: 'قسم الانتاج',
                                           ),
                                           ProfileItemInfoWidget(

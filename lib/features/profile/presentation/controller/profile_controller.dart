@@ -18,7 +18,7 @@ import 'package:path/path.dart';
 
 class ProfileController extends GetxController {
   // ignore: prefer_typing_uninitialized_variables
-  SimpleHrService hrService = SimpleHrService();
+  var hrService = SimpleHrService();
   HrEmployee profileData = HrEmployee(id: 0, name: '');
   RxBool loading = false.obs;
   @override
@@ -39,7 +39,7 @@ class ProfileController extends GetxController {
 
   void getProfileData() async {
     loading.value = true;
-    final result = await hrService.getEmployeeProfile();
+    final result = await hrService.getProfile();
     if (result.isNotEmpty) {
       profileData = result.first;
       update();
@@ -72,7 +72,6 @@ class ProfileController extends GetxController {
             ChangeLangWidget(lang: 'en'),
             ChangeJapaneseWidget(),
             const SizedBox(height: 10),
-
           ],
         ),
       ),
@@ -109,3 +108,32 @@ class ProfileController extends GetxController {
     );
   }
 }
+// {
+//     "jsonrpc": "2.0",
+//     "id": null,
+//     "result": {
+//         "uid": 22,
+//         "is_system": false,
+//         "is_admin": false,
+//         "user_context": {
+//             "lang": "en_US",
+//             "tz": "UTC"
+//         },
+//         "db": "hr_mobile_test",
+//         "server_version": "18.0",
+//         "server_version_info": [
+//             18,
+//             0,
+//             0,
+//             "final",
+//             0
+//         ],
+//         "name": "Mohammed Mamdouh",
+//         "username": "EMP001",
+//         "partner_display_name": "Mohammed Mamdouh",
+//         "company_id": 1,
+//         "web.base.url": "http://168.231.106.200:8193",
+//         "mobile_token": "22:1783670521.921189:7ae5553e6a02b3c272485ff7b841ad57",
+//         "employee_id": 22
+//     }
+// }

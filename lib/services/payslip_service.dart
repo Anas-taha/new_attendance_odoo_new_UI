@@ -7,7 +7,8 @@ import 'odoo_rpc_service.dart';
 /// Service for handling payslip management in Odoo
 class PayslipService {
   static PayslipService? _instance;
-  static PayslipService get instance => _instance ??= PayslipService._internal();
+  static PayslipService get instance =>
+      _instance ??= PayslipService._internal();
 
   PayslipService._internal();
 
@@ -25,7 +26,7 @@ class PayslipService {
       print('💵 Fetching payslips for employee $employeeId...');
 
       final domain = <List<dynamic>>[
-        ['employee_id', '=', employeeId]
+        ['employee_id', '=', employeeId],
       ];
 
       if (state != null) {
@@ -34,7 +35,7 @@ class PayslipService {
 
       if (year != null) {
         final startDate = DateTime(year, month ?? 1, 1);
-        final endDate = month != null 
+        final endDate = month != null
             ? DateTime(year, month + 1, 0)
             : DateTime(year + 1, 1, 0);
         domain.add(['date_from', '>=', _formatOdooDate(startDate)]);
@@ -87,7 +88,9 @@ class PayslipService {
   }
 
   /// Get payslip details with lines
-  Future<Map<String, dynamic>> getPayslipDetails({required int payslipId}) async {
+  Future<Map<String, dynamic>> getPayslipDetails({
+    required int payslipId,
+  }) async {
     try {
       print('📋 Fetching payslip details for $payslipId...');
 
@@ -95,7 +98,7 @@ class PayslipService {
       final payslipResult = await _odooService.searchRead(
         model: 'hr.payslip',
         domain: [
-          ['id', '=', payslipId]
+          ['id', '=', payslipId],
         ],
         fields: [
           'id',
@@ -120,10 +123,7 @@ class PayslipService {
       );
 
       if (!payslipResult['success'] || payslipResult['data']?.isEmpty == true) {
-        return {
-          'success': false,
-          'error': 'Payslip not found',
-        };
+        return {'success': false, 'error': 'Payslip not found'};
       }
 
       final payslip = payslipResult['data'][0];
@@ -132,7 +132,7 @@ class PayslipService {
       final linesResult = await _odooService.searchRead(
         model: 'hr.payslip.line',
         domain: [
-          ['slip_id', '=', payslipId]
+          ['slip_id', '=', payslipId],
         ],
         fields: [
           'id',
@@ -152,7 +152,7 @@ class PayslipService {
       final workedDaysResult = await _odooService.searchRead(
         model: 'hr.payslip.worked_days',
         domain: [
-          ['payslip_id', '=', payslipId]
+          ['payslip_id', '=', payslipId],
         ],
         fields: [
           'id',
@@ -168,14 +168,13 @@ class PayslipService {
         'success': true,
         'payslip': payslip,
         'lines': linesResult['success'] ? linesResult['data'] : [],
-        'worked_days': workedDaysResult['success'] ? workedDaysResult['data'] : [],
+        'worked_days': workedDaysResult['success']
+            ? workedDaysResult['data']
+            : [],
       };
     } catch (e) {
       print('❌ Error fetching payslip details: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -255,7 +254,7 @@ class PayslipService {
       print('📊 Fetching payslip statistics for employee $employeeId...');
 
       final targetYear = year ?? DateTime.now().year;
-      
+
       final payslips = await getEmployeePayslips(
         employeeId: employeeId,
         year: targetYear,
@@ -276,7 +275,7 @@ class PayslipService {
       for (final payslip in payslips) {
         final gross = payslip.grossWage ?? 0;
         final net = payslip.netWage ?? 0;
-        
+
         totalGross += gross;
         totalNet += net;
         totalDeductions += (gross - net);
@@ -301,9 +300,12 @@ class PayslipService {
         if (payslip.dateFrom != null) {
           final month = payslip.dateFrom!.month;
           monthlyBreakdown[month] ??= {'gross': 0, 'net': 0, 'deductions': 0};
-          monthlyBreakdown[month]!['gross'] = (monthlyBreakdown[month]!['gross'] ?? 0) + gross;
-          monthlyBreakdown[month]!['net'] = (monthlyBreakdown[month]!['net'] ?? 0) + net;
-          monthlyBreakdown[month]!['deductions'] = (monthlyBreakdown[month]!['deductions'] ?? 0) + (gross - net);
+          monthlyBreakdown[month]!['gross'] =
+              (monthlyBreakdown[month]!['gross'] ?? 0) + gross;
+          monthlyBreakdown[month]!['net'] =
+              (monthlyBreakdown[month]!['net'] ?? 0) + net;
+          monthlyBreakdown[month]!['deductions'] =
+              (monthlyBreakdown[month]!['deductions'] ?? 0) + (gross - net);
         }
       }
 
@@ -326,10 +328,7 @@ class PayslipService {
       };
     } catch (e) {
       print('❌ Error fetching payslip statistics: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -388,13 +387,7 @@ class PayslipService {
       final result = await _odooService.searchRead(
         model: 'hr.payroll.structure',
         domain: [],
-        fields: [
-          'id',
-          'name',
-          'code',
-          'type_id',
-          'country_id',
-        ],
+        fields: ['id', 'name', 'code', 'type_id', 'country_id'],
         limit: 50,
       );
 
@@ -418,16 +411,13 @@ class PayslipService {
         model: 'hr.payslip',
         method: 'compute_sheet',
         args: [
-          [payslipId]
+          [payslipId],
         ],
       );
 
       if (result['success']) {
         print('✅ Payslip computed successfully');
-        return {
-          'success': true,
-          'message': 'Payslip computed successfully',
-        };
+        return {'success': true, 'message': 'Payslip computed successfully'};
       }
 
       return {
@@ -436,10 +426,7 @@ class PayslipService {
       };
     } catch (e) {
       print('❌ Error computing payslip: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -452,16 +439,13 @@ class PayslipService {
         model: 'hr.payslip',
         method: 'action_payslip_done',
         args: [
-          [payslipId]
+          [payslipId],
         ],
       );
 
       if (result['success']) {
         print('✅ Payslip confirmed successfully');
-        return {
-          'success': true,
-          'message': 'Payslip confirmed successfully',
-        };
+        return {'success': true, 'message': 'Payslip confirmed successfully'};
       }
 
       return {
@@ -470,10 +454,7 @@ class PayslipService {
       };
     } catch (e) {
       print('❌ Error confirming payslip: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -507,7 +488,7 @@ class PayslipService {
 
       if (result['success'] && result['data'] != null) {
         final payslips = result['data'] as List;
-        
+
         double totalGross = 0;
         double totalNet = 0;
         int totalEmployees = 0;
@@ -518,7 +499,7 @@ class PayslipService {
         for (final payslip in payslips) {
           totalGross += (payslip['gross_wage'] ?? 0).toDouble();
           totalNet += (payslip['net_wage'] ?? 0).toDouble();
-          
+
           final empId = payslip['employee_id']?[0];
           if (empId != null) employeeIds.add(empId);
 
@@ -541,7 +522,9 @@ class PayslipService {
           'total_deductions': totalGross - totalNet,
           'paid_count': paidCount,
           'pending_count': pendingCount,
-          'average_per_employee': totalEmployees > 0 ? totalNet / totalEmployees : 0,
+          'average_per_employee': totalEmployees > 0
+              ? totalNet / totalEmployees
+              : 0,
         };
       }
 
@@ -551,15 +534,14 @@ class PayslipService {
       };
     } catch (e) {
       print('❌ Error fetching payroll summary: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
   /// Download payslip PDF
-  Future<Map<String, dynamic>> downloadPayslipPdf({required int payslipId}) async {
+  Future<Map<String, dynamic>> downloadPayslipPdf({
+    required int payslipId,
+  }) async {
     try {
       print('📥 Getting payslip PDF for $payslipId...');
 
@@ -569,7 +551,7 @@ class PayslipService {
         method: 'render_qweb_pdf',
         args: [
           ['hr.report_payslip'],
-          [payslipId]
+          [payslipId],
         ],
       );
 
@@ -582,16 +564,10 @@ class PayslipService {
         };
       }
 
-      return {
-        'success': false,
-        'error': 'Failed to generate PDF',
-      };
+      return {'success': false, 'error': 'Failed to generate PDF'};
     } catch (e) {
       print('❌ Error downloading payslip PDF: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -602,4 +578,3 @@ class PayslipService {
         '${date.day.toString().padLeft(2, '0')}';
   }
 }
-

@@ -1,15 +1,18 @@
 class HrEmployee {
   final int id;
   final String name;
+  final String? jobTitle;
+  final List<dynamic>? departmentId;
   final String? workEmail;
   final String? workPhone;
-  final String? jobTitle;
-  final String? department;
-  final String? workLocation;
-  final String? imageUrl;
-  final DateTime? hireDate;
-  final String? employeeId;
-  final bool isActive;
+  final String? barcode;
+  final String? attendanceState;
+  final List<dynamic>? parentId;
+  final String? workLocationId;
+  // final String? imageUrl;
+  // final DateTime? hireDate;
+  // final String? employeeId;
+  // final bool isActive;
 
   HrEmployee({
     required this.id,
@@ -17,12 +20,15 @@ class HrEmployee {
     this.workEmail,
     this.workPhone,
     this.jobTitle,
-    this.department,
-    this.workLocation,
-    this.imageUrl,
-    this.hireDate,
-    this.employeeId,
-    this.isActive = true,
+    this.departmentId,
+    this.workLocationId,
+    // this.imageUrl,
+    // this.hireDate,
+    // this.employeeId,
+    this.parentId,
+    // this.isActive = true,
+    this.barcode,
+    this.attendanceState,
   });
 
   factory HrEmployee.fromOdoo(Map<String, dynamic> data) {
@@ -32,18 +38,27 @@ class HrEmployee {
       workEmail: data['work_email'] != false ? data['work_email'] : null,
       workPhone: data['work_phone'] != false ? data['work_phone'] : null,
       jobTitle: data['job_title'] != false ? data['job_title'] : null,
-      department: data['department_id'] != false && data['department_id'] != null 
-          ? data['department_id'][1] 
+      departmentId:
+          data['department_id'] != false && data['department_id'] != null
+          ? List<dynamic>.from(data['department_id'])
           : null,
-      workLocation: data['work_location_id'] != false && data['work_location_id'] != null 
-          ? data['work_location_id'][1] 
+      workLocationId:
+          data['work_location_id'] != false && data['work_location_id'] != null
+          ? data['work_location_id'][1]
           : null,
-      imageUrl: data['image_128'],
-      hireDate: data['hire_date'] != null 
-          ? DateTime.tryParse(data['hire_date']) 
+      // imageUrl: data['image_128'],
+      // hireDate: data['hire_date'] != null
+      //     ? DateTime.tryParse(data['hire_date'])
+      //     : null,
+      // employeeId: data['employee_id'],
+      // isActive: data['active'] ?? true,
+      barcode: data['barcode'] != false ? data['barcode'] : null,
+      parentId: data['parent_id'] != false
+          ? List<String>.from(data['parent_id'])
           : null,
-      employeeId: data['employee_id'],
-      isActive: data['active'] ?? true,
+      attendanceState: data['attendance_state'] != false
+          ? data['attendance_state']
+          : null,
     );
   }
 
@@ -54,12 +69,15 @@ class HrEmployee {
       'work_email': workEmail,
       'work_phone': workPhone,
       'job_title': jobTitle,
-      'department': department,
-      'work_location': workLocation,
-      'image_url': imageUrl,
-      'hire_date': hireDate?.toIso8601String(),
-      'employee_id': employeeId,
-      'active': isActive,
+      'department': departmentId,
+      'work_location': workLocationId,
+      // 'image_url': imageUrl,
+      // 'hire_date': hireDate?.toIso8601String(),
+      // 'employee_id': employeeId,
+      // 'active': isActive,
+      'barcode': barcode,
+      'attendance_state': attendanceState,
+      'parent_id': parentId,
     };
   }
 
@@ -69,12 +87,15 @@ class HrEmployee {
     String? workEmail,
     String? workPhone,
     String? jobTitle,
-    String? department,
-    String? workLocation,
+    List<dynamic>? departmentId,
+    String? workLocationId,
     String? imageUrl,
     DateTime? hireDate,
     String? employeeId,
     bool? isActive,
+    String? barcode,
+    String? attendanceState,
+    List<dynamic>? parentId,
   }) {
     return HrEmployee(
       id: id ?? this.id,
@@ -82,12 +103,15 @@ class HrEmployee {
       workEmail: workEmail ?? this.workEmail,
       workPhone: workPhone ?? this.workPhone,
       jobTitle: jobTitle ?? this.jobTitle,
-      department: department ?? this.department,
-      workLocation: workLocation ?? this.workLocation,
-      imageUrl: imageUrl ?? this.imageUrl,
-      hireDate: hireDate ?? this.hireDate,
-      employeeId: employeeId ?? this.employeeId,
-      isActive: isActive ?? this.isActive,
+      departmentId: departmentId ?? this.departmentId,
+      workLocationId: workLocationId ?? this.workLocationId,
+      // imageUrl: imageUrl ?? this.imageUrl,
+      // hireDate: hireDate ?? this.hireDate,
+      // employeeId: employeeId ?? this.employeeId,
+      // isActive: isActive ?? this.isActive,
+      barcode: barcode ?? this.barcode,
+      attendanceState: attendanceState ?? this.attendanceState,
+      parentId: parentId ?? this.parentId,
     );
   }
-} 
+}

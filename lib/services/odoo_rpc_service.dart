@@ -108,10 +108,12 @@ class OdooRPCService {
             }),
           )
           .timeout(Duration(milliseconds: OdooConfig.connectionTimeout));
-
-      print('Response api: ${OdooConfig.baseUrl}web/session/authenticate');
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      log(
+        name: 'OdooRPCService',
+        'Response api: ${OdooConfig.baseUrl}web/session/authenticate',
+      );
+      log(name: 'OdooRPCService', 'Response status: ${response.statusCode}');
+      log(name: 'OdooRPCService', 'Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         try {
@@ -151,7 +153,10 @@ class OdooRPCService {
             name: " OdooConfig_token",
             "Received mobile token: ${OdooConfig.token}",
           );
-          print('✅ Odoo.sh web session authenticated successfully');
+          log(
+            name: 'OdooRPCService',
+            '✅ Odoo.sh web session authenticated successfully',
+          );
 
           return HrLogin(
             success: true,
@@ -186,7 +191,7 @@ class OdooRPCService {
         // };
       }
     } catch (e) {
-      print('Authentication error: $e');
+      log(name: 'OdooRPCService', 'Authentication error: $e');
       return HrLogin(success: false, error: e.toString());
       // return {'success': false, 'error': e.toString()};
     }
@@ -781,7 +786,10 @@ class OdooRPCService {
           ).firstMatch(cookies);
           if (sessionMatch != null) {
             _webSessionId = sessionMatch.group(1);
-            print('🔐 Web session ID obtained: $_webSessionId');
+            log(
+              name: 'OdooRPCService',
+              '🔐 Web session ID obtained: $_webSessionId',
+            );
           }
         }
 
@@ -793,7 +801,10 @@ class OdooRPCService {
           ).firstMatch(body);
           if (sessionMatch != null) {
             _webSessionId = sessionMatch.group(1);
-            print('🔐 Web session ID extracted from response: $_webSessionId');
+            log(
+              name: 'OdooRPCService',
+              '🔐 Web session ID extracted from response: $_webSessionId',
+            );
           }
         }
       }
@@ -803,7 +814,7 @@ class OdooRPCService {
         await _authenticateWebSession();
       }
     } catch (e) {
-      print('⚠️ Warning: Could not get web session: $e');
+      log(name: 'OdooRPCService', '⚠️ Warning: Could not get web session: $e');
     }
   }
 
@@ -834,23 +845,34 @@ class OdooRPCService {
         }),
       );
 
-      print(
+      log(
+        name: 'OdooRPCService',
         '🔐 Web session authentication response status: ${response.statusCode}',
       );
-      print('🔐 Web session authentication response body: ${response.body}');
+      log(
+        name: 'OdooRPCService',
+        '🔐 Web session authentication response body: ${response.body}',
+      );
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         if (jsonResponse['error'] == null) {
-          print('✅ Web session authenticated successfully');
+          log(
+            name: 'OdooRPCService',
+            '✅ Web session authenticated successfully',
+          );
         } else {
-          print(
+          log(
+            name: 'OdooRPCService',
             '❌ Web session authentication failed: ${jsonResponse['error']}',
           );
         }
       }
     } catch (e) {
-      print('⚠️ Warning: Could not authenticate web session: $e');
+      log(
+        name: 'OdooRPCService',
+        '⚠️ Warning: Could not authenticate web session: $e',
+      );
     }
   }
 

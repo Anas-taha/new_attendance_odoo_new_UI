@@ -21,7 +21,7 @@ class LeaveService {
       final result = await _odooService.searchRead(
         model: 'hr.leave.type',
         domain: [
-          ['active', '=', true]
+          ['active', '=', true],
         ],
         fields: [
           'id',
@@ -47,7 +47,9 @@ class LeaveService {
   }
 
   /// Get employee leave balance/allocation
-  Future<Map<String, dynamic>> getLeaveBalance({required int employeeId}) async {
+  Future<Map<String, dynamic>> getLeaveBalance({
+    required int employeeId,
+  }) async {
     try {
       print('💰 Fetching leave balance for employee $employeeId...');
 
@@ -71,7 +73,7 @@ class LeaveService {
 
       if (result['success'] && result['data'] != null) {
         final allocations = result['data'] as List;
-        
+
         // Group allocations by leave type
         final balanceByType = <String, double>{};
         for (final allocation in allocations) {
@@ -94,10 +96,7 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error fetching leave balance: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -113,7 +112,7 @@ class LeaveService {
       print('🏖️ Fetching leaves for employee $employeeId...');
 
       final domain = <List<dynamic>>[
-        ['employee_id', '=', employeeId]
+        ['employee_id', '=', employeeId],
       ];
 
       if (state != null) {
@@ -285,10 +284,7 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error creating leave request: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -343,15 +339,14 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error updating leave request: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
   /// Cancel a leave request
-  Future<Map<String, dynamic>> cancelLeaveRequest({required int leaveId}) async {
+  Future<Map<String, dynamic>> cancelLeaveRequest({
+    required int leaveId,
+  }) async {
     try {
       print('❌ Cancelling leave request $leaveId...');
 
@@ -360,7 +355,7 @@ class LeaveService {
         model: 'hr.leave',
         method: 'action_refuse',
         args: [
-          [leaveId]
+          [leaveId],
         ],
       );
 
@@ -392,15 +387,14 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error cancelling leave request: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
   /// Approve a leave request (for managers)
-  Future<Map<String, dynamic>> approveLeaveRequest({required int leaveId}) async {
+  Future<Map<String, dynamic>> approveLeaveRequest({
+    required int leaveId,
+  }) async {
     try {
       print('✅ Approving leave request $leaveId...');
 
@@ -408,7 +402,7 @@ class LeaveService {
         model: 'hr.leave',
         method: 'action_approve',
         args: [
-          [leaveId]
+          [leaveId],
         ],
       );
 
@@ -426,19 +420,21 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error approving leave request: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
   /// Get leave statistics for an employee
-  Future<Map<String, dynamic>> getLeaveStatistics({required int employeeId}) async {
+  Future<Map<String, dynamic>> getLeaveStatistics({
+    required int employeeId,
+  }) async {
     try {
       print('📊 Fetching leave statistics for employee $employeeId...');
 
-      final leaves = await getEmployeeLeaves(employeeId: employeeId, limit: 200);
+      final leaves = await getEmployeeLeaves(
+        employeeId: employeeId,
+        limit: 200,
+      );
       final balance = await getLeaveBalance(employeeId: employeeId);
 
       int totalRequests = leaves.length;
@@ -474,10 +470,7 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error fetching leave statistics: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -493,7 +486,11 @@ class LeaveService {
 
       final domain = <List<dynamic>>[
         ['employee_id', '=', employeeId],
-        ['state', 'not in', ['refuse', 'cancel']],
+        [
+          'state',
+          'not in',
+          ['refuse', 'cancel'],
+        ],
         ['date_from', '<=', _formatOdooDate(dateTo)],
         ['date_to', '>=', _formatOdooDate(dateFrom)],
       ];
@@ -511,7 +508,7 @@ class LeaveService {
 
       if (result['success'] && result['data'] != null) {
         final conflicts = result['data'] as List;
-        
+
         if (conflicts.isNotEmpty) {
           return {
             'success': true,
@@ -534,10 +531,7 @@ class LeaveService {
       };
     } catch (e) {
       print('❌ Error checking date conflict: $e');
-      return {
-        'success': false,
-        'error': 'Exception: $e',
-      };
+      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -553,7 +547,11 @@ class LeaveService {
       final domain = <List<dynamic>>[
         ['date_from', '>=', _formatOdooDate(now)],
         ['date_from', '<=', _formatOdooDate(endDate)],
-        ['state', 'in', ['confirm', 'validate']],
+        [
+          'state',
+          'in',
+          ['confirm', 'validate'],
+        ],
       ];
 
       if (employeeId != null) {
@@ -605,4 +603,3 @@ class LeaveService {
         '${dateTime.second.toString().padLeft(2, '0')}';
   }
 }
-

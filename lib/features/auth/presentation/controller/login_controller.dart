@@ -54,7 +54,7 @@ class LoginController extends GetxController {
         isLoading.value = true;
         final result = await OdooRPCService.instance.authenticate(
           username: emailController.text.trim(),
-          password: passwordController.text,
+          password: passwordController.text.trim(),
           database: OdooConfig.database,
         );
         if (result.success) {

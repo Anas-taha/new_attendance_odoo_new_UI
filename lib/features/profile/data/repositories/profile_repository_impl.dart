@@ -10,7 +10,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<HrEmployee?> getProfileData() async {
-    final result = await _hrService.getEmployeeProfile();
+    final result = await _hrService.getProfile();
     if (result.isEmpty) {
       return null;
     }

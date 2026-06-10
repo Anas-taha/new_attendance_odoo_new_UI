@@ -1823,7 +1823,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectDate.
   ///
   /// In en, this message translates to:
-  /// **'Select Date'**
+  /// **'Select date'**
   String get selectDate;
 
   /// No description provided for @allowances.
@@ -1847,7 +1847,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadPayslip.
   ///
   /// In en, this message translates to:
-  /// **'Download Payslip'**
+  /// **'Download payslip'**
   String get downloadPayslip;
 
   /// No description provided for @readed.
@@ -1951,6 +1951,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Arabic'**
   String get arabic;
+
+  /// No description provided for @notificationsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsScreenTitle;
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll let you know when there\'s something new.'**
+  String get notificationsEmptySubtitle;
+
+  /// No description provided for @notificationsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get notificationsRead;
+
+  /// No description provided for @notificationsUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notificationsUnread;
+
+  /// No description provided for @notificationsRelativeTwoDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'2 days ago'**
+  String get notificationsRelativeTwoDaysAgo;
+
+  /// No description provided for @salariesScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Salaries'**
+  String get salariesScreenTitle;
+
+  /// No description provided for @netSalaryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Net salary'**
+  String get netSalaryLabel;
+
+  /// No description provided for @payslipAmountPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'30.000'**
+  String get payslipAmountPlaceholder;
+
+  /// No description provided for @payslipDeductionSample.
+  ///
+  /// In en, this message translates to:
+  /// **'2000'**
+  String get payslipDeductionSample;
+
+  /// No description provided for @amountZero.
+  ///
+  /// In en, this message translates to:
+  /// **'0'**
+  String get amountZero;
+
+  /// No description provided for @profileDirectManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct manager'**
+  String get profileDirectManager;
+
+  /// No description provided for @profileDepartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get profileDepartment;
+
+  /// No description provided for @profileBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get profileBranch;
+
+  /// No description provided for @profileWorkPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get profileWorkPhone;
+
+  /// No description provided for @profileWorkEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Work email'**
+  String get profileWorkEmail;
+
+  /// No description provided for @profileSampleManagerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Salem Abdulhakim Saber'**
+  String get profileSampleManagerName;
+
+  /// No description provided for @profileSampleDepartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Production department'**
+  String get profileSampleDepartment;
+
+  /// No description provided for @profileSampleBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Main branch, Riyadh'**
+  String get profileSampleBranch;
+
+  /// No description provided for @attendanceAndDepartureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance & departure'**
+  String get attendanceAndDepartureTitle;
+
+  /// No description provided for @attendanceDaysUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get attendanceDaysUnit;
+
+  /// No description provided for @attendanceEarlyLeaveLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Early leave'**
+  String get attendanceEarlyLeaveLong;
+
+  /// No description provided for @attendanceAbsencesPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'Absences'**
+  String get attendanceAbsencesPlural;
+
+  /// No description provided for @attendanceHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays'**
+  String get attendanceHolidays;
+
+  /// No description provided for @attendanceLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get attendanceLate;
+
+  /// No description provided for @attendanceEarlyLeaveShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get attendanceEarlyLeaveShort;
+
+  /// No description provided for @attendanceAbsentShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Absent'**
+  String get attendanceAbsentShort;
+
+  /// No description provided for @attendanceSampleSickLeaveDays.
+  ///
+  /// In en, this message translates to:
+  /// **'3 days (sick leave)'**
+  String get attendanceSampleSickLeaveDays;
+
+  /// No description provided for @attendanceWeekNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Week {number}'**
+  String attendanceWeekNumber(int number);
+
+  /// No description provided for @attendanceStatusAbsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Absent ❌'**
+  String get attendanceStatusAbsent;
+
+  /// No description provided for @attendanceStatusLeftEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Left early ⚠️'**
+  String get attendanceStatusLeftEarly;
+
+  /// No description provided for @attendanceStatusLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Late ⏰'**
+  String get attendanceStatusLate;
+
+  /// No description provided for @attendanceStatusFullDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Full day ✅'**
+  String get attendanceStatusFullDay;
 }
 
 class _AppLocalizationsDelegate

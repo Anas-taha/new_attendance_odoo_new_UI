@@ -999,4 +999,106 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get arabic => 'العربية';
+
+  @override
+  String get notificationsScreenTitle => 'الإشعارات';
+
+  @override
+  String get notificationsEmptyTitle => 'لا يوجد إشعارات';
+
+  @override
+  String get notificationsEmptySubtitle =>
+      'سنخبرك عندما يكون هناك شيء لتحديثك.';
+
+  @override
+  String get notificationsRead => 'مقروءة';
+
+  @override
+  String get notificationsUnread => 'غير مقروءة';
+
+  @override
+  String get notificationsRelativeTwoDaysAgo => 'منذ يومين';
+
+  @override
+  String get salariesScreenTitle => 'الرواتب';
+
+  @override
+  String get netSalaryLabel => 'صافي الراتب';
+
+  @override
+  String get payslipAmountPlaceholder => '30.000';
+
+  @override
+  String get payslipDeductionSample => '2000';
+
+  @override
+  String get amountZero => '0';
+
+  @override
+  String get profileDirectManager => 'المدير المباشر';
+
+  @override
+  String get profileDepartment => 'تابع إلى قسم';
+
+  @override
+  String get profileBranch => 'فرع';
+
+  @override
+  String get profileWorkPhone => 'رقم الهاتف';
+
+  @override
+  String get profileWorkEmail => 'البريد الإلكتروني';
+
+  @override
+  String get profileSampleManagerName => 'سالم عبد الحكيم صابر';
+
+  @override
+  String get profileSampleDepartment => 'قسم الإنتاج';
+
+  @override
+  String get profileSampleBranch => 'الفرع الرئيسي بالرياض';
+
+  @override
+  String get attendanceAndDepartureTitle => 'الحضور والانصراف';
+
+  @override
+  String get attendanceDaysUnit => 'أيام';
+
+  @override
+  String get attendanceEarlyLeaveLong => 'مغادرة مبكرة';
+
+  @override
+  String get attendanceAbsencesPlural => 'غيابات';
+
+  @override
+  String get attendanceHolidays => 'الإجازات';
+
+  @override
+  String get attendanceLate => 'تأخير';
+
+  @override
+  String get attendanceEarlyLeaveShort => 'مغادرة';
+
+  @override
+  String get attendanceAbsentShort => 'غياب';
+
+  @override
+  String get attendanceSampleSickLeaveDays => '3 أيام (إجازة مرضية)';
+
+  @override
+  String attendanceWeekNumber(int number) {
+    return 'الأسبوع $number';
+  }
+
+  @override
+  String get attendanceStatusAbsent => 'غياب ❌';
+
+  @override
+  String get attendanceStatusLeftEarly => 'مغادرة مبكرة ⚠️';
+
+  @override
+  String get attendanceStatusLate => 'تأخير ⏰';
+
+  @override
+  String get attendanceStatusFullDay => 'يوم كامل ✅';
 }

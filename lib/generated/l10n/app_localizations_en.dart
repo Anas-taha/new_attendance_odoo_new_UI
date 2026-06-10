@@ -946,7 +946,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get selectDate => 'Select Date';
+  String get selectDate => 'Select date';
 
   @override
   String get allowances => 'Allowances';
@@ -958,7 +958,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get netSalary => 'Net Salary';
 
   @override
-  String get downloadPayslip => 'Download Payslip';
+  String get downloadPayslip => 'Download payslip';
 
   @override
   String get readed => 'Readed';
@@ -1010,4 +1010,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get arabic => 'Arabic';
+
+  @override
+  String get notificationsScreenTitle => 'Notifications';
+
+  @override
+  String get notificationsEmptyTitle => 'No notifications';
+
+  @override
+  String get notificationsEmptySubtitle =>
+      'We\'ll let you know when there\'s something new.';
+
+  @override
+  String get notificationsRead => 'Read';
+
+  @override
+  String get notificationsUnread => 'Unread';
+
+  @override
+  String get notificationsRelativeTwoDaysAgo => '2 days ago';
+
+  @override
+  String get salariesScreenTitle => 'Salaries';
+
+  @override
+  String get netSalaryLabel => 'Net salary';
+
+  @override
+  String get payslipAmountPlaceholder => '30.000';
+
+  @override
+  String get payslipDeductionSample => '2000';
+
+  @override
+  String get amountZero => '0';
+
+  @override
+  String get profileDirectManager => 'Direct manager';
+
+  @override
+  String get profileDepartment => 'Department';
+
+  @override
+  String get profileBranch => 'Branch';
+
+  @override
+  String get profileWorkPhone => 'Phone number';
+
+  @override
+  String get profileWorkEmail => 'Work email';
+
+  @override
+  String get profileSampleManagerName => 'Salem Abdulhakim Saber';
+
+  @override
+  String get profileSampleDepartment => 'Production department';
+
+  @override
+  String get profileSampleBranch => 'Main branch, Riyadh';
+
+  @override
+  String get attendanceAndDepartureTitle => 'Attendance & departure';
+
+  @override
+  String get attendanceDaysUnit => 'days';
+
+  @override
+  String get attendanceEarlyLeaveLong => 'Early leave';
+
+  @override
+  String get attendanceAbsencesPlural => 'Absences';
+
+  @override
+  String get attendanceHolidays => 'Holidays';
+
+  @override
+  String get attendanceLate => 'Late';
+
+  @override
+  String get attendanceEarlyLeaveShort => 'Leave';
+
+  @override
+  String get attendanceAbsentShort => 'Absent';
+
+  @override
+  String get attendanceSampleSickLeaveDays => '3 days (sick leave)';
+
+  @override
+  String attendanceWeekNumber(int number) {
+    return 'Week $number';
+  }
+
+  @override
+  String get attendanceStatusAbsent => 'Absent ❌';
+
+  @override
+  String get attendanceStatusLeftEarly => 'Left early ⚠️';
+
+  @override
+  String get attendanceStatusLate => 'Late ⏰';
+
+  @override
+  String get attendanceStatusFullDay => 'Full day ✅';
 }

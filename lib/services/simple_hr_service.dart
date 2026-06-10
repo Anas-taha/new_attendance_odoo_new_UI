@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/models/hr_leave.dart';
@@ -15,7 +16,7 @@ class SimpleHrService {
   // SimpleHrService(this._odooService=OdooRPCService.instance);
 
   /// Get all employees
-  Future<List<HrEmployee>> getEmployeeProfile() async {
+  Future<List<HrEmployee>> getProfile() async {
     try {
       final result = await _odooService.searchRead(
         model: 'hr.employee',
@@ -40,7 +41,9 @@ class SimpleHrService {
       }
       return [];
     } catch (e) {
+      await CustomDialog.loginAgainDialog(e.toString());
       print('❌ Error getting employees: $e');
+      Get.back();
       return [];
     }
   }

@@ -532,7 +532,7 @@ class FaceAttendanceService {
     try {
       print('🔄 Submitting face attendance via controller...');
       print('📍 Location: lat=$latitude, lon=$longitude');
-      
+
       final url = Uri.parse('${OdooConfig.baseUrl}/submit_face');
       final response = await http
           .post(
@@ -554,22 +554,20 @@ class FaceAttendanceService {
       if (response.statusCode == 200) {
         final message = _extractMessageFromHtml(response.body);
         final isSuccess = message.contains('Success') || message.contains('✅');
-        
+
         // Determine if it was check-in or check-out from the message
         String action = 'unknown';
-        if (message.toLowerCase().contains('check') && message.toLowerCase().contains('in')) {
+        if (message.toLowerCase().contains('check') &&
+            message.toLowerCase().contains('in')) {
           action = 'check_in';
-        } else if (message.toLowerCase().contains('check') && message.toLowerCase().contains('out')) {
+        } else if (message.toLowerCase().contains('check') &&
+            message.toLowerCase().contains('out')) {
           action = 'check_out';
         }
-        
+
         if (isSuccess) {
           print('✅ Face attendance successful: $message');
-          return {
-            'success': true,
-            'message': message,
-            'action': action,
-          };
+          return {'success': true, 'message': message, 'action': action};
         } else {
           print('❌ Face attendance failed: $message');
           return {'success': false, 'error': message};
@@ -594,7 +592,7 @@ class FaceAttendanceService {
   }) async {
     try {
       print('🔄 Attempting face attendance with controller first...');
-      
+
       // First, try the face recognition controller
       final controllerResult = await submitFaceViaController(
         base64Image: base64Image,
@@ -608,9 +606,9 @@ class FaceAttendanceService {
 
       // If face recognition fails (no matching face, etc.), check error
       final error = controllerResult['error']?.toString() ?? '';
-      
+
       // If it's a face matching issue, don't fallback - return the error
-      if (error.contains('No matching face') || 
+      if (error.contains('No matching face') ||
           error.contains('No face detected') ||
           error.contains('face')) {
         return controllerResult;
@@ -639,12 +637,9 @@ class FaceAttendanceService {
   Future<bool> isFaceAttendanceAvailable() async {
     try {
       final url = Uri.parse('${OdooConfig.baseUrl}/face_attendance');
-      final response = await http.get(
-        url,
-        headers: {
-          'User-Agent': 'HR App Flutter Face Attendance',
-        },
-      ).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(url, headers: {'User-Agent': 'HR App Flutter Face Attendance'})
+          .timeout(const Duration(seconds: 5));
 
       return response.statusCode == 200;
     } catch (e) {
@@ -676,7 +671,7 @@ class FaceAttendanceService {
       log('📱 Platform: Web - camera not supported');
       return false;
     }
-    
+
     try {
       // Check for mobile platforms only (Android/iOS)
       final isMobile = Platform.isAndroid || Platform.isIOS;
@@ -699,11 +694,11 @@ class FaceAttendanceService {
   Future<Map<String, dynamic>> pickImageFromGallery() async {
     try {
       log('🔄 Starting image capture process...');
-      
+
       // Determine platform first before any async operations
       final bool useMobileCamera = _isMobilePlatform;
       log('📱 Using mobile camera: $useMobileCamera');
-      
+
       // Get current location (with timeout to prevent hanging)
       Position? location;
       try {
@@ -715,7 +710,7 @@ class FaceAttendanceService {
         log('⚠️ Location error (continuing anyway): $e');
         // Continue without location on desktop - don't block the flow
       }
-      
+
       if (location != null) {
         log('✅ Location obtained: ${location.latitude}, ${location.longitude}');
       } else {
@@ -750,16 +745,19 @@ class FaceAttendanceService {
 
       if (image == null) {
         log('❌ No image selected by user');
-        return {'success': false, 'error': 'No image selected. Please select an image.'};
+        return {
+          'success': false,
+          'error': 'No image selected. Please select an image.',
+        };
       }
       log('✅ Image selected: ${image.path}');
 
       // Read image bytes
       final imageBytes = await image.readAsBytes();
       log('📊 Image size: ${imageBytes.length} bytes');
-      
+
       String base64Image;
-      
+
       // Compress image on mobile platforms, use raw bytes on desktop/web
       if (useMobileCamera && !kIsWeb) {
         log('🗜️ Compressing image...');
@@ -774,14 +772,14 @@ class FaceAttendanceService {
         // On desktop/web, use the raw bytes directly
         base64Image = base64Encode(imageBytes);
       }
-      
+
       log('✅ base64Image length: ${base64Image.length} characters');
 
       // Get address from coordinates (only if location available)
       String address = 'Unknown location';
       double? latitude;
       double? longitude;
-      
+
       if (location != null) {
         latitude = location.latitude;
         longitude = location.longitude;
