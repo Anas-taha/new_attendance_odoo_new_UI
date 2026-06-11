@@ -271,7 +271,12 @@ class OdooRPCService {
 
   /// Search and read records from Odoo using standard JSON-RPC
 
-  Future<Map<String, dynamic>> callOdooApi({required String apiUrl}) async {
+  Future<Map<String, dynamic>> callOdooApi({
+    required String apiUrl,
+
+    String? date_from,
+    String? date_to,
+  }) async {
     if (!isAuthenticated) {
       throw Exception('Not authenticated. Please login first.');
     }
@@ -293,7 +298,12 @@ class OdooRPCService {
               'X-Requested-With': 'XMLHttpRequest',
             },
             body: json.encode({
-              "params": {"db": "$_database", "mobile_token": "$_mobileToken"},
+              "params": {
+                "db": "$_database",
+                "mobile_token": "$_mobileToken",
+                "date_from": "$date_from",
+                "date_to": "$date_to",
+              },
               // 'jsonrpc': '2.0',
               // 'method': 'call',
               // 'params': {

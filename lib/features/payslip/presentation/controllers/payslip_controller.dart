@@ -1,92 +1,95 @@
-// import 'dart:developer';
-// import 'dart:io';
-// import 'dart:typed_data';
+import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
-// import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
-// import 'package:hr_app_odoo/features/payslip/data/repositories/payslip_repository_impl.dart';
-// import 'package:hr_app_odoo/features/payslip/domain/repositories/payslip_repository.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:pdf/widgets.dart' as pw;
-// import 'package:printing/printing.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
+import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
+import 'package:hr_app_odoo/features/payslip/data/repositories/payslip_repository_impl.dart';
+import 'package:hr_app_odoo/features/payslip/domain/repositories/payslip_repository.dart';
+import 'package:hr_app_odoo/models/salary_model.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
-// class PayslipController extends GetxController {
-//   PayslipController({PayslipRepository? payslipRepository})
-//     : _payslipRepository = payslipRepository ?? PayslipRepositoryImpl();
+class PayslipController extends GetxController {
+  PayslipController({PayslipRepository? payslipRepository})
+    : _payslipRepository = payslipRepository ?? PayslipRepositoryImpl();
 
-//   final PayslipRepository _payslipRepository;
+  final PayslipRepository _payslipRepository;
 
-//   TextEditingController dateController = TextEditingController();
-//   bool salary = false;
-//   RxBool isLoading = false.obs;
-//   String allSalary = '30.000';
-//   String netSalary = '1.000';
-//   String grossSalary = '25.000';
-//   Uint8List? pdfBytes;
+  TextEditingController dateController = TextEditingController();
+  Payslips salary = Payslips();
+  RxBool isLoading = false.obs;
 
-//   @override
-//   void onReady() {
-//     super.onReady();
-//     dateController.text = '';
-//     getSalaries();
-//   }
+  Uint8List? pdfBytes;
 
-//   Future<void> getSalaries() async {
-//     isLoading.value = true;
-//     final result = await _payslipRepository.getPayslips();
-//     salary = result.isNotEmpty;
-//     update();
-//     log(name: 'PayslipController', 'result: $result');
-//     isLoading.value = false;
-//   }
+  @override
+  void onReady() {
+    super.onReady();
+    dateController.text = '';
+    getSalaries();
+  }
 
-//   Future<void> getPayslipLine() async {
-//     isLoading.value = true;
-//     final result = await _payslipRepository.getPayslipLine();
-//     log(name: 'PayslipController', 'getPayslipLine result: $result');
-//     isLoading.value = false;
-//   }
+  Future<void> getSalaries() async {
+    isLoading.value = true;
+    final result = await _payslipRepository.getPayslips();
+    log(name: 'sfdbdfgjhndtyj', 'result: ${result.status} ');
+    salary = result.payslips?.first ?? Payslips();
+    update();
+    log(
+      name: 'PayslipController',
+      'result: $result salary: $salary name: ${salary.basicSalary}',
+    );
+    isLoading.value = false;
+  }
 
-//   void selectDate() {
-//     final ctx = Get.context;
-//     final title = ctx == null ? '' : AppLocalizations.of(ctx)!.selectDate;
-//     CustomCalender.calenderDialog(contorller: dateController, title: title);
-//   }
+  Future<void> getPayslipLine() async {
+    isLoading.value = true;
+    final result = await _payslipRepository.getPayslipLine();
+    log(name: 'PayslipController', 'getPayslipLine result: $result');
+    isLoading.value = false;
+  }
 
-//   Future<void> generatePdf() async {
-//     final pdf = pw.Document();
+  void selectDate() {
+    final ctx = Get.context;
+    final title = ctx == null ? '' : AppLocalizations.of(ctx)!.selectDate;
+    CustomCalender.calenderDialog(contorller: dateController, title: title);
+  }
 
-//     pdf.addPage(
-//       pw.Page(
-//         build: (pw.Context context) {
-//           return pw.Column(
-//             crossAxisAlignment: pw.CrossAxisAlignment.start,
-//             children: [
-//               pw.Text('Name: $allSalary'),
-//               pw.Text('Age: $netSalary'),
-//               pw.Text('Address: $grossSalary'),
-//             ],
-//           );
-//         },
-//       ),
-//     );
+  Future<void> generatePdf() async {
+    final pdf = pw.Document();
 
-//     pdfBytes = await pdf.save();
-//   }
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // pw.Text('Name: $allSalary'),
+              // pw.Text('Age: $netSalary'),
+              // pw.Text('Address: $grossSalary'),
+            ],
+          );
+        },
+      ),
+    );
 
-//   Widget buildPdfPreview() {
-//     if (pdfBytes == null) {
-//       return const SizedBox();
-//     }
+    pdfBytes = await pdf.save();
+  }
 
-//     return Expanded(child: PdfPreview(build: (format) => pdfBytes!));
-//   }
+  Widget buildPdfPreview() {
+    if (pdfBytes == null) {
+      return const SizedBox();
+    }
 
-//   Future<void> savePdf() async {
-//     final dir = await getApplicationDocumentsDirectory();
-//     final file = File('${dir.path}/my_form.pdf');
-//     await file.writeAsBytes(pdfBytes!);
-//   }
-// }
+    return Expanded(child: PdfPreview(build: (format) => pdfBytes!));
+  }
+
+  Future<void> savePdf() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/my_form.pdf');
+    await file.writeAsBytes(pdfBytes!);
+  }
+}

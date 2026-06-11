@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
+import 'package:hr_app_odoo/models/salary_model.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/models/hr_leave.dart';
@@ -244,31 +245,22 @@ class SimpleHrService {
     }
   }
 
-  Future<List<HrPayslip>> getPayslip() async {
+  Future<SalaryModel> getPayslip() async {
     try {
-      final result = await _odooService.searchRead(
-        model: 'hr.payslip',
-        fields: [
-          "number",
-          "name",
-          "date_from",
-          "date_to",
-          "state",
-          "net_wage",
-          "basic_wage",
-          "struct_id",
-        ],
-        order: "date_from desc",
-        limit: 12,
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'payslips',
+        date_from: null,
+        date_to: null,
       );
-      if (result['success']) {
-        final data = result['data'] as List<dynamic>;
-        return data.map((item) => HrPayslip.fromOdoo(item)).toList();
+      if (result['status'] == 'success') {
+        SalaryModel ddd = SalaryModel.fromJson(result);
+        log(name: 'asokdjnbvksjdbngv', "${ddd.status}");
+        return SalaryModel.fromJson(result);
       }
-      return [];
+      return SalaryModel();
     } catch (e) {
       print('❌ Error getting salary: $e');
-      return [];
+      return SalaryModel();
     }
   }
 

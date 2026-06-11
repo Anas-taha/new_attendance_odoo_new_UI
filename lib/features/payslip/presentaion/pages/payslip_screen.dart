@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/features/payslip/presentation/controllers/payslip_controller.dart';
 import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/features/payslip/presentaion/controller/payslip_controller.dart';
@@ -65,7 +66,7 @@ class PayslipScreen extends StatelessWidget {
                   Column(
                     children: [
                       CustomText(
-                        text: controller.basicSalary,
+                        text: controller.salary.basicSalary.toString(),
                         color: AppColors.appFFFFFFBackGround1,
                         fontSize: 30.w,
                         fontWeight: FontWeight.w700,
@@ -99,7 +100,7 @@ class PayslipScreen extends StatelessWidget {
                       ),
                       Spacer(),
                       CustomText(
-                        text: controller.netSalary,
+                        text: controller.salary.allowances.toString(),
                         color: AppColors.appPrimaryColor,
                         fontWeight: FontWeight.w700,
                       ),
@@ -122,7 +123,7 @@ class PayslipScreen extends StatelessWidget {
                     ),
                     Spacer(),
                     CustomText(
-                      text: controller.grossSalary,
+                      text: controller.salary.deductions.toString(),
                       color: AppColors.appF44336Error,
                       fontWeight: FontWeight.w700,
                     ),
@@ -144,7 +145,7 @@ class PayslipScreen extends StatelessWidget {
                     ),
                     Spacer(),
                     CustomText(
-                      text: controller.netSalary,
+                      text: controller.salary.netSalary.toString(),
                       color: AppColors.app4CAF50Success,
                       fontWeight: FontWeight.w700,
                     ),
