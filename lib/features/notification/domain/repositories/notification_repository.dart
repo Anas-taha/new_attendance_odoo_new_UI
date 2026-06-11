@@ -1,7 +1,9 @@
+import 'package:hr_app_odoo/models/notification_model.dart';
+
 abstract class NotificationRepository {
-  Future<List<String>> getAllNotifications();
+  Future<NotificationModel> getNotification();
 
-  Future<List<String>> getReadNotifications();
+  Future<List<Notifications>> getReadNotifications();
 
-  Future<List<String>> getUnreadNotifications();
+  Future<List<Notifications>> getUnreadNotifications();
 }
