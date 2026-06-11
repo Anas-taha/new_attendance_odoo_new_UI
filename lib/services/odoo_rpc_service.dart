@@ -273,7 +273,7 @@ class OdooRPCService {
 
   Future<Map<String, dynamic>> callOdooApi({
     required String apiUrl,
-
+    String? state,
     String? date_from,
     String? date_to,
   }) async {
@@ -303,6 +303,7 @@ class OdooRPCService {
                 "mobile_token": "$_mobileToken",
                 "date_from": "$date_from",
                 "date_to": "$date_to",
+                "state": "$state",
               },
               // 'jsonrpc': '2.0',
               // 'method': 'call',

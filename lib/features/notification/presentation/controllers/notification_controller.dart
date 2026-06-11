@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/notification/data/repositories/notification_repository_impl.dart';
 import 'package:hr_app_odoo/features/notification/domain/repositories/notification_repository.dart';
+import 'package:hr_app_odoo/models/notifications_model.dart';
 
 enum NotifiState { all, readed, unReaded }
 
@@ -12,9 +13,9 @@ class NotificationController extends GetxController {
           notificationRepository ?? NotificationRepositoryImpl();
 
   final NotificationRepository _notificationRepository;
-
+RxBool isLoading = false.obs;
   Rx<NotifiState> selectedNotifiState = Rx<NotifiState>(NotifiState.all);
-  RxList<String> notificationList = RxList<String>([]);
+ NotificationsModel notificationList = NotificationsModel();
 
   @override
   void onReady() {
@@ -36,24 +37,29 @@ class NotificationController extends GetxController {
       case NotifiState.all:
         getAllNotification();
       case NotifiState.readed:
-        getReadedNotification();
+        getAllNotification();
+
+      // getReadedNotification();
       case NotifiState.unReaded:
-        getUnReadedNotification();
+        getAllNotification();
+      // getUnReadedNotification();
     }
   }
 
-  Future<void> getReadedNotification() async {
-    notificationList.value = await _notificationRepository
-        .getReadNotifications();
-  }
+  // Future<void> getReadedNotification() async {
+  //   notificationList.value = await _notificationRepository
+  //       .getReadNotifications();
+  // }
 
-  Future<void> getUnReadedNotification() async {
-    notificationList.value = await _notificationRepository
-        .getUnreadNotifications();
-  }
+  // Future<void> getUnReadedNotification() async {
+  //   notificationList.value = await _notificationRepository
+  //       .getUnreadNotifications();
+  // }
 
   Future<void> getAllNotification() async {
-    notificationList.value = await _notificationRepository
-        .getAllNotifications();
+    isLoading.value = true;
+    notificationList = await _notificationRepository.getNotifications();
+    update();
+    isLoading.value = false;
   }
 }

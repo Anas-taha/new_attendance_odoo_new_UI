@@ -1,23 +1,20 @@
 import 'package:hr_app_odoo/features/notification/domain/repositories/notification_repository.dart';
+import 'package:hr_app_odoo/models/notifications_model.dart';
+import 'package:hr_app_odoo/services/simple_hr_service.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
-  static const List<String> _notifications = <String>[
-    ' readed notification 1',
-    ' readed notification 2',
-    'unReaded notification 1',
-    'unReaded notification 2',
-    'unReaded notification 3',
-  ];
-
+  NotificationRepositoryImpl({SimpleHrService? hrService})
+    : _hrService = hrService ?? SimpleHrService();
+ final SimpleHrService _hrService;
   @override
-  Future<List<String>> getAllNotifications() async =>
-      List<String>.from(_notifications);
+  Future<NotificationsModel> getNotifications() async =>
+     _hrService.getNotifications();
 
-  @override
-  Future<List<String>> getReadNotifications() async =>
-      _notifications.where((item) => item.contains('readed')).toList();
+  // @override
+  // Future<List<String>> getReadNotifications() async =>
+  //     _notifications.where((item) => item.contains('readed')).toList();
 
-  @override
-  Future<List<String>> getUnreadNotifications() async =>
-      _notifications.where((item) => item.contains('unReaded')).toList();
+  // @override
+  // Future<List<String>> getUnreadNotifications() async =>
+  //     _notifications.where((item) => item.contains('unReaded')).toList();
 }
