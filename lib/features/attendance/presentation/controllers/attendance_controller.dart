@@ -174,7 +174,7 @@ class AttendanceController extends GetxController {
       currentEmployee = await _attendanceRepository.getCurrentEmployee();
       if (currentEmployee != null) {
         final summary = await _attendanceRepository.getTodayAttendanceSummary(
-          employeeId: currentEmployee!.id,
+          employeeId: currentEmployee!.profile?.id,
         );
         log(summary.toString(), name: "is_checked_in");
 
@@ -257,7 +257,7 @@ class AttendanceController extends GetxController {
       bool success;
       if (isCheckedIn) {
         success = await _attendanceRepository.checkOut(
-          employeeId: currentEmployee?.id,
+          employeeId: currentEmployee?.profile?.id,
         );
         if (success) {
           isCheckedIn = false;
@@ -276,7 +276,7 @@ class AttendanceController extends GetxController {
         }
       } else {
         success = await _attendanceRepository.checkIn(
-          employeeId: currentEmployee?.id,
+          employeeId: currentEmployee?.profile?.id,
         );
         if (success) {
           final now = DateTime.now();

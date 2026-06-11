@@ -68,7 +68,7 @@ class LoginController extends GetxController {
           final hrService = HrService();
           final employee = await hrService.getCurrentEmployee();
           if (employee != null) {
-            OdooRPCService.instance.setCurrentEmployeeId(employee.id);
+            OdooRPCService.instance.setCurrentEmployeeId(employee.profile?.id??0);
           }
           // // if (!mounted) return;
           // final l10n = AppLocalizations.of(Get.context!)!;

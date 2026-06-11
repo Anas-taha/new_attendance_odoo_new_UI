@@ -17,8 +17,9 @@ class AttendanceReportScreen extends StatefulWidget {
 class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     with TickerProviderStateMixin {
   final HrService _hrService = HrService();
-  final AttendanceReportService _reportService = AttendanceReportService.instance;
-  
+  final AttendanceReportService _reportService =
+      AttendanceReportService.instance;
+
   HrEmployee? _currentEmployee;
   List<HrAttendance> _allRecords = [];
   Map<String, dynamic>? _statistics;
@@ -108,15 +109,15 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Future<void> _loadAttendanceRecords() async {
     try {
       final records = await _hrService.getEmployeeAttendance(
-        employeeId: _currentEmployee!.id,
+        employeeId: _currentEmployee!.profile!.id,
         limit: 100,
       );
-      
+
       final reportData = await _reportService.getAttendanceReport(
-        employeeId: _currentEmployee!.id,
+        employeeId: _currentEmployee!.profile!.id,
         limit: 100,
       );
-      
+
       setState(() {
         _allRecords = records;
         if (reportData['success'] == true) {
@@ -131,7 +132,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Future<void> _loadWeeklySummary() async {
     try {
       final summary = await _reportService.getWeeklySummary(
-        employeeId: _currentEmployee!.id,
+        employeeId: _currentEmployee!.profile!.id!,
       );
       setState(() {
         _weeklySummary = summary['success'] == true ? summary : null;
@@ -144,7 +145,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Future<void> _loadMonthlySummary() async {
     try {
       final summary = await _reportService.getMonthlySummary(
-        employeeId: _currentEmployee!.id,
+        employeeId: _currentEmployee!.profile!.id!,
       );
       setState(() {
         _monthlySummary = summary['success'] == true ? summary : null;
@@ -157,11 +158,15 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   List<HrAttendance> _getFilteredRecords() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     switch (_selectedPeriod) {
       case 'today':
         return _allRecords.where((record) {
-          final recordDate = DateTime(record.createDate.year, record.createDate.month, record.createDate.day);
+          final recordDate = DateTime(
+            record.createDate.year,
+            record.createDate.month,
+            record.createDate.day,
+          );
           return recordDate.isAtSameMomentAs(today);
         }).toList();
 
@@ -169,24 +174,30 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
         final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
         final endOfWeek = startOfWeek.add(const Duration(days: 7));
         return _allRecords.where((record) {
-          return record.createDate.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-                 record.createDate.isBefore(endOfWeek);
+          return record.createDate.isAfter(
+                startOfWeek.subtract(const Duration(days: 1)),
+              ) &&
+              record.createDate.isBefore(endOfWeek);
         }).toList();
 
       case 'this_month':
         final startOfMonth = DateTime(now.year, now.month, 1);
         final endOfMonth = DateTime(now.year, now.month + 1, 1);
         return _allRecords.where((record) {
-          return record.createDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
-                 record.createDate.isBefore(endOfMonth);
+          return record.createDate.isAfter(
+                startOfMonth.subtract(const Duration(days: 1)),
+              ) &&
+              record.createDate.isBefore(endOfMonth);
         }).toList();
 
       case 'last_month':
         final startOfLastMonth = DateTime(now.year, now.month - 1, 1);
         final endOfLastMonth = DateTime(now.year, now.month, 1);
         return _allRecords.where((record) {
-          return record.createDate.isAfter(startOfLastMonth.subtract(const Duration(days: 1))) &&
-                 record.createDate.isBefore(endOfLastMonth);
+          return record.createDate.isAfter(
+                startOfLastMonth.subtract(const Duration(days: 1)),
+              ) &&
+              record.createDate.isBefore(endOfLastMonth);
         }).toList();
 
       default:
@@ -233,15 +244,17 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     final totalHours = totalSeconds ~/ 3600;
     final totalMinutes = (totalSeconds % 3600) ~/ 60;
     final totalSecs = totalSeconds % 60;
-    
+
     final avgSeconds = totalSessions > 0 ? totalSeconds ~/ totalSessions : 0;
     final avgHours = avgSeconds ~/ 3600;
     final avgMinutes = (avgSeconds % 3600) ~/ 60;
     final avgSecs = avgSeconds % 60;
 
     return {
-      'total_hours': '${totalHours.toString().padLeft(2, '0')}:${totalMinutes.toString().padLeft(2, '0')}:${totalSecs.toString().padLeft(2, '0')}',
-      'average_daily': '${avgHours.toString().padLeft(2, '0')}:${avgMinutes.toString().padLeft(2, '0')}:${avgSecs.toString().padLeft(2, '0')}',
+      'total_hours':
+          '${totalHours.toString().padLeft(2, '0')}:${totalMinutes.toString().padLeft(2, '0')}:${totalSecs.toString().padLeft(2, '0')}',
+      'average_daily':
+          '${avgHours.toString().padLeft(2, '0')}:${avgMinutes.toString().padLeft(2, '0')}:${avgSecs.toString().padLeft(2, '0')}',
       'total_sessions': totalSessions,
       'on_time_count': onTimeCount,
       'late_count': lateCount,
@@ -257,10 +270,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-            ],
+            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
           ),
         ),
         child: SafeArea(
@@ -268,10 +278,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             children: [
               // Custom App Bar
               _buildAppBar(),
-              
+
               // Tab Bar
               _buildTabBar(),
-              
+
               // Content
               Expanded(
                 child: Container(
@@ -325,7 +335,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                 ),
                 if (_currentEmployee != null)
                   Text(
-                    _currentEmployee!.name,
+                    _currentEmployee!.profile!.name!,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
                       fontSize: 14,
@@ -371,26 +381,26 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Widget _buildSummaryView() {
     final filteredRecords = _getFilteredRecords();
     final stats = _calculateStats(filteredRecords);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
           // Period Selector
           _buildPeriodSelector(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Quick Stats
           _buildQuickStats(context, stats),
-          
+
           const SizedBox(height: 24),
-          
+
           // Weekly Overview
           if (_weeklySummary != null) _buildWeeklyOverview(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Monthly Overview
           if (_monthlySummary != null) _buildMonthlyOverview(),
         ],
@@ -400,7 +410,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
 
   Widget _buildRecordsView() {
     final filteredRecords = _getFilteredRecords();
-    
+
     return Column(
       children: [
         // Period Selector
@@ -408,11 +418,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           padding: const EdgeInsets.all(20),
           child: _buildPeriodSelector(),
         ),
-        
+
         // Records List
-        Expanded(
-          child: _buildRecordsList(context, filteredRecords),
-        ),
+        Expanded(child: _buildRecordsList(context, filteredRecords)),
       ],
     );
   }
@@ -424,14 +432,14 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
         children: [
           // Attendance Trends Chart Placeholder
           _buildAttendanceTrends(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Punctuality Analysis
           _buildPunctualityAnalysis(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Location Analysis (if available)
           _buildLocationAnalysis(),
         ],
@@ -475,9 +483,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -535,9 +543,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -582,8 +590,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
 
   Widget _buildWeeklyOverview() {
     final weeklyHours = _weeklySummary?['total_weekly_hours'] ?? 0.0;
-    final dailyBreakdown = _weeklySummary?['daily_breakdown'] as Map<String, dynamic>?;
-    
+    final dailyBreakdown =
+        _weeklySummary?['daily_breakdown'] as Map<String, dynamic>?;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -617,7 +626,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ],
           ),
-          
+
           if (dailyBreakdown != null && dailyBreakdown.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Divider(),
@@ -629,10 +638,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      entry.key,
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
+                    Text(entry.key, style: TextStyle(color: Colors.grey[700])),
                     Text(
                       '${(dayData['total_hours'] as double).toStringAsFixed(1)}h',
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -651,7 +657,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     final monthlyHours = _monthlySummary?['total_monthly_hours'] ?? 0.0;
     final workingDays = _monthlySummary?['working_days'] ?? 0;
     final avgDaily = _monthlySummary?['average_daily_hours'] ?? 0.0;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -685,9 +691,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Expanded(
@@ -713,7 +719,12 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildMiniStat(BuildContext context, String title, String value, IconData icon) {
+  Widget _buildMiniStat(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+  ) {
     return Row(
       children: [
         Icon(icon, size: 16, color: Colors.grey[600]),
@@ -725,10 +736,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               title,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
-            Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ],
@@ -784,11 +792,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.analytics,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.analytics, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.noAttendanceRecords,
@@ -801,10 +805,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.tryDifferentPeriod,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             ),
           ],
         ),
@@ -821,15 +822,21 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildRecordCard(BuildContext context, HrAttendance record, int index) {
+  Widget _buildRecordCard(
+    BuildContext context,
+    HrAttendance record,
+    int index,
+  ) {
     final isCurrentSession = record.isCheckedIn;
     final workedHours = record.getFormattedWorkedHours();
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isCurrentSession ? const Color(0xFF48BB78).withOpacity(0.1) : Colors.white,
+        color: isCurrentSession
+            ? const Color(0xFF48BB78).withOpacity(0.1)
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isCurrentSession ? const Color(0xFF48BB78) : Colors.grey[200]!,
@@ -851,8 +858,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isCurrentSession 
-                      ? const Color(0xFF48BB78) 
+                  color: isCurrentSession
+                      ? const Color(0xFF48BB78)
                       : Colors.grey[400],
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -862,9 +869,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                   size: 20,
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -872,12 +879,14 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                     Row(
                       children: [
                         Text(
-                          isCurrentSession ? AppLocalizations.of(context)!.activeSession : AppLocalizations.of(context)!.completedSession,
+                          isCurrentSession
+                              ? AppLocalizations.of(context)!.activeSession
+                              : AppLocalizations.of(context)!.completedSession,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isCurrentSession 
-                                ? const Color(0xFF48BB78) 
+                            color: isCurrentSession
+                                ? const Color(0xFF48BB78)
                                 : Colors.grey[700],
                           ),
                         ),
@@ -903,24 +912,24 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                           ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     Text(
-                      DateFormat('EEEE, MMMM dd, yyyy', Localizations.localeOf(context).toString()).format(record.createDate),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      DateFormat(
+                        'EEEE, MMMM dd, yyyy',
+                        Localizations.localeOf(context).toString(),
+                      ).format(record.createDate),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Expanded(
@@ -932,7 +941,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                   color: Colors.green[600]!,
                 ),
               ),
-              
+
               if (record.checkOut != null) ...[
                 Expanded(
                   child: _buildTimeInfo(
@@ -943,7 +952,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
                     color: Colors.red[600]!,
                   ),
                 ),
-                
+
                 Expanded(
                   child: _buildTimeInfo(
                     context: context,
@@ -995,7 +1004,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
 
   Widget _buildAttendanceTrends() {
     final stats = _statistics;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1020,9 +1029,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           if (stats != null) ...[
             _buildTrendItem(
               context,
@@ -1037,7 +1046,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               AppLocalizations.of(context)!.onTimeRate,
               '${stats['on_time_percentage'] ?? '0.0'}%',
               const Color(0xFF48BB78),
-              double.tryParse(stats['on_time_percentage']?.toString() ?? '0') ?? 0.0 / 100,
+              double.tryParse(stats['on_time_percentage']?.toString() ?? '0') ??
+                  0.0 / 100,
             ),
             const SizedBox(height: 12),
             _buildTrendItem(
@@ -1059,7 +1069,13 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildTrendItem(BuildContext context, String label, String value, Color color, double progress) {
+  Widget _buildTrendItem(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+    double progress,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1067,7 +1083,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: TextStyle(color: Colors.grey[700])),
-            Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+            Text(
+              value,
+              style: TextStyle(fontWeight: FontWeight.bold, color: color),
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -1087,7 +1106,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Widget _buildPunctualityAnalysis() {
     final filteredRecords = _getFilteredRecords();
     final stats = _calculateStats(filteredRecords);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1112,9 +1131,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Expanded(
@@ -1148,7 +1167,12 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
     );
   }
 
-  Widget _buildPunctualityItem(String label, int count, Color color, IconData icon) {
+  Widget _buildPunctualityItem(
+    String label,
+    int count,
+    Color color,
+    IconData icon,
+  ) {
     return Column(
       children: [
         Icon(icon, color: color, size: 28),
@@ -1161,13 +1185,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
             color: color,
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -1175,7 +1193,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
   Widget _buildLocationAnalysis() {
     final locationCount = _statistics?['records_with_location'] ?? 0;
     final totalRecords = _statistics?['total_sessions'] ?? 0;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1200,9 +1218,9 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -1260,10 +1278,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen>
           children: [
             Text(
               AppLocalizations.of(context)!.exportReport,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             ListTile(

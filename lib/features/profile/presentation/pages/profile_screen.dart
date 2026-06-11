@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:hr_app_odoo/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
@@ -55,14 +56,21 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   60.verticalSpace,
                                   CustomText(
-                                    text: controller.profileData.name ?? '',
+                                    text:
+                                        controller.profileData.profile?.name ??
+                                        '',
                                     fontSize: 16.w,
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.app1A1A1AText1,
                                   ),
                                   8.verticalSpace,
                                   CustomText(
-                                    text: controller.profileData.jobTitle ?? '',
+                                    text:
+                                        controller
+                                            .profileData
+                                            .profile
+                                            ?.jobTitle ??
+                                        '',
                                     fontSize: 16.w,
                                     fontWeight: FontWeight.w400,
                                     color: AppColors.appA0A0A0Text2,
@@ -77,17 +85,32 @@ class ProfileScreen extends StatelessWidget {
                                           ProfileItemInfoWidget(
                                             title:
                                                 context.appWords.directManeger,
-                                            value: 'سالم عبد الحكيم صابر',
+                                            value:
+                                                controller
+                                                    .profileData
+                                                    .profile
+                                                    ?.directManager ??
+                                                '',
                                           ),
                                           ProfileItemInfoWidget(
                                             title: context
                                                 .appWords
                                                 .belongToDepartment,
-                                            value: 'قسم الانتاج',
+                                            value:
+                                                controller
+                                                    .profileData
+                                                    .profile
+                                                    ?.department ??
+                                                '',
                                           ),
                                           ProfileItemInfoWidget(
                                             title: context.appWords.branch,
-                                            value: 'الفرع الرئيسي بالرياض',
+                                            value:
+                                                controller
+                                                    .profileData
+                                                    .profile
+                                                    ?.branch ??
+                                                '',
                                           ),
                                         ],
                                       ),
@@ -103,7 +126,8 @@ class ProfileScreen extends StatelessWidget {
                                           value:
                                               controller
                                                   .profileData
-                                                  .workPhone ??
+                                                  .profile
+                                                  ?.workPhone ??
                                               '',
                                         ),
                                         ProfileItemInfoWidget(
@@ -111,7 +135,8 @@ class ProfileScreen extends StatelessWidget {
                                           value:
                                               controller
                                                   .profileData
-                                                  .workEmail ??
+                                                  .profile
+                                                  ?.workEmail ??
                                               '',
                                         ),
                                       ],

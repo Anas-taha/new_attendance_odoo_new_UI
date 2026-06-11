@@ -91,7 +91,7 @@ class _OldLoginScreenState extends State<OldLoginScreen> {
           final hrService = HrService();
           final employee = await hrService.getCurrentEmployee();
           if (employee != null) {
-            OdooRPCService.instance.setCurrentEmployeeId(employee.id);
+            OdooRPCService.instance.setCurrentEmployeeId(employee.profile!.id!);
           }
 
           if (!mounted) return;
@@ -100,7 +100,7 @@ class _OldLoginScreenState extends State<OldLoginScreen> {
             SnackBar(
               content: Text(
                 l10n.welcomeName(
-                  employee?.name ?? _emailController.text.trim(),
+                  employee?.profile?.name ?? _emailController.text.trim(),
                 ),
               ),
               backgroundColor: Colors.green,

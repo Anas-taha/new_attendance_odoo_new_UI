@@ -32,7 +32,7 @@ class EmployeeCardWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  controller.currentEmployee?.name ??
+                  controller.currentEmployee?.profile?.name ??
                       AppLocalizations.of(context)!.employee,
                   style: const TextStyle(
                     fontSize: 18,
@@ -40,17 +40,17 @@ class EmployeeCardWidget extends StatelessWidget {
                     color: Color(0xFF2D3748),
                   ),
                 ),
-                if (controller.currentEmployee?.jobTitle != null) ...[
+                if (controller.currentEmployee?.profile?.jobTitle != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    controller.currentEmployee!.jobTitle!,
+                    controller.currentEmployee!.profile!.jobTitle!,
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
                 const SizedBox(height: 4),
                 Text(
                   AppLocalizations.of(context)!.idLabel(
-                    controller.currentEmployee?.id.toString() ??
+                    controller.currentEmployee?.profile?.id.toString() ??
                         AppLocalizations.of(context)!.na,
                   ),
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),

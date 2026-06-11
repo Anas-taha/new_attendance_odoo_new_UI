@@ -17,10 +17,10 @@ class PayslipController extends GetxController {
   HrPayslip salary = HrPayslip();
   RxBool isLoading = false.obs;
 
-  String basicSalary = '30.000';
-  String netSalary = '1.000';
-  String grossSalary = '25.000';
-  String remainingSalary = '25.000';
+  String basicSalary = '';
+  String netSalary = '';
+  String grossSalary = '';
+  String remainingSalary = '';
 
   Uint8List? pdfBytes;
 
@@ -37,8 +37,8 @@ class PayslipController extends GetxController {
     if (result.isNotEmpty) {
       salary = result.first;
       basicSalary = salary.basicWage.toString();
-      netSalary = (salary.basicWage??0 - (salary.netWage??0)).toString();
-      grossSalary = (salary.grossWage??0 -( salary.netWage??0)).toString();
+      netSalary = (salary.basicWage ?? 0 - (salary.netWage ?? 0)).toString();
+      grossSalary = (salary.grossWage ?? 0 - (salary.netWage ?? 0)).toString();
       remainingSalary = salary.netWage.toString();
       // salary = true;
       update();

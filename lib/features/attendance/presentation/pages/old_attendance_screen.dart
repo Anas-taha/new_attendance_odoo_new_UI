@@ -207,7 +207,7 @@ class _OldAttendanceScreenState extends State<OldAttendanceScreen>
   //     if (_currentEmployee != null) {
   //       // Get today's attendance summary
   //       final summary = await _hrService.getTodayAttendanceSummary(
-  //         employeeId: _currentEmployee!.id,
+  //         employeeId: _currentEmployee!.profile!.id,
   //       );
   //       log(summary.toString(), name: "is_checked_in");
 

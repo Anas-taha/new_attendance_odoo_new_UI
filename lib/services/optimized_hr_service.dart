@@ -103,7 +103,7 @@ class OptimizedHrService {
       final cachedEmployees = await _localStorage.getCachedEmployees();
       if (cachedEmployees != null) {
         final employees = cachedEmployees
-            .map((e) => HrEmployee.fromOdoo(e))
+            .map((e) => HrEmployee.fromJson(e))
             .toList();
         _employeesController.add(employees);
       }
@@ -188,7 +188,7 @@ class OptimizedHrService {
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
         final employees = data
-            .map((item) => HrEmployee.fromOdoo(item))
+            .map((item) => HrEmployee.fromJson(item))
             .toList();
 
         // Cache the data

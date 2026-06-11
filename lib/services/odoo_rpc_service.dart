@@ -270,6 +270,109 @@ class OdooRPCService {
   }
 
   /// Search and read records from Odoo using standard JSON-RPC
+
+  Future<Map<String, dynamic>> callOdooApi({required String apiUrl}) async {
+    if (!isAuthenticated) {
+      throw Exception('Not authenticated. Please login first.');
+    }
+
+    try {
+      // For Odoo.sh, we need to use the standard JSON-RPC endpoint with proper session context
+      final url = Uri.parse('${OdooConfig.baseUrl}$apiUrl');
+      log(
+        name: 'OdooRPCServiceData',
+        'database: $_database,token: $_mobileToken, model: $apiUrl',
+      );
+      final response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'HR App Flutter Odoo.sh',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: json.encode({
+              "params": {"db": "$_database", "mobile_token": "$_mobileToken"},
+              // 'jsonrpc': '2.0',
+              // 'method': 'call',
+              // 'params': {
+              //   'service': 'object',
+              //   'method': 'execute_kw',
+              //   'args': [
+              //     _database,
+              //     1,
+              //     OdooConfig.token,
+              //     model,
+              //     "search_read",
+              //     [
+              //       listInsideArgs != null ? [listInsideArgs] : [],
+              //     ],
+              //     {
+              //       "fields": fields ?? [],
+              //       "limit": limit ?? OdooConfig.defaultPageSize,
+              //     },
+              //   ],
+              // },
+            }),
+          )
+          .timeout(Duration(milliseconds: OdooConfig.readTimeout));
+
+      log(name: 'OdooRPCService', ' response status: ${response.statusCode}');
+      log(name: 'OdooRPCService', 'response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        try {
+          final jsonResponse = json.decode(response.body);
+          if (jsonResponse['result'] != null) {
+            if (jsonResponse['result']['status'] == 'success') {
+              return jsonResponse['result'];
+            } else {
+              return {
+                'success': false,
+                'error': jsonResponse['result']['message'] ?? 'Search failed',
+              };
+            }
+          }
+          if (jsonResponse['error'] != null) {
+            if (jsonResponse['error']['data']['message'] ==
+                    'Invalid mobile session' ||
+                jsonResponse['error']['message'] == 'Odoo Server Error') {
+              log(
+                name: 'OdooRPCService',
+                'Session expired or invalid. Redirecting to login.',
+              );
+              await CustomDialog.loginAgainDialog(
+                jsonResponse['error']['data']['message'],
+              );
+              // Get.offNamed(AppRoutes.login);
+            }
+            return {
+              'success': false,
+              'error':
+                  jsonResponse['error']['data']['message'] ?? 'Search failed',
+            };
+          }
+
+          return {'success': true, 'data': jsonResponse['result'] ?? []};
+        } catch (e) {
+          return {
+            'success': false,
+            'error': 'Failed to parse JSON response: $e',
+          };
+        }
+      } else {
+        return {
+          'success': false,
+          'error': 'HTTP Error: ${response.statusCode} - ${response.body}',
+        };
+      }
+    } catch (e) {
+      print('🔍 Odoo.sh searchRead error: $e');
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
   Future<Map<String, dynamic>> searchRead({
     required String model,
     List<List<dynamic>>? domain,

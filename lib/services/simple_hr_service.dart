@@ -16,35 +16,22 @@ class SimpleHrService {
   // SimpleHrService(this._odooService=OdooRPCService.instance);
 
   /// Get all employees
-  Future<List<HrEmployee>> getProfile() async {
+  Future<HrEmployee> getProfile() async {
     try {
-      final result = await _odooService.searchRead(
-        model: 'hr.employee',
-        fields: [
-          "name",
-          "job_title",
-          "department_id",
-          "work_email",
-          "work_phone",
-          "barcode",
-          "image_1920",
-          "attendance_state",
-          "last_attendance_id",
-          "work_location_id",
-        ],
-        limit: 1,
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'profile',
+        // final result = await _odooService.searchRead(
       );
       log(name: 'SimpleHrService', 'getEmployees result: $result');
-      if (result['success']) {
-        final data = result['data'] as List<dynamic>;
-        return data.map((item) => HrEmployee.fromOdoo(item)).toList();
+      if (result['status'] == 'success') {
+        return HrEmployee.fromJson(result);
       }
-      return [];
+      return HrEmployee();
     } catch (e) {
-      await CustomDialog.loginAgainDialog(e.toString());
+      // await CustomDialog.loginAgainDialog(e.toString());
       print('❌ Error getting employees: $e');
-      Get.back();
-      return [];
+      // Get.back();
+      return HrEmployee();
     }
   }
 
@@ -67,7 +54,7 @@ class SimpleHrService {
       log(name: 'SimpleHrService', 'getEmployees result: $result');
       if (result['success']) {
         final data = result['data'] as List<dynamic>;
-        return data.map((item) => HrEmployee.fromOdoo(item)).toList();
+        return data.map((item) => HrEmployee.fromJson(item)).toList();
       }
       return [];
     } catch (e) {

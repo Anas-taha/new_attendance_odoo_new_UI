@@ -108,8 +108,8 @@ class HrService {
         final employeeData = result['data'][0];
         print('Employee data found: $employeeData');
 
-        final employee = HrEmployee.fromOdoo(employeeData);
-        print('✅ Employee found: ${employee.name} (ID: ${employee.id})');
+        final employee = HrEmployee.fromJson(employeeData);
+        print('✅ Employee found: ${employee.profile?.name} (ID: ${employee..profile?.id})');
         print('Employee user_id: ${employeeData['user_id']}');
         return employee;
       } else {
@@ -182,9 +182,9 @@ class HrService {
             '🔍 Admin user has no employee record, using first available employee for now...',
           );
           final firstEmployee = allEmployeesResult['data'][0];
-          final employee = HrEmployee.fromOdoo(firstEmployee);
+          final employee = HrEmployee.fromJson(firstEmployee);
           print(
-            '✅ Using employee: ${employee.name} (ID: ${employee.id}) for admin user',
+            '✅ Using employee: ${employee.profile?.name} (ID: ${employee.profile?.id}) for admin user',
           );
           return employee;
         } else {
@@ -645,7 +645,7 @@ class HrService {
       int? empId = employeeId;
       if (empId == null) {
         final currentEmployee = await getCurrentEmployee();
-        empId = currentEmployee?.id;
+        empId = currentEmployee?.profile?.id;
       }
 
       if (empId == null) {
@@ -896,7 +896,7 @@ class HrService {
         final employees = <HrEmployee>[];
         for (final data in result['data']) {
           try {
-            final employee = HrEmployee.fromOdoo(data);
+            final employee = HrEmployee.fromJson(data);
             employees.add(employee);
           } catch (e) {
             print('⚠️ Error processing employee data: $e');
@@ -925,7 +925,7 @@ class HrService {
       int? empId = employeeId;
       if (empId == null) {
         final currentEmployee = await getCurrentEmployee();
-        empId = currentEmployee?.id;
+        empId = currentEmployee?.profile?.id;
       }
 
       if (empId == null) {
@@ -1225,7 +1225,7 @@ class HrService {
         return [];
       }
 
-      print('🔍 Getting contracts for employee ID: ${currentEmployee.id}');
+      print('🔍 Getting contracts for employee ID: ${currentEmployee.profile?.id}');
 
       // First test if we can access the contract model
       print('🔍 Testing access to hr.contract model...');
@@ -1252,7 +1252,7 @@ class HrService {
 
       // Filter by current employee ID
       final domain = <List<dynamic>>[
-        ['employee_id', '=', currentEmployee.id],
+        ['employee_id', '=', currentEmployee.profile?.id],
       ];
 
       if (state != null) {
@@ -1537,8 +1537,8 @@ class HrService {
       final currentEmployee = await getCurrentEmployee();
       if (currentEmployee != null) {
         expense = expense.copyWith(
-          employeeId: currentEmployee.id,
-          employeeName: currentEmployee.name,
+          employeeId: currentEmployee.profile?.id,
+          employeeName: currentEmployee.profile?.name,
         );
       }
 
@@ -1597,13 +1597,13 @@ class HrService {
         return {'success': false, 'error': 'No current employee found'};
       }
 
-      print('🔍 Getting expenses for employee ID: ${currentEmployee.id}');
+      print('🔍 Getting expenses for employee ID: ${currentEmployee.profile?.id}');
 
       // Search for expenses with the current employee's ID
       final result = await _odooService.searchRead(
         model: OdooConfig.hrExpenseModel,
         domain: [
-          ['employee_id', '=', currentEmployee.id],
+          ['employee_id', '=', currentEmployee.profile?.id],
         ],
         fields: [
           'id',

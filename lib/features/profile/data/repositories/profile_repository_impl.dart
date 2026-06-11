@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hr_app_odoo/features/profile/domain/repositories/profile_repository.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/services/simple_hr_service.dart';
@@ -11,9 +13,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<HrEmployee?> getProfileData() async {
     final result = await _hrService.getProfile();
-    if (result.isEmpty) {
-      return null;
+    log(name: 'feqwgfwgbveg', 'result: $result');
+    if (result.status == 'success') {
+      return result;
     }
-    return result.first;
+    return null;
   }
 }
