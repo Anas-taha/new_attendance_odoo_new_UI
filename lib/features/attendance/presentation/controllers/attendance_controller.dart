@@ -8,6 +8,7 @@ import 'package:hr_app_odoo/features/attendance/data/model/attendance_model.dart
 import 'package:hr_app_odoo/features/attendance/data/repositories/attendance_repository_impl.dart';
 import 'package:hr_app_odoo/features/attendance/domain/repositories/attendance_repository.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
+import 'package:hr_app_odoo/models/attendance_model.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
@@ -18,7 +19,9 @@ class AttendanceController extends GetxController {
   AttendanceController({AttendanceRepository? attendanceRepository})
     : _attendanceRepository =
           attendanceRepository ?? AttendanceRepositoryImpl();
-
+  AttendanceSummaryModel attendanceSummary = AttendanceSummaryModel();
+  AttendanceTotals attendanceTotals = AttendanceTotals();
+  List<AttendanceWeek> weekInfo = [];
   final AttendanceRepository _attendanceRepository;
   HrEmployee? currentEmployee;
   List<HrAttendance> todayRecords = [];
@@ -37,25 +40,46 @@ class AttendanceController extends GetxController {
   Rx<List<AttendanceModel>> allAttendanceRecords = Rx<List<AttendanceModel>>(
     [],
   );
-  Rx<List<WeekInfoModel>> weekInfo = Rx<List<WeekInfoModel>>([]);
-
-  void init() {
+  // Rx<List<WeekInfoModel>> weekInfo = Rx<List<WeekInfoModel>>([]);
+  @override
+  void onReady() {
     selectedWeekCard.value = -1;
-    getAttendanceRecords();
+    getAttendanceSummary();
+    super.onReady();
   }
 
-  Future<void> getAttendanceRecords() async {
-    isLoading.value = true;
-    final result = await _attendanceRepository.getAllAttendance();
-    if (result.isNotEmpty) {
-      allAttendanceRecords.value = result;
-      weekInfo.value = mapToWeeks(result);
-      isLoading.value = false;
-    } else {
-      allAttendanceRecords.value = [];
-      isLoading.value = false;
-    }
+  @override
+  void onClose() {
+    log(name: "ProfileControllerState", "onClose");
+    super.onClose();
   }
+
+  Future<void> getAttendanceSummary() async {
+    isLoading.value = true;
+    attendanceSummary = await _attendanceRepository.getAttendanceSummary();
+    log(
+      name: 'getAttendanceSummary',
+      'result: ${attendanceSummary.totals?.earlyLeaves ?? 0} ',
+    );
+    attendanceTotals = attendanceSummary.totals ?? AttendanceTotals();
+    weekInfo = attendanceSummary.weeks ?? [];
+    log(name: 'getAttendanceSummary', 'weekInfo: ${weekInfo.length} ');
+    isLoading.value = false;
+    update();
+  }
+
+  // Future<void> getAttendanceRecords() async {
+  //   isLoading.value = true;
+  //   final result = await _attendanceRepository.getAllAttendance();
+  //   if (result.isNotEmpty) {
+  //     allAttendanceRecords.value = result;
+  //     weekInfo.value = mapToWeeks(result);
+  //     isLoading.value = false;
+  //   } else {
+  //     allAttendanceRecords.value = [];
+  //     isLoading.value = false;
+  //   }
+  // }
 
   List<WeekInfoModel> mapToWeeks(List<AttendanceModel> data) {
     try {
@@ -168,158 +192,158 @@ class AttendanceController extends GetxController {
     CustomCalender.calenderDialog(contorller: dateController, title: title);
   }
 
-  Future<void> loadAttendanceData() async {
-    isLoading.value = true;
-    try {
-      currentEmployee = await _attendanceRepository.getCurrentEmployee();
-      if (currentEmployee != null) {
-        final summary = await _attendanceRepository.getTodayAttendanceSummary(
-          employeeId: currentEmployee!.profile?.id,
-        );
-        log(summary.toString(), name: "is_checked_in");
+  // Future<void> loadAttendanceData() async {
+  //   isLoading.value = true;
+  //   try {
+  //     currentEmployee = await _attendanceRepository.getCurrentEmployee();
+  //     if (currentEmployee != null) {
+  //       final summary = await _attendanceRepository.getTodayAttendanceSummary(
+  //         employeeId: currentEmployee!.profile?.id,
+  //       );
+  //       log(summary.toString(), name: "is_checked_in");
 
-        isCheckedIn = summary['is_checked_in'] ?? false;
-        totalWorkedHours = summary['total_worked_hours'] ?? '00:00:00';
-        todayRecords = List<HrAttendance>.from(summary['today_records'] ?? []);
-        isLoading.value = false;
+  //       isCheckedIn = summary['is_checked_in'] ?? false;
+  //       totalWorkedHours = summary['total_worked_hours'] ?? '00:00:00';
+  //       todayRecords = List<HrAttendance>.from(summary['today_records'] ?? []);
+  //       isLoading.value = false;
 
-        if (summary['current_check_in'] != null) {
-          final currentCheckIn = summary['current_check_in'] as DateTime;
-          checkInDateTime = currentCheckIn;
-          checkInTime =
-              '${currentCheckIn.hour.toString().padLeft(2, '0')}:${currentCheckIn.minute.toString().padLeft(2, '0')}:${currentCheckIn.second.toString().padLeft(2, '0')}';
-        } else {
-          checkInDateTime = null;
-          checkInTime = '--:--:--';
-        }
+  //       if (summary['current_check_in'] != null) {
+  //         final currentCheckIn = summary['current_check_in'] as DateTime;
+  //         checkInDateTime = currentCheckIn;
+  //         checkInTime =
+  //             '${currentCheckIn.hour.toString().padLeft(2, '0')}:${currentCheckIn.minute.toString().padLeft(2, '0')}:${currentCheckIn.second.toString().padLeft(2, '0')}';
+  //       } else {
+  //         checkInDateTime = null;
+  //         checkInTime = '--:--:--';
+  //       }
 
-        if (isCheckedIn && checkInDateTime != null) {
-          startTimer();
-          pulseController.repeat();
-        } else {
-          stopTimer();
-          pulseController.stop();
-        }
-      }
-    } catch (e) {
-      isLoading.value = false;
-    }
-  }
+  //       if (isCheckedIn && checkInDateTime != null) {
+  //         startTimer();
+  //         pulseController.repeat();
+  //       } else {
+  //         stopTimer();
+  //         pulseController.stop();
+  //       }
+  //     }
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //   }
+  // }
 
-  Future<void> refreshAttendanceState() async {
-    try {
-      final summary = await _attendanceRepository.getTodayAttendanceSummary();
-      if (summary.isNotEmpty) {
-        isCheckedIn = summary['is_checked_in'] ?? false;
-        totalWorkedHours = summary['total_worked_hours'] ?? '00:00:00';
+  // Future<void> refreshAttendanceState() async {
+  //   try {
+  //     final summary = await _attendanceRepository.getTodayAttendanceSummary();
+  //     if (summary.isNotEmpty) {
+  //       isCheckedIn = summary['is_checked_in'] ?? false;
+  //       totalWorkedHours = summary['total_worked_hours'] ?? '00:00:00';
 
-        if (summary['current_check_in'] != null) {
-          final currentCheckIn = summary['current_check_in'] as DateTime;
-          checkInDateTime = currentCheckIn;
-          checkInTime =
-              '${currentCheckIn.hour.toString().padLeft(2, '0')}:${currentCheckIn.minute.toString().padLeft(2, '0')}:${currentCheckIn.second.toString().padLeft(2, '0')}';
-        } else {
-          checkInDateTime = null;
-          checkInTime = '--:--:--';
-        }
+  //       if (summary['current_check_in'] != null) {
+  //         final currentCheckIn = summary['current_check_in'] as DateTime;
+  //         checkInDateTime = currentCheckIn;
+  //         checkInTime =
+  //             '${currentCheckIn.hour.toString().padLeft(2, '0')}:${currentCheckIn.minute.toString().padLeft(2, '0')}:${currentCheckIn.second.toString().padLeft(2, '0')}';
+  //       } else {
+  //         checkInDateTime = null;
+  //         checkInTime = '--:--:--';
+  //       }
 
-        if (isCheckedIn && checkInDateTime != null) {
-          startTimer();
-          pulseController.repeat();
-        } else {
-          stopTimer();
-          pulseController.stop();
-        }
+  //       if (isCheckedIn && checkInDateTime != null) {
+  //         startTimer();
+  //         pulseController.repeat();
+  //       } else {
+  //         stopTimer();
+  //         pulseController.stop();
+  //       }
 
-        if (isCheckedIn) {
-          final l10n = AppLocalizations.of(Get.context!)!;
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(
-              content: Text(l10n.alreadyCheckedInSnack(checkInTime)),
-              backgroundColor: AppColors.primary600,
-              duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: l10n.dismiss,
-                textColor: Colors.white,
-                onPressed: () {
-                  ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar();
-                },
-              ),
-            ),
-          );
-        }
-      }
-    } catch (_) {}
-  }
+  //       if (isCheckedIn) {
+  //         final l10n = AppLocalizations.of(Get.context!)!;
+  //         ScaffoldMessenger.of(Get.context!).showSnackBar(
+  //           SnackBar(
+  //             content: Text(l10n.alreadyCheckedInSnack(checkInTime)),
+  //             backgroundColor: AppColors.primary600,
+  //             duration: const Duration(seconds: 4),
+  //             action: SnackBarAction(
+  //               label: l10n.dismiss,
+  //               textColor: Colors.white,
+  //               onPressed: () {
+  //                 ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar();
+  //               },
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //     }
+  //   } catch (_) {}
+  // }
 
-  Future<void> handleCheckInOut() async {
-    try {
-      bool success;
-      if (isCheckedIn) {
-        success = await _attendanceRepository.checkOut(
-          employeeId: currentEmployee?.profile?.id,
-        );
-        if (success) {
-          isCheckedIn = false;
-          checkInDateTime = null;
-          checkInTime = '--:--:--';
-          stopTimer();
-          pulseController.stop();
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(Get.context!)!.successCheckedOutShort,
-              ),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        success = await _attendanceRepository.checkIn(
-          employeeId: currentEmployee?.profile?.id,
-        );
-        if (success) {
-          final now = DateTime.now();
-          isCheckedIn = true;
-          checkInDateTime = now;
-          checkInTime =
-              '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
-          startTimer();
-          pulseController.repeat();
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(Get.context!)!.successCheckedInShort,
-              ),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      }
+  // Future<void> handleCheckInOut() async {
+  //   try {
+  //     bool success;
+  //     if (isCheckedIn) {
+  //       success = await _attendanceRepository.checkOut(
+  //         employeeId: currentEmployee?.profile?.id,
+  //       );
+  //       if (success) {
+  //         isCheckedIn = false;
+  //         checkInDateTime = null;
+  //         checkInTime = '--:--:--';
+  //         stopTimer();
+  //         pulseController.stop();
+  //         ScaffoldMessenger.of(Get.context!).showSnackBar(
+  //           SnackBar(
+  //             content: Text(
+  //               AppLocalizations.of(Get.context!)!.successCheckedOutShort,
+  //             ),
+  //             backgroundColor: Colors.green,
+  //           ),
+  //         );
+  //       }
+  //     } else {
+  //       success = await _attendanceRepository.checkIn(
+  //         employeeId: currentEmployee?.profile?.id,
+  //       );
+  //       if (success) {
+  //         final now = DateTime.now();
+  //         isCheckedIn = true;
+  //         checkInDateTime = now;
+  //         checkInTime =
+  //             '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+  //         startTimer();
+  //         pulseController.repeat();
+  //         ScaffoldMessenger.of(Get.context!).showSnackBar(
+  //           SnackBar(
+  //             content: Text(
+  //               AppLocalizations.of(Get.context!)!.successCheckedInShort,
+  //             ),
+  //             backgroundColor: Colors.green,
+  //           ),
+  //         );
+  //       }
+  //     }
 
-      if (success) {
-        await loadAttendanceData();
-      } else {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(Get.context!)!.failedUpdateAttendanceShort,
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(Get.context!)!.errorGeneric(e.toString()),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
+  //     if (success) {
+  //       await loadAttendanceData();
+  //     } else {
+  //       ScaffoldMessenger.of(Get.context!).showSnackBar(
+  //         SnackBar(
+  //           content: Text(
+  //             AppLocalizations.of(Get.context!)!.failedUpdateAttendanceShort,
+  //           ),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(Get.context!).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           AppLocalizations.of(Get.context!)!.errorGeneric(e.toString()),
+  //         ),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   }
+  // }
 
   String formatDuration(Duration duration) {
     final hours = duration.inHours;

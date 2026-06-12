@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
+import 'package:hr_app_odoo/models/attendance_model.dart';
 import 'package:hr_app_odoo/models/notification_model.dart';
 import 'package:hr_app_odoo/models/salary_model.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
@@ -69,6 +70,22 @@ class SimpleHrService {
     } catch (e) {
       print('❌ Error getting salary: $e');
       return NotificationModel();
+    }
+  }
+
+  Future<AttendanceSummaryModel> getAttendanceSummary() async {
+    try {
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'attendance/summary',
+        state: null,
+      );
+      if (result['status'] == 'success') {
+        return AttendanceSummaryModel.fromJson(result);
+      }
+      return AttendanceSummaryModel();
+    } catch (e) {
+      print('❌ Error getting attendance summary: $e');
+      return AttendanceSummaryModel();
     }
   }
 
