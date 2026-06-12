@@ -72,7 +72,10 @@ class AppPages {
       name: AppRoutes.attendance,
       page: () => const AttendanceScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<AttendanceController>(() => AttendanceController());
+        Get.lazyPut<AttendanceController>(
+          () => AttendanceController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(

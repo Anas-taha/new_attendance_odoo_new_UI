@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/notification/data/repositories/notification_repository_impl.dart';
 import 'package:hr_app_odoo/features/notification/domain/repositories/notification_repository.dart';
-import 'package:hr_app_odoo/models/notifications_model.dart';
+import 'package:hr_app_odoo/models/notification_model.dart';
 
-enum NotifiState { all, readed, unReaded }
+enum NotifiState { all, read, unread }
 
 class NotificationController extends GetxController {
   NotificationController({NotificationRepository? notificationRepository})
@@ -13,16 +13,24 @@ class NotificationController extends GetxController {
           notificationRepository ?? NotificationRepositoryImpl();
 
   final NotificationRepository _notificationRepository;
-RxBool isLoading = false.obs;
-  Rx<NotifiState> selectedNotifiState = Rx<NotifiState>(NotifiState.all);
- NotificationsModel notificationList = NotificationsModel();
+
+  NotifiState selectedNotifiState = NotifiState.all;
+  NotificationModel? notificationsModel;
+
+  List<Notifications> notifications = [];
+  List<Notifications> allNotifications = [];
+  // List<Notifications> readNotifications = [];
+  // List<Notifications> unreadNotifications = [];
+
+  RxBool isLoading = false.obs;
 
   @override
   void onReady() {
     super.onReady();
     log(name: 'NotificationControllerState', 'onReady');
-    getAllNotification();
-    selectedNotifiState.value = NotifiState.all;
+    getNotification();
+    selectedNotifiState = NotifiState.all;
+    update();
   }
 
   @override
@@ -32,16 +40,23 @@ RxBool isLoading = false.obs;
   }
 
   void changeNotifiState(NotifiState state) {
-    selectedNotifiState.value = state;
+    selectedNotifiState = state;
+    update();
     switch (state) {
       case NotifiState.all:
-        getAllNotification();
-      case NotifiState.readed:
-        getAllNotification();
-
+        notifications = allNotifications;
+      // getNotification();
+      case NotifiState.read:
+        notifications = allNotifications
+            .where((n) => n.state == 'read')
+            .toList();
+      // getNotification();
       // getReadedNotification();
-      case NotifiState.unReaded:
-        getAllNotification();
+      case NotifiState.unread:
+        notifications = allNotifications
+            .where((n) => n.state == 'unread')
+            .toList();
+      // getNotification();
       // getUnReadedNotification();
     }
   }
@@ -56,10 +71,14 @@ RxBool isLoading = false.obs;
   //       .getUnreadNotifications();
   // }
 
-  Future<void> getAllNotification() async {
-    isLoading.value = true;
-    notificationList = await _notificationRepository.getNotifications();
+  Future<void> getNotification() async {
+    notificationsModel = await _notificationRepository.getNotification();
+    allNotifications = notificationsModel?.notifications ?? [];
+    log(
+      name: 'NotificationControllerState',
+      'getNotification: ${notificationsModel?.notifications?[0].title}',
+    );
+    notifications = allNotifications;
     update();
-    isLoading.value = false;
   }
 }

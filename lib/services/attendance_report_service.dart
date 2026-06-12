@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:hr_app_odoo/features/attendance/data/model/attendance_model.dart';
+import 'package:hr_app_odoo/models/attendance_model.dart';
 import 'package:http/http.dart' as http;
 import '../config/odoo_config.dart';
 import '../models/hr_attendance.dart';
@@ -18,6 +19,26 @@ class AttendanceReportService {
 
   /// Fetch attendance report data from Odoo
   /// Uses the /attendance_location/objects endpoint
+  ///
+
+  Future<AttendanceSummaryModel> getAttendanceSummary() async {
+    try {
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'attendance/summary',
+        state: null,
+        date_from: null,
+        date_to: null,
+      );
+      if (result['status'] == 'success') {
+        return AttendanceSummaryModel.fromJson(result);
+      }
+      return AttendanceSummaryModel();
+    } catch (e) {
+      print('❌ Error getting attendance summary: $e');
+      return AttendanceSummaryModel();
+    }
+  }
+
   Future<List<AttendanceModel>> getAllAttendance() async {
     final result = await _odooService.searchRead(
       model: OdooConfig.hrAttendanceModel,

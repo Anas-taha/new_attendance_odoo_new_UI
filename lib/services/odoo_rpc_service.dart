@@ -271,7 +271,7 @@ class OdooRPCService {
 
   /// Search and read records from Odoo using standard JSON-RPC
 
-  Future<Map<String, dynamic>> callOdooApi({
+  Future<dynamic> callOdooApi({
     required String apiUrl,
     String? state,
     String? date_from,
@@ -305,26 +305,6 @@ class OdooRPCService {
                 "date_to": "$date_to",
                 "state": "$state",
               },
-              // 'jsonrpc': '2.0',
-              // 'method': 'call',
-              // 'params': {
-              //   'service': 'object',
-              //   'method': 'execute_kw',
-              //   'args': [
-              //     _database,
-              //     1,
-              //     OdooConfig.token,
-              //     model,
-              //     "search_read",
-              //     [
-              //       listInsideArgs != null ? [listInsideArgs] : [],
-              //     ],
-              //     {
-              //       "fields": fields ?? [],
-              //       "limit": limit ?? OdooConfig.defaultPageSize,
-              //     },
-              //   ],
-              // },
             }),
           )
           .timeout(Duration(milliseconds: OdooConfig.readTimeout));
@@ -338,34 +318,26 @@ class OdooRPCService {
           if (jsonResponse['result'] != null) {
             if (jsonResponse['result']['status'] == 'success') {
               return jsonResponse['result'];
-            } else {
-              return {
-                'success': false,
-                'error': jsonResponse['result']['message'] ?? 'Search failed',
-              };
+            } else if (jsonResponse['result']['status'] == 'error') {
+              if (jsonResponse['result']['message'] ==
+                  'Invalid mobile session') {
+                log(
+                  name: 'OdooRPCService',
+                  'Session expired or invalid. Redirecting to login.',
+                );
+                await CustomDialog.loginAgainDialog(
+                  jsonResponse['result']['message'],
+                );
+                // Get.offNamed(AppRoutes.login);
+              } else {
+                CustomDialog.dialog(
+                  child: CustomText(
+                    text: jsonResponse['result']['message'] ?? 'Error',
+                  ),
+                );
+              }
             }
           }
-          if (jsonResponse['error'] != null) {
-            if (jsonResponse['error']['data']['message'] ==
-                    'Invalid mobile session' ||
-                jsonResponse['error']['message'] == 'Odoo Server Error') {
-              log(
-                name: 'OdooRPCService',
-                'Session expired or invalid. Redirecting to login.',
-              );
-              await CustomDialog.loginAgainDialog(
-                jsonResponse['error']['data']['message'],
-              );
-              // Get.offNamed(AppRoutes.login);
-            }
-            return {
-              'success': false,
-              'error':
-                  jsonResponse['error']['data']['message'] ?? 'Search failed',
-            };
-          }
-
-          return {'success': true, 'data': jsonResponse['result'] ?? []};
         } catch (e) {
           return {
             'success': false,

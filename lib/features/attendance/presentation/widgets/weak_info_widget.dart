@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hr_app_odoo/features/attendance/presentation/controller/attendance_controller.dart';
+import 'package:hr_app_odoo/features/attendance/presentation/controllers/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_date_card_widget.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_mini_card_widget.dart';
+import 'package:hr_app_odoo/models/attendance_model.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
@@ -19,61 +20,65 @@ class WeakInfoWidget extends StatelessWidget {
       },
       child: Obx(() {
         bool isSelected = controller.selectedWeekCard.value == index;
-        WeekInfoModel weekInfo = controller.weekInfo.value[index];
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: EdgeInsets.only(top: 8, bottom: 4, left: 8, right: 8),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.appFAFAFABackGround2,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.appFFFFFFBackGround1,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    _weekNumberAndDate(isSelected: isSelected),
-                    16.horizontalSpace,
-                    _miniCardsInfo(isSelected: isSelected),
-                    // isSelected ? SizedBox.shrink() : Spacer(),
-                    isSelected
-                        ? SizedBox.shrink()
-                        : Icon(
-                            Icons.keyboard_arrow_down_sharp,
-                            color: AppColors.appA0A0A0Text2,
-                            size: 30,
-                          ),
-                  ],
-                ),
+        AttendanceWeek weekInfo = controller.weekInfo[index];
+        return Builder(
+          builder: (context) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: EdgeInsets.only(top: 8, bottom: 4, left: 8, right: 8),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.appFAFAFABackGround2,
+                borderRadius: BorderRadius.circular(10),
               ),
-              2.verticalSpace,
-              AnimatedCrossFade(
-                firstCurve: Curves.easeInOut,
-                secondCurve: Curves.easeInOut,
-                crossFadeState: isSelected
-                    ? CrossFadeState.showFirst
-                    : CrossFadeState.showSecond,
-                firstChild: Column(
-                  children: List.generate(
-                    2,
-                    (index) => AttendanceInfoDateCardWidget(
-                      state: AttendanceStateEnum.holidays,
-                      date: '2023-01-01',
-                      value: '3 أيام (اجازه مرضية)',
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.appFFFFFFBackGround1,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        _weekNumberAndDate(isSelected: isSelected),
+                        16.horizontalSpace,
+                        _miniCardsInfo(isSelected: isSelected),
+                        // isSelected ? SizedBox.shrink() : Spacer(),
+                        isSelected
+                            ? SizedBox.shrink()
+                            : Icon(
+                                Icons.keyboard_arrow_down_sharp,
+                                color: AppColors.appA0A0A0Text2,
+                                size: 30,
+                              ),
+                      ],
                     ),
                   ),
-                ),
-                secondChild: SizedBox.shrink(),
-                duration: const Duration(milliseconds: 300),
+                  2.verticalSpace,
+                  AnimatedCrossFade(
+                    firstCurve: Curves.easeInOut,
+                    secondCurve: Curves.easeInOut,
+                    crossFadeState: isSelected
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    firstChild: Column(
+                      children: List.generate(
+                        2,
+                        (index) => AttendanceInfoDateCardWidget(
+                          state: AttendanceStateEnum.holidays,
+                          date: '2023-01-01',
+                          value: '3 أيام (اجازه مرضية)',
+                        ),
+                      ),
+                    ),
+                    secondChild: SizedBox.shrink(),
+                    duration: const Duration(milliseconds: 300),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       }),
     );

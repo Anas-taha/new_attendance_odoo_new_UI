@@ -9,14 +9,16 @@ import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 class NotificationCardWidget extends StatelessWidget {
   NotificationCardWidget({
     super.key,
-    required this.title,
+    this.title,
     this.onTap,
     this.date,
+    this.state,
   });
 
-  String title;
+  String? title;
   String? date;
   VoidCallback? onTap;
+  String? state;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -35,14 +37,16 @@ class NotificationCardWidget extends StatelessWidget {
               height: 32,
               padding: EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.appE1CDE4CardBG,
+                color: state == 'read'
+                    ? AppColors.appE5E5E5Border
+                    : AppColors.appE1CDE4CardBG,
                 shape: BoxShape.circle,
               ),
               child: CustomImage(image: AppImage.notificationIcon),
             ),
             8.horizontalSpace,
             CustomText(
-              text: title,
+              text: title ?? '',
               fontSize: 13.w,
               fontWeight: FontWeight.w600,
             ),
