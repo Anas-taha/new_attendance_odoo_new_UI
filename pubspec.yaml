@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    generate: true
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.2

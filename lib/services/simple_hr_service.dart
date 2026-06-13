@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
 import 'package:hr_app_odoo/models/attendance_model.dart';
+import 'package:hr_app_odoo/models/holiday_model.dart';
 import 'package:hr_app_odoo/models/notification_model.dart';
 import 'package:hr_app_odoo/models/salary_model.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
@@ -86,6 +87,23 @@ class SimpleHrService {
     } catch (e) {
       print('❌ Error getting attendance summary: $e');
       return AttendanceSummaryModel();
+    }
+  }
+
+  Future<HolidaysModel> getHolidays() async {
+    try {
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'leaves',
+        date_from: null,
+        leave_type_id: 1,
+      );
+      if (result['status'] == 'success') {
+        return HolidaysModel.fromJson(result);
+      }
+      return HolidaysModel();
+    } catch (e) {
+      print('❌ Error getting holidays: $e');
+      return HolidaysModel();
     }
   }
 

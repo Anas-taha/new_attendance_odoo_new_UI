@@ -101,7 +101,7 @@ class AppPages {
     ),
     // GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),
     // GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
-    GetPage(name: AppRoutes.requestHoliday, page: () => RequestHolidayScreen()),
+    // GetPage(name: AppRoutes.requestHoliday, page: () => RequestHolidayScreen()),
     GetPage(
       name: AppRoutes.profile,
       page: () => ProfileScreen(),
@@ -113,7 +113,10 @@ class AppPages {
       name: AppRoutes.holidays,
       page: () => const HolidaysScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<HolidaysController>(() => HolidaysController());
+        Get.lazyPut<HolidaysController>(
+          () => HolidaysController(),
+          fenix: true,
+        );
       }),
     ),
   ];

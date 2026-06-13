@@ -3,14 +3,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/widgets/HolidayColoredStateCardWidget.dart';
+import 'package:hr_app_odoo/models/holiday_model.dart';
 import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
 class HolidayDetailWidget extends StatelessWidget {
-  HolidayDetailWidget({super.key, required this.state});
+  HolidayDetailWidget({super.key, required this.state, required this.leave});
   final controller = Get.find<HolidaysController>();
   HolidayStateEnum state;
+  Leaves? leave;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,14 +37,14 @@ class HolidayDetailWidget extends StatelessWidget {
               ),
               8.horizontalSpace,
               CustomText(
-                text: context.appWords.sickLeave,
+                text: leave?.title ?? '',
                 fontSize: 14.w,
                 fontWeight: FontWeight.w500,
                 color: AppColors.app1A1A1AText1,
               ),
               4.horizontalSpace,
               CustomText(
-                text: '01 مايو 2024',
+                text: leave?.dateFrom ?? '',
                 fontSize: 13.w,
                 fontWeight: FontWeight.w500,
                 color: AppColors.appA0A0A0Text2,
@@ -54,14 +56,12 @@ class HolidayDetailWidget extends StatelessWidget {
           5.verticalSpace,
           _holidayDetail(
             title: context.appWords.leaveReason,
-            discription:
-                'هناك حقيقة مثبتة منذ زمن طويل وهي أن المحتوى المقروء لصفحة ما سيلهي القارئ عن التركيز على الشكل ',
+            discription: leave?.holidayReason ?? '',
           ),
           state == HolidayStateEnum.rejected
               ? _holidayDetail(
                   title: context.appWords.rejectionReason,
-                  discription:
-                      'هناك حقيقة مثبتة منذ زمن طويل وهي أن المحتوى المقروء لصفحة ما سيلهي القارئ عن التركيز على الشكل ',
+                  discription: leave?.rejectedReason ?? '',
                 )
               : SizedBox.shrink(),
         ],

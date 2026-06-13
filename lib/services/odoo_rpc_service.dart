@@ -276,6 +276,7 @@ class OdooRPCService {
     String? state,
     String? date_from,
     String? date_to,
+    int? leave_type_id,
   }) async {
     if (!isAuthenticated) {
       throw Exception('Not authenticated. Please login first.');
@@ -304,6 +305,7 @@ class OdooRPCService {
                 "date_from": "$date_from",
                 "date_to": "$date_to",
                 "state": "$state",
+                "leave_type_id": "$leave_type_id",
               },
             }),
           )
