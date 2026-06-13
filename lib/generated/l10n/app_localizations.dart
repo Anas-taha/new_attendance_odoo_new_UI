@@ -1730,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'My Expenses'**
   String get myExpenses;
 
+  /// No description provided for @the_week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get the_week;
+
   /// No description provided for @addNewExpense.
   ///
   /// In en, this message translates to:

@@ -5,6 +5,7 @@ import 'package:hr_app_odoo/features/attendance/presentation/controllers/attenda
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_date_card_widget.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/widgets/attendance_info_mini_card_widget.dart';
 import 'package:hr_app_odoo/models/attendance_model.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
@@ -41,9 +42,9 @@ class WeakInfoWidget extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _weekNumberAndDate(isSelected: isSelected),
+                        _weekNumberAndDate(isSelected, weekInfo),
                         16.horizontalSpace,
-                        _miniCardsInfo(isSelected: isSelected),
+                        _miniCardsInfo(isSelected, weekInfo),
                         // isSelected ? SizedBox.shrink() : Spacer(),
                         isSelected
                             ? SizedBox.shrink()
@@ -56,25 +57,26 @@ class WeakInfoWidget extends StatelessWidget {
                     ),
                   ),
                   2.verticalSpace,
-                  AnimatedCrossFade(
-                    firstCurve: Curves.easeInOut,
-                    secondCurve: Curves.easeInOut,
-                    crossFadeState: isSelected
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    firstChild: Column(
-                      children: List.generate(
-                        2,
-                        (index) => AttendanceInfoDateCardWidget(
-                          state: AttendanceStateEnum.holidays,
-                          date: '2023-01-01',
-                          value: '3 أيام (اجازه مرضية)',
+                  if (weekInfo.holidays == null || weekInfo.dateFrom!.isEmpty)
+                    AnimatedCrossFade(
+                      firstCurve: Curves.easeInOut,
+                      secondCurve: Curves.easeInOut,
+                      crossFadeState: isSelected
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                      firstChild: Column(
+                        children: List.generate(
+                          2,
+                          (index) => AttendanceInfoDateCardWidget(
+                            state: AttendanceStateEnum.holidays,
+                            date: weekInfo.dateFrom ?? '',
+                            value: '3 أيام (اجازه مرضية)',
+                          ),
                         ),
                       ),
+                      secondChild: SizedBox.shrink(),
+                      duration: const Duration(milliseconds: 300),
                     ),
-                    secondChild: SizedBox.shrink(),
-                    duration: const Duration(milliseconds: 300),
-                  ),
                 ],
               ),
             );
@@ -83,15 +85,42 @@ class WeakInfoWidget extends StatelessWidget {
       }),
     );
   }
-}
 
-class _miniCardsInfo extends StatelessWidget {
-  const _miniCardsInfo({super.key, required this.isSelected});
+  Widget _weekNumberAndDate(bool isSelected, AttendanceWeek weekInfo) {
+    return AnimatedCrossFade(
+      duration: const Duration(milliseconds: 300),
+      firstCurve: Curves.easeInOut,
+      secondCurve: Curves.easeInOut,
+      crossFadeState: isSelected
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      firstChild: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomText(
+            text: '${Get.context!.appWords.the_week} ${index + 1}',
+            fontSize: 14.w,
+            fontWeight: FontWeight.w400,
+            color: AppColors.appPrimaryColor,
+          ),
+          CustomText(
+            text: weekInfo.dateFrom ?? '',
+            fontSize: 12.w,
+            fontWeight: FontWeight.w500,
+            color: AppColors.appA0A0A0Text2,
+          ),
+        ],
+      ),
+      secondChild: CustomText(
+        text: '${Get.context!.appWords.the_week} ${index + 1}',
+        fontSize: 14.w,
+        fontWeight: FontWeight.w400,
+        color: AppColors.appPrimaryColor,
+      ),
+    );
+  }
 
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _miniCardsInfo(final bool isSelected, final AttendanceWeek weekInfo) {
     return Expanded(
       child: AnimatedCrossFade(
         duration: const Duration(milliseconds: 300),
@@ -104,31 +133,31 @@ class _miniCardsInfo extends StatelessWidget {
           children: [
             AttendanceInfoMiniCardWidget(
               isSelected: isSelected,
-              value: 2.toString(),
+              value: weekInfo.earlyLeaves.toString(),
               state: AttendanceStateEnum.leaveEarly,
             ),
             6.horizontalSpace,
             AttendanceInfoMiniCardWidget(
               isSelected: isSelected,
-              value: 14.toString(),
+              value: weekInfo.absences.toString(),
               state: AttendanceStateEnum.absences,
             ),
             6.horizontalSpace,
             AttendanceInfoMiniCardWidget(
               isSelected: isSelected,
-              value: 7.toString(),
+              value: weekInfo.holidaysCount.toString(),
               state: AttendanceStateEnum.holidays,
             ),
             6.horizontalSpace,
             AttendanceInfoMiniCardWidget(
               isSelected: isSelected,
-              value: 0.toString(),
+              value: weekInfo.lates.toString(),
               state: AttendanceStateEnum.lateArrival,
             ),
           ],
         ),
         secondChild: CustomText(
-          text: '(01 مايو - 07 مايو )',
+          text: weekInfo.dateFrom ?? '',
           fontSize: 12.w,
           fontWeight: FontWeight.w500,
           color: AppColors.appA0A0A0Text2,
@@ -138,43 +167,102 @@ class _miniCardsInfo extends StatelessWidget {
   }
 }
 
-class _weekNumberAndDate extends StatelessWidget {
-  const _weekNumberAndDate({super.key, required this.isSelected});
+// class _miniCardsInfo extends StatelessWidget {
+//   const _miniCardsInfo({super.key, required this.isSelected});
 
-  final bool isSelected;
+//   final bool isSelected;
 
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      duration: const Duration(milliseconds: 300),
-      firstCurve: Curves.easeInOut,
-      secondCurve: Curves.easeInOut,
-      crossFadeState: isSelected
-          ? CrossFadeState.showFirst
-          : CrossFadeState.showSecond,
-      firstChild: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CustomText(
-            text: 'الاسبوع الاول',
-            fontSize: 14.w,
-            fontWeight: FontWeight.w400,
-            color: AppColors.appPrimaryColor,
-          ),
-          CustomText(
-            text: '(01 مايو - 07 مايو )',
-            fontSize: 12.w,
-            fontWeight: FontWeight.w500,
-            color: AppColors.appA0A0A0Text2,
-          ),
-        ],
-      ),
-      secondChild: CustomText(
-        text: 'الاسبوع الاول',
-        fontSize: 14.w,
-        fontWeight: FontWeight.w400,
-        color: AppColors.appPrimaryColor,
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//      return Expanded(
+//       child: AnimatedCrossFade(
+//         duration: const Duration(milliseconds: 300),
+//         firstCurve: Curves.easeInOut,
+//         secondCurve: Curves.easeInOut,
+//         crossFadeState: isSelected
+//             ? CrossFadeState.showFirst
+//             : CrossFadeState.showSecond,
+//         firstChild: Row(
+//           children: [
+//             AttendanceInfoMiniCardWidget(
+//               isSelected: isSelected,
+//               value: 2.toString(),
+//               state: AttendanceStateEnum.leaveEarly,
+//             ),
+//             6.horizontalSpace,
+//             AttendanceInfoMiniCardWidget(
+//               isSelected: isSelected,
+//               value: 14.toString(),
+//               state: AttendanceStateEnum.absences,
+//             ),
+//             6.horizontalSpace,
+//             AttendanceInfoMiniCardWidget(
+//               isSelected: isSelected,
+//               value: 7.toString(),
+//               state: AttendanceStateEnum.holidays,
+//             ),
+//             6.horizontalSpace,
+//             AttendanceInfoMiniCardWidget(
+//               isSelected: isSelected,
+//               value: 0.toString(),
+//               state: AttendanceStateEnum.lateArrival,
+//             ),
+//           ],
+//         ),
+//         secondChild: CustomText(
+//           text: '(01 مايو - 07 مايو )',
+//           fontSize: 12.w,
+//           fontWeight: FontWeight.w500,
+//           color: AppColors.appA0A0A0Text2,
+//         ),
+//       ),
+//     );
+
+//     }
+// }
+
+// class _weekNumberAndDate extends StatelessWidget {
+//   const _weekNumberAndDate({
+//     super.key,
+//     required this.isSelected,
+//     required this.weekInfo,
+//   });
+
+//   final bool isSelected;
+//   final AttendanceWeek weekInfo;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedCrossFade(
+//       duration: const Duration(milliseconds: 300),
+//       firstCurve: Curves.easeInOut,
+//       secondCurve: Curves.easeInOut,
+//       crossFadeState: isSelected
+//           ? CrossFadeState.showFirst
+//           : CrossFadeState.showSecond,
+//       firstChild: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           CustomText(
+//             text: 'الاسبوع $index',
+//             fontSize: 14.w,
+//             fontWeight: FontWeight.w400,
+//             color: AppColors.appPrimaryColor,
+//           ),
+//           CustomText(
+//             text: weekInfo.dateFrom ?? '',
+//             fontSize: 12.w,
+//             fontWeight: FontWeight.w500,
+//             color: AppColors.appA0A0A0Text2,
+//           ),
+//         ],
+//       ),
+//       secondChild: CustomText(
+//         text: 'الاسبوع الاول',
+//         fontSize: 14.w,
+//         fontWeight: FontWeight.w400,
+//         color: AppColors.appPrimaryColor,
+//       ),
+//     );
+//   }
+// }

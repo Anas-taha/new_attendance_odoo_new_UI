@@ -887,6 +887,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get myExpenses => 'مصروفاتي';
 
   @override
+  String get the_week => 'الأسبوع';
+
+  @override
   String get addNewExpense => 'إضافة مصروف جديد';
 
   @override

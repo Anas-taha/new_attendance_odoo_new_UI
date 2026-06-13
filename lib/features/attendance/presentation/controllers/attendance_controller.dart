@@ -63,7 +63,7 @@ class AttendanceController extends GetxController {
     );
     attendanceTotals = attendanceSummary.totals ?? AttendanceTotals();
     weekInfo = attendanceSummary.weeks ?? [];
-    log(name: 'getAttendanceSummary', 'weekInfo: ${weekInfo.length} ');
+    log(name: 'getAttendanceSummary', 'weekInfo: ${weekInfo[0].dateFrom} ');
     isLoading.value = false;
     update();
   }
@@ -183,7 +183,12 @@ class AttendanceController extends GetxController {
   }
 
   void selectWeekCard(int index) {
-    selectedWeekCard.value = index;
+    log(name: 'acsdcsasc', '${selectedWeekCard.value} , $index');
+    if (selectedWeekCard.value == index) {
+      selectedWeekCard.value = -1;
+    } else {
+      selectedWeekCard.value = index;
+    }
   }
 
   void selectDate() {

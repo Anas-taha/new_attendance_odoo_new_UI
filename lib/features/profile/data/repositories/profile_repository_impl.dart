@@ -20,3 +20,23 @@ class ProfileRepositoryImpl implements ProfileRepository {
     return null;
   }
 }
+// {"jsonrpc": "2.0",
+//  "id": null,
+//   "result": {
+//     "totals": {"lates": 0, "early_leaves": 0, "absences": 10, "holidays": 0, "present": 0},
+//      "weeks": [
+//       {"week_number": 23,
+//        "date_from": "2026-06-01",
+//         "date_to": "2026-06-07",
+//          "lates": 0,
+//           "early_leaves": 0,
+//            "absences": 5,
+//             "holidays_count": 0,
+//              "present": 0,
+//               "holidays": []
+//               },
+//                {"week_number": 24,
+//                 "date_from": "2026-06-08", "date_to": "2026-06-13", "lates": 0, "early_leaves": 0, "absences": 5, "holidays_count": 0, "present": 0, "holidays": []}],
+// "status": "success",
+// "date_from": "2026-06-01",
+// "date_to": "2026-06-13"}}

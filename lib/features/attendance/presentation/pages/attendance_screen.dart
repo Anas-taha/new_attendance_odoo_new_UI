@@ -25,11 +25,7 @@ class AttendanceScreen extends StatelessWidget {
           appBarTitle: context.appWords.attendanceAndLeaves,
           body: Column(
             children: [
-              // Obx(
-              //   () => CustomText(
-              //     text: controller.weekInfo.value.length.toString(),
-              //   ),
-              // ),
+              // CustomText(text: controller.weekInfo.length.toString()),
               GestureDetector(
                 onTap: () => controller.selectDate(),
                 child: CustomTextField(

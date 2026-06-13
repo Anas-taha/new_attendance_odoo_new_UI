@@ -342,6 +342,7 @@
   "attendanceLate": "تأخير",
   "attendanceEarlyLeaveShort": "مغادرة",
   "attendanceAbsentShort": "غياب",
+  "the_week": "الأسبوع",
   "attendanceSampleSickLeaveDays": "3 أيام (إجازة مرضية)",
   "attendanceWeekNumber": "الأسبوع {number}",
   "@attendanceWeekNumber": {

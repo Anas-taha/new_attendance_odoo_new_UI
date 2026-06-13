@@ -898,6 +898,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myExpenses => 'My Expenses';
 
   @override
+  String get the_week => 'Week';
+
+  @override
   String get addNewExpense => 'Add New Expense';
 
   @override

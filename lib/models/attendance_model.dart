@@ -2,8 +2,8 @@ class AttendanceSummaryModel {
   final AttendanceTotals? totals;
   final List<AttendanceWeek>? weeks;
   final String? status;
-  final DateTime? dateFrom;
-  final DateTime? dateTo;
+  final String? dateFrom;
+  final String? dateTo;
 
   AttendanceSummaryModel({
     this.totals,
@@ -24,24 +24,27 @@ class AttendanceSummaryModel {
                 .toList()
           : null,
       status: data['status'],
-      dateFrom: data['date_from'] != null && data['date_from'] != false
-          ? DateTime.tryParse(data['date_from'])
-          : null,
-      dateTo: data['date_to'] != null && data['date_to'] != false
-          ? DateTime.tryParse(data['date_to'])
-          : null,
+      dateFrom: data['date_from'],
+      dateTo: data['date_to'],
+
+      // dateFrom: data['date_from'] != null && data['date_from'] != false
+      //     ? DateTime.tryParse(data['date_from'])
+      //     : null,
+      // dateTo: data['date_to'] != null && data['date_to'] != false
+      //     ? DateTime.tryParse(data['date_to'])
+      //     : null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'totals': totals?.toJson(),
-      'weeks': weeks?.map((e) => e.toJson()).toList(),
-      'status': status,
-      'date_from': dateFrom?.toIso8601String(),
-      'date_to': dateTo?.toIso8601String(),
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'totals': totals?.toJson(),
+  //     // 'weeks': weeks?.map((e) => e.toJson()).toList(),
+  //     'status': status,
+  //     'date_from': dateFrom?.toIso8601String(),
+  //     'date_to': dateTo?.toIso8601String(),
+  //   };
+  // }
 
   bool get isSuccess => status == 'success';
 }
@@ -84,8 +87,8 @@ class AttendanceTotals {
 
 class AttendanceWeek {
   final int? weekNumber;
-  final DateTime? dateFrom;
-  final DateTime? dateTo;
+  final String? dateFrom;
+  final String? dateTo;
   final int? lates;
   final int? earlyLeaves;
   final int? absences;
@@ -108,12 +111,14 @@ class AttendanceWeek {
   factory AttendanceWeek.fromJson(Map<String, dynamic> data) {
     return AttendanceWeek(
       weekNumber: data['week_number'],
-      dateFrom: data['date_from'] != null && data['date_from'] != false
-          ? DateTime.tryParse(data['date_from'])
-          : null,
-      dateTo: data['date_to'] != null && data['date_to'] != false
-          ? DateTime.tryParse(data['date_to'])
-          : null,
+      dateFrom: data['date_from'],
+      dateTo: data['date_to'],
+      // dateFrom: data['date_from'] != null && data['date_from'] != false
+      //     ? DateTime.tryParse(data['date_from'])
+      //     : null,
+      // dateTo: data['date_to'] != null && data['date_to'] != false
+      //     ? DateTime.tryParse(data['date_to'])
+      //     : null,
       lates: data['lates'],
       earlyLeaves: data['early_leaves'],
       absences: data['absences'],
@@ -123,29 +128,29 @@ class AttendanceWeek {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'week_number': weekNumber,
-      'date_from': dateFrom?.toIso8601String(),
-      'date_to': dateTo?.toIso8601String(),
-      'lates': lates,
-      'early_leaves': earlyLeaves,
-      'absences': absences,
-      'holidays_count': holidaysCount,
-      'present': present,
-      'holidays': holidays,
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'week_number': weekNumber,
+  //     'date_from': dateFrom?.toIso8601String(),
+  //     'date_to': dateTo?.toIso8601String(),
+  //     'lates': lates,
+  //     'early_leaves': earlyLeaves,
+  //     'absences': absences,
+  //     'holidays_count': holidaysCount,
+  //     'present': present,
+  //     'holidays': holidays,
+  //   };
+  // }
 
   /// Display label e.g. "Week 18"
   String get weekLabel => 'Week ${weekNumber ?? '-'}';
 
   /// Formatted date range e.g. "2026-05-01 to 2026-05-03"
-  String get dateRangeDisplay {
-    if (dateFrom == null) return 'N/A';
-    final start = dateFrom!.toLocal().toString().split(' ')[0];
-    if (dateTo == null) return start;
-    final end = dateTo!.toLocal().toString().split(' ')[0];
-    return '$start to $end';
-  }
+  // String get dateRangeDisplay {
+  //   if (dateFrom == null) return 'N/A';
+  //   final start = dateFrom!.toLocal().toString().split(' ')[0];
+  //   if (dateTo == null) return start;
+  //   final end = dateTo!.toLocal().toString().split(' ')[0];
+  //   return '$start to $end';
+  // }
 }
