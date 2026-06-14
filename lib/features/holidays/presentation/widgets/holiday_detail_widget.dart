@@ -58,7 +58,9 @@ class HolidayDetailWidget extends StatelessWidget {
             title: context.appWords.leaveReason,
             discription: leave?.holidayReason ?? '',
           ),
-          state == HolidayStateEnum.rejected
+          state == HolidayStateEnum.rejected &&
+                  leave?.rejectedReason != null &&
+                  leave?.rejectedReason != ''
               ? _holidayDetail(
                   title: context.appWords.rejectionReason,
                   discription: leave?.rejectedReason ?? '',
