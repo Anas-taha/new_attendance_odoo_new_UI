@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_drop_down/custom_drop_down.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_no_data/custom_no_data.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/widgets/HolidayColoredStateCardWidget.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/widgets/holiday_detail_widget.dart';
@@ -93,23 +94,20 @@ class HolidaysScreen extends StatelessWidget {
                 ),
               ),
               16.verticalSpace,
-              Expanded(
-                child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    if (controller.leaves.isEmpty) {
-                      return NoNotificationWidget();
-                    }
-                    return Obx(() {
-                      return HolidayDetailWidget(
-                        state: controller.selectedHolidayState.value,
-                        leave: controller.leaves[index],
-                      );
-                    });
-                  },
-                  separatorBuilder: (context, index) => 16.verticalSpace,
-                  itemCount: controller.leaves.length,
-                ),
-              ),
+              controller.leaves.isEmpty
+                  ? CustomNoDataWidget()
+                  : Expanded(
+                      child: ListView.separated(
+                        itemBuilder: (context, index) {
+                          return HolidayDetailWidget(
+                            state: controller.selectedHolidayState.value,
+                            leave: controller.leaves[index],
+                          );
+                        },
+                        separatorBuilder: (context, index) => 16.verticalSpace,
+                        itemCount: 1,
+                      ),
+                    ),
             ],
           ),
         );

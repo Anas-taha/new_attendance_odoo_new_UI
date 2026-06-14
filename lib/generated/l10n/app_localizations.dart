@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Enter a valid email'**
   String get emailInvalid;
 
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data Found'**
+  String get noData;
+
   /// No description provided for @passwordRequired.
   ///
   /// In en, this message translates to:

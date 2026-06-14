@@ -254,6 +254,7 @@
   "noContractsMatchingFilter": "لم يتم العثور على عقود تطابق الفلتر",
   "tryAdjustingFilterContract": "حاول تعديل الفلتر أو تواصل مع الموارد البشرية.",
   "unknownEmployee": "موظف غير معروف",
+  "noData":"لا يوجد بيانات",
   "closed": "مغلق",
   "cancelled": "ملغى",
   "employeeInformation": "معلومات الموظف",

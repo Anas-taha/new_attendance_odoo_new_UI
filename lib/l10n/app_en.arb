@@ -8,6 +8,7 @@
   "password": "Password",
   "emailRequired": "Email is required",
   "emailInvalid": "Enter a valid email",
+  "noData":"No Data Found",
   "passwordRequired": "Password is required",
   "loginDes":"Log in to access your account and manage your work easily",
   "passwordMinLength": "Password must be at least 4 characters",
