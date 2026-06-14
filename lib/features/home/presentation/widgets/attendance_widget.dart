@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text_field/custom_text_field.dart';
 import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/features/home/presentation/controllers/home_controller.dart';
@@ -41,13 +43,22 @@ class AttendanceWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              CustomContainer(
-                verticalPadding: 8,
-                child: CustomText(
-                  text: 'حي الجامعه.منطقة الزهور',
-                  fontSize: 13.w,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.appPrimaryColor,
+              Obx(
+                () => GestureDetector(
+                  onTap: () {
+                    homeController.addressDialog();
+                  },
+                  child: CustomContainer(
+                    verticalPadding: 8,
+                    child: CustomText(
+                      text: homeController.address.value.isNotEmpty
+                          ? homeController.address.value
+                          : context.appWords.enterYourAddress,
+                      fontSize: 13.w,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.appPrimaryColor,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -77,7 +88,8 @@ class AttendanceWidget extends StatelessWidget {
                   ? context.appWords.checkOut
                   : context.appWords.checkIn,
               onTap: () {
-                homeController.timerSwitchButton();
+                homeController.checkIn();
+                
               },
             ),
           ),

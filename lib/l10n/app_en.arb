@@ -9,9 +9,11 @@
   "emailRequired": "Email is required",
   "emailInvalid": "Enter a valid email",
   "noData":"No Data Found",
+  "save":"Save",
   "passwordRequired": "Password is required",
   "loginDes":"Log in to access your account and manage your work easily",
   "passwordMinLength": "Password must be at least 4 characters",
+  "enterYourAddress":"Enter your address",
   "welcomeName": "Welcome {name}!",
   "@welcomeName": {
     "placeholders": {

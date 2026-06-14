@@ -152,6 +152,12 @@ abstract class AppLocalizations {
   /// **'No Data Found'**
   String get noData;
 
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
   /// No description provided for @passwordRequired.
   ///
   /// In en, this message translates to:
@@ -169,6 +175,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must be at least 4 characters'**
   String get passwordMinLength;
+
+  /// No description provided for @enterYourAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your address'**
+  String get enterYourAddress;
 
   /// No description provided for @welcomeName.
   ///

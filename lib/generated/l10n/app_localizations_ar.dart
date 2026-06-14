@@ -36,6 +36,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noData => 'لا يوجد بيانات';
 
   @override
+  String get save => 'حفظ';
+
+  @override
   String get passwordRequired => 'كلمة المرور مطلوبة';
 
   @override
@@ -43,6 +46,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get passwordMinLength => 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
+
+  @override
+  String get enterYourAddress => 'ادخل عنوانك';
 
   @override
   String welcomeName(String name) {

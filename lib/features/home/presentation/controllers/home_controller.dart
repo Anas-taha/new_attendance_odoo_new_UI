@@ -1,12 +1,21 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_button/custom_button.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_text_field/custom_text_field.dart';
 import 'package:hr_app_odoo/features/home/data/repositories/home_repository_impl.dart';
 import 'package:hr_app_odoo/features/home/domain/repositories/home_repository.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
+import 'package:hr_app_odoo/models/check_in_model.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
 
 sealed class HomeUiEvent {
@@ -37,7 +46,7 @@ class HomeErrorMessageEvent extends HomeUiEvent {
 class HomeController extends GetxController {
   HomeController({HomeRepository? homeRepository})
     : _homeRepository = homeRepository ?? HomeRepositoryImpl();
-
+  TextEditingController addressController = TextEditingController();
   RxInt seconds = 0.obs;
   RxBool isCheckedIn = false.obs;
   Rx<DateTime?> checkInDateTime = DateTime.now().obs;
@@ -52,10 +61,24 @@ class HomeController extends GetxController {
   RxString userName = ''.obs;
 
   final HomeRepository _homeRepository;
-
+  RxBool isLoading = false.obs;
+  RxString address = ''.obs;
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
   RxString currentDate = ''.obs;
   RxBool isAm = true.obs;
+  CheckInModel checkInModel = CheckInModel();
+  Position position = Position(
+    longitude: 0,
+    latitude: 0,
+    timestamp: DateTime.now(),
+    accuracy: 0,
+    altitude: 0,
+    altitudeAccuracy: 0,
+    heading: 0,
+    headingAccuracy: 0,
+    speed: 0,
+    speedAccuracy: 0,
+  );
 
   @override
   void onInit() {
@@ -63,12 +86,14 @@ class HomeController extends GetxController {
     _stopTimer();
   }
 
-  void initData() {
+  @override
+  void onReady() {
+    super.onReady();
+    getAddress();
     getUserName();
     getCurrentDate();
     timeIsAm();
-    // loadEmployeeData();
-    // loadTodayAttendance();
+    setPosition();
   }
 
   @override
@@ -101,6 +126,20 @@ class HomeController extends GetxController {
     ];
 
     currentDate.value = '${now.day} ${months[now.month - 1]} ${now.year}';
+
+    update();
+  }
+
+  void setAddress() {
+    address.value = addressController.text;
+    LocalStorageService().saveAddress(address.value);
+    Get.back();
+  }
+
+  void getAddress() async {
+    address.value = await LocalStorageService().getSavedAddress() ?? '';
+    addressController.text = address.value;
+    log('asxasfcqwevfc: $address');
   }
 
   void timeIsAm() {
@@ -324,5 +363,81 @@ class HomeController extends GetxController {
         errorDetail: e.toString(),
       );
     }
+  }
+
+  void checkIn() async {
+    if (address.value.isEmpty || address.value == '') {
+      addressDialog();
+      return;
+    }
+    isLoading.value = true;
+    var result = await _homeRepository.getAttendanceCheck(
+      latitude: position.latitude,
+      longitude: position.longitude,
+      address: address.value,
+    );
+
+    timerSwitchButton();
+    isLoading.value = false;
+  }
+
+  void setPosition() async {
+    isLoading.value = true;
+    position = await getCurrentLocation();
+    log(name: 'latitude', 'position: ${position.latitude}');
+    log(name: 'longitude', 'position: ${position.longitude}');
+    isLoading.value = false;
+  }
+
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permission denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permission permanently denied');
+    }
+
+    return await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+    );
+  }
+
+  Future<dynamic> addressDialog() async {
+    return await CustomDialog.dialog(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomText(text: Get.context!.appWords.enterYourAddress),
+          8.verticalSpace,
+          CustomTextField(controller: addressController),
+          8.verticalSpace,
+          CustomButton(
+            text: Get.context!.appWords.save,
+            onTap: () {
+              if (addressController.text.isEmpty) {
+                Get.back();
+                return;
+              }
+              setAddress();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -36,6 +36,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noData => 'No Data Found';
 
   @override
+  String get save => 'Save';
+
+  @override
   String get passwordRequired => 'Password is required';
 
   @override
@@ -44,6 +47,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordMinLength => 'Password must be at least 4 characters';
+
+  @override
+  String get enterYourAddress => 'Enter your address';
 
   @override
   String welcomeName(String name) {

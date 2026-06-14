@@ -55,7 +55,7 @@ class AppPages {
       name: AppRoutes.home,
       page: () => const HomeScreen(),
       binding: BindingsBuilder(() {
-        Get.put(HomeController(), permanent: true);
+        Get.put(HomeController());
       }),
     ),
     GetPage(

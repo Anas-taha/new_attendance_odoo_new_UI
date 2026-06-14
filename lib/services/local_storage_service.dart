@@ -14,6 +14,7 @@ class LocalStorageService {
   static const String _isFirstLoginKey = 'is_first_login';
   static const String _savedEmailKey = 'saved_email';
   static const String _savedNameKey = 'saved_name';
+  static const String _savedAddressKey = 'saved_address';
   static const String _savedPasswordKey = 'saved_password';
   static const String _localeLanguageKey = 'locale_language';
   static const String _localeCountryKey = 'locale_country';
@@ -44,6 +45,11 @@ class LocalStorageService {
     final prefs = await SharedPreferences.getInstance();
     final data = jsonEncode(leaves);
     await prefs.setString(_leavesKey, data);
+    await _updateLastSync();
+  }
+  Future<void> saveAddress(String address) async {
+    final prefs = await SharedPreferences.getInstance();
+     await prefs.setString(_savedAddressKey, address);
     await _updateLastSync();
   }
 
@@ -297,6 +303,10 @@ class LocalStorageService {
   Future<String?> getSavedName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_savedNameKey);
+  }
+  Future<String?> getSavedAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_savedAddressKey);
   }
 
   /// Clear stored credentials (used on logout)
