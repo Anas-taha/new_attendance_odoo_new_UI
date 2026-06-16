@@ -356,5 +356,10 @@
   "attendanceStatusAbsent": "غياب ❌",
   "attendanceStatusLeftEarly": "مغادرة مبكرة ⚠️",
   "attendanceStatusLate": "تأخير ⏰",
-  "attendanceStatusFullDay": "يوم كامل ✅"
+  "attendanceStatusFullDay": "يوم كامل ✅",
+  "registerFaceTitle": "تسجيل الوجه",
+  "registerFaceDescription": "التقط صورة واضحة لوجهك لتفعيل تسجيل الحضور",
+  "registerFaceContinue": "حفظ ومتابعة",
+  "registerFaceImageRequired": "يرجى التقاط صورة قبل المتابعة",
+  "registerFaceUploadFailed": "فشل رفع صورة الوجه. يرجى المحاولة مرة أخرى."
 }

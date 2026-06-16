@@ -46,6 +46,11 @@ class OdooRPCService {
   // Getter for current employee ID
   int? get currentEmployeeId => _currentEmployeeId;
 
+  String? get mobileToken =>
+      (_mobileToken != null && _mobileToken!.isNotEmpty)
+      ? _mobileToken
+      : (OdooConfig.token.isNotEmpty ? OdooConfig.token : null);
+
   // Setter for current employee ID
   void setCurrentEmployeeId(int employeeId) {
     _currentEmployeeId = employeeId;

@@ -528,12 +528,21 @@ class FaceAttendanceService {
     required String base64Image,
     double? latitude,
     double? longitude,
+    String? address,
   }) async {
     try {
       print('🔄 Submitting face attendance via controller...');
       print('📍 Location: lat=$latitude, lon=$longitude');
 
-      final url = Uri.parse('${OdooConfig.baseUrl}/submit_face');
+      final mobileToken = OdooRPCService.instance.mobileToken;
+      if (mobileToken == null || mobileToken.isEmpty) {
+        return {
+          'success': false,
+          'error': 'Not authenticated. Please login first.',
+        };
+      }
+
+      final url = Uri.parse('${OdooConfig.serverRootUrl}/submit_face');
       final response = await http
           .post(
             url,
@@ -542,9 +551,11 @@ class FaceAttendanceService {
               'User-Agent': 'HR App Flutter Face Attendance',
             },
             body: {
+              'mobile_token': mobileToken,
               'face_image': 'data:image/jpeg;base64,$base64Image',
               'latitude': latitude?.toString() ?? '',
               'longitude': longitude?.toString() ?? '',
+              'address': address ?? '',
             },
           )
           .timeout(Duration(milliseconds: OdooConfig.writeTimeout));
@@ -598,6 +609,7 @@ class FaceAttendanceService {
         base64Image: base64Image,
         latitude: latitude,
         longitude: longitude,
+        address: address,
       );
 
       if (controllerResult['success'] == true) {
@@ -630,13 +642,13 @@ class FaceAttendanceService {
 
   /// Get face attendance page URL for web view
   String getFaceAttendanceUrl() {
-    return '${OdooConfig.baseUrl}/face_attendance';
+    return '${OdooConfig.serverRootUrl}/face_attendance';
   }
 
   /// Check if face attendance controller is available
   Future<bool> isFaceAttendanceAvailable() async {
     try {
-      final url = Uri.parse('${OdooConfig.baseUrl}/face_attendance');
+      final url = Uri.parse('${OdooConfig.serverRootUrl}/face_attendance');
       final response = await http
           .get(url, headers: {'User-Agent': 'HR App Flutter Face Attendance'})
           .timeout(const Duration(seconds: 5));

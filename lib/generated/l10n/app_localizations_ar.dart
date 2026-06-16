@@ -1113,4 +1113,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get attendanceStatusFullDay => 'يوم كامل ✅';
+
+  @override
+  String get registerFaceTitle => 'تسجيل الوجه';
+
+  @override
+  String get registerFaceDescription =>
+      'التقط صورة واضحة لوجهك لتفعيل تسجيل الحضور';
+
+  @override
+  String get registerFaceContinue => 'حفظ ومتابعة';
+
+  @override
+  String get registerFaceImageRequired => 'يرجى التقاط صورة قبل المتابعة';
+
+  @override
+  String get registerFaceUploadFailed =>
+      'فشل رفع صورة الوجه. يرجى المحاولة مرة أخرى.';
 }

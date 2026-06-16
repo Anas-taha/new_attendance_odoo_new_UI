@@ -2,7 +2,9 @@ import 'package:get/get.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/controllers/attendance_controller.dart';
 import 'package:hr_app_odoo/features/attendance/presentation/pages/attendance_screen.dart';
 import 'package:hr_app_odoo/features/auth/presentation/controller/login_controller.dart';
+import 'package:hr_app_odoo/features/auth/presentation/controller/register_face_controller.dart';
 import 'package:hr_app_odoo/features/auth/presentation/pages/login_screen.dart';
+import 'package:hr_app_odoo/features/auth/presentation/pages/register_face_screen.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/controller/holidays_controller.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/pages/holidays_screen.dart';
 import 'package:hr_app_odoo/features/holidays/presentation/pages/request_holiday_screen.dart';
@@ -26,6 +28,7 @@ import 'package:hr_app_odoo/screens/team_off_screen.dart';
 
 class AppRoutes {
   static const login = '/login';
+  static const registerFace = '/register-face';
   static const home = '/home';
   static const notifications = '/notifications';
   static const attendance = '/attendance';
@@ -49,6 +52,16 @@ class AppPages {
       page: () => LoginScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.registerFace,
+      page: () => RegisterFaceScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<RegisterFaceController>(
+          () => RegisterFaceController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(

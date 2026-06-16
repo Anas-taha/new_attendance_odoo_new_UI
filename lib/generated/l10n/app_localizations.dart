@@ -2173,6 +2173,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Full day ✅'**
   String get attendanceStatusFullDay;
+
+  /// No description provided for @registerFaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Your Face'**
+  String get registerFaceTitle;
+
+  /// No description provided for @registerFaceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a clear photo of your face to enable attendance check-in'**
+  String get registerFaceDescription;
+
+  /// No description provided for @registerFaceContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and Continue'**
+  String get registerFaceContinue;
+
+  /// No description provided for @registerFaceImageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please take a photo before continuing'**
+  String get registerFaceImageRequired;
+
+  /// No description provided for @registerFaceUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload face image. Please try again.'**
+  String get registerFaceUploadFailed;
 }
 
 class _AppLocalizationsDelegate

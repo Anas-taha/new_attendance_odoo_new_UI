@@ -1,6 +1,5 @@
 class OdooConfig {
   // Odoo server configuration - fixed values
-  // static const String baseUrl = 'https://al-shalawi.gulftriangle.net/mobile/';
   static const String baseUrl = 'http://168.231.106.200:8193/mobile/';
   // static const String database = 'al-shalawi';
   static const String database = 'hr_mobile_test';
@@ -33,6 +32,21 @@ class OdooConfig {
   // Hr Model
   static const String methodSearchRead = "search_read";
   static const String methodcreate = 'create';
+
+  /// Root server URL without the `/mobile/` API prefix.
+  static String get serverRootUrl {
+    var url = baseUrl;
+    if (url.endsWith('/mobile/')) {
+      return url.substring(0, url.length - '/mobile/'.length);
+    }
+    if (url.endsWith('/mobile')) {
+      return url.substring(0, url.length - '/mobile'.length);
+    }
+    if (url.endsWith('/')) {
+      return url.substring(0, url.length - 1);
+    }
+    return url;
+  }
 
   /// Get the full URL for a specific endpoint
   static String getEndpointUrl(String endpoint) {

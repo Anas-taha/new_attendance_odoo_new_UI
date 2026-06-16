@@ -30,10 +30,10 @@ class HrApp extends StatelessWidget {
             initialRoute: AppRoutes.login,
             getPages: AppPages.pages,
             debugShowCheckedModeBanner: false,
-            title: 'HR App',
+            title: 'ALSHALAWI',
             theme: appTheme,
             locale: controller.locale,
-            fallbackLocale: const Locale('en'),
+            fallbackLocale: const Locale('ar'),
             localizationsDelegates:
                 AppLocalizations.localizationsDelegates,
             supportedLocales:

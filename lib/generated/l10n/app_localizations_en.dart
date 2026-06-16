@@ -1124,4 +1124,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceStatusFullDay => 'Full day ✅';
+
+  @override
+  String get registerFaceTitle => 'Register Your Face';
+
+  @override
+  String get registerFaceDescription =>
+      'Take a clear photo of your face to enable attendance check-in';
+
+  @override
+  String get registerFaceContinue => 'Save and Continue';
+
+  @override
+  String get registerFaceImageRequired =>
+      'Please take a photo before continuing';
+
+  @override
+  String get registerFaceUploadFailed =>
+      'Failed to upload face image. Please try again.';
 }

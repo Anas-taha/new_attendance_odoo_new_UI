@@ -464,5 +464,10 @@
   "attendanceStatusAbsent": "Absent ❌",
   "attendanceStatusLeftEarly": "Left early ⚠️",
   "attendanceStatusLate": "Late ⏰",
-  "attendanceStatusFullDay": "Full day ✅"
+  "attendanceStatusFullDay": "Full day ✅",
+  "registerFaceTitle": "Register Your Face",
+  "registerFaceDescription": "Take a clear photo of your face to enable attendance check-in",
+  "registerFaceContinue": "Save and Continue",
+  "registerFaceImageRequired": "Please take a photo before continuing",
+  "registerFaceUploadFailed": "Failed to upload face image. Please try again."
 }

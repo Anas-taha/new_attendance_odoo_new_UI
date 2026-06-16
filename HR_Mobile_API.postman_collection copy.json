@@ -1,0 +1,208 @@
+{
+  "info": {
+    "name": "HR Mobile API — Full (Odoo 18)",
+    "description": "Complete collection for the Flutter HR app: OLD generic endpoints (/mobile/web, /mobile/jsonrpc whitelist, /submit_face) AND the NEW dedicated structured endpoints (/mobile/profile, /mobile/leaves, /mobile/payslips, /mobile/attendance/*, /mobile/notifications). Authenticate once (folder 0) to auto-store mobile_token, then use any request.\n\nTEST SERVER (demo data preloaded): base_url=http://168.231.106.200:8193 , db=hr_mobile_test , login(barcode)=EMP001 , password(PIN)=1234. A manager MGR001/1234 also exists. Sample data: 2 leaves (1 with refusal reason), 1 payslip with lines, 2 notifications.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://168.231.106.200:8193" },
+    { "key": "db", "value": "hr_mobile_test" },
+    { "key": "barcode", "value": "EMP001" },
+    { "key": "pin", "value": "1234" },
+    { "key": "mobile_token", "value": "" },
+    { "key": "employee_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Auth (token)",
+      "item": [
+        {
+          "name": "GET /mobile/web (landing cookie)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/mobile/web", "host": ["{{base_url}}"], "path": ["mobile","web"] }
+          }
+        },
+        {
+          "name": "POST /mobile/web/session/authenticate (barcode + PIN)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const r = pm.response.json();",
+            "if (r.result) {",
+            "  if (r.result.mobile_token) pm.collectionVariables.set('mobile_token', r.result.mobile_token);",
+            "  if (r.result.employee_id) pm.collectionVariables.set('employee_id', r.result.employee_id);",
+            "}"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/web/session/authenticate", "host": ["{{base_url}}"], "path": ["mobile","web","session","authenticate"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"login\": \"{{barcode}}\",\n    \"password\": \"{{pin}}\"\n  }\n}" }
+          }
+        },
+        {
+          "name": "POST /mobile/web/session/check",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": { "raw": "{{base_url}}/mobile/web/session/check", "host": ["{{base_url}}"], "path": ["mobile","web","session","check"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Generic RPC (/mobile/jsonrpc) — OLD",
+      "description": "Whitelisted execute_kw proxy. args = [db, uid(ignored), token, model, method, [positional], {kwargs}]. Token goes in args[2].",
+      "item": [
+        {
+          "name": "hr.employee — search_read (own profile)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.employee\", \"search_read\", [[]], {\"fields\": [\"name\",\"job_title\",\"department_id\",\"work_email\",\"work_phone\",\"barcode\",\"attendance_state\",\"parent_id\",\"work_location_id\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.attendance — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.attendance\", \"search_read\", [[]], {\"fields\": [\"check_in\",\"check_out\",\"worked_hours\",\"in_latitude\",\"in_longitude\",\"in_address\",\"geofence_status\"], \"limit\": 30, \"order\": \"check_in desc\"}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.attendance — create (check-in)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.attendance\", \"create\", [{\"check_in\": \"2026-06-06 08:00:00\", \"in_latitude\": 24.7136, \"in_longitude\": 46.6753}]]\n  }\n}" } }
+        },
+        {
+          "name": "hr.leave — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.leave\", \"search_read\", [[]], {\"fields\": [\"name\",\"holiday_status_id\",\"date_from\",\"date_to\",\"number_of_days\",\"state\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.leave — create (request)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.leave\", \"create\", [{\"holiday_status_id\": 1, \"request_date_from\": \"2026-06-10\", \"request_date_to\": \"2026-06-12\", \"name\": \"Family reasons\"}]]\n  }\n}" } }
+        },
+        {
+          "name": "hr.leave.type — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.leave.type\", \"search_read\", [[]], {\"fields\": [\"name\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.leave.allocation — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.leave.allocation\", \"search_read\", [[]], {\"fields\": [\"holiday_status_id\",\"number_of_days\",\"state\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.expense — create",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.expense\", \"create\", [{\"name\": \"Taxi\", \"total_amount\": 50.0}]]\n  }\n}" } }
+        },
+        {
+          "name": "hr.expense — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.expense\", \"search_read\", [[]], {\"fields\": [\"name\",\"total_amount\",\"state\",\"date\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.payslip — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.payslip\", \"search_read\", [[]], {\"fields\": [\"number\",\"name\",\"date_from\",\"date_to\",\"basic_wage\",\"gross_wage\",\"net_wage\",\"state\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "hr.contract — search_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"hr.contract\", \"search_read\", [[]], {\"fields\": [\"name\",\"wage\",\"date_start\",\"date_end\",\"state\"]}]\n  }\n}" } }
+        },
+        {
+          "name": "res.users — read (own)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/jsonrpc", "host": ["{{base_url}}"], "path": ["mobile","jsonrpc"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\"{{db}}\", 0, \"{{mobile_token}}\", \"res.users\", \"search_read\", [[]], {\"fields\": [\"name\",\"login\",\"lang\"]}]\n  }\n}" } }
+        }
+      ]
+    },
+    {
+      "name": "2. Face Attendance — OLD",
+      "item": [
+        {
+          "name": "GET /face_attendance (status)",
+          "request": { "method": "GET", "header": [],
+            "url": { "raw": "{{base_url}}/face_attendance", "host": ["{{base_url}}"], "path": ["face_attendance"] } }
+        },
+        {
+          "name": "POST /submit_face (image + GPS)",
+          "request": { "method": "POST", "header": [],
+            "url": { "raw": "{{base_url}}/submit_face", "host": ["{{base_url}}"], "path": ["submit_face"] },
+            "body": { "mode": "formdata", "formdata": [
+              { "key": "mobile_token", "value": "{{mobile_token}}", "type": "text" },
+              { "key": "face_image", "value": "<base64-or-dataURL>", "type": "text" },
+              { "key": "latitude", "value": "24.7136", "type": "text" },
+              { "key": "longitude", "value": "46.6753", "type": "text" },
+              { "key": "address", "value": "Riyadh, Saudi Arabia", "type": "text" }
+            ] } }
+        }
+      ]
+    },
+    {
+      "name": "3. Dedicated Endpoints — NEW",
+      "item": [
+        {
+          "name": "POST /mobile/attendance/check (no face)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/attendance/check", "host": ["{{base_url}}"], "path": ["mobile","attendance","check"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"mobile_token\": \"{{mobile_token}}\",\n    \"latitude\": 24.7136,\n    \"longitude\": 46.6753,\n    \"address\": \"Riyadh, Saudi Arabia\"\n  }\n}" } }
+        },
+        {
+          "name": "POST /mobile/profile",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/profile", "host": ["{{base_url}}"], "path": ["mobile","profile"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": { \"db\": \"{{db}}\", \"mobile_token\": \"{{mobile_token}}\" }\n}" } }
+        },
+        {
+          "name": "POST /mobile/leaves (filter type & date)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/leaves", "host": ["{{base_url}}"], "path": ["mobile","leaves"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"mobile_token\": \"{{mobile_token}}\",\n    \"leave_type_id\": null,\n    \"date_from\": null\n  }\n}" } }
+        },
+        {
+          "name": "POST /mobile/leaves/types",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/leaves/types", "host": ["{{base_url}}"], "path": ["mobile","leaves","types"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": { \"db\": \"{{db}}\", \"mobile_token\": \"{{mobile_token}}\" }\n}" } }
+        },
+        {
+          "name": "POST /mobile/payslips (salaries)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/payslips", "host": ["{{base_url}}"], "path": ["mobile","payslips"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"mobile_token\": \"{{mobile_token}}\",\n    \"date_from\": null,\n    \"date_to\": null\n  }\n}" } }
+        },
+        {
+          "name": "POST /mobile/attendance/summary (totals + weeks)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/attendance/summary", "host": ["{{base_url}}"], "path": ["mobile","attendance","summary"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"mobile_token\": \"{{mobile_token}}\",\n    \"date_from\": \"2026-05-01\",\n    \"date_to\": \"2026-05-31\"\n  }\n}" } }
+        },
+        {
+          "name": "POST /mobile/notifications (list)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/notifications", "host": ["{{base_url}}"], "path": ["mobile","notifications"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"mobile_token\": \"{{mobile_token}}\",\n    \"state\": null\n  }\n}" } }
+        },
+        {
+          "name": "POST /mobile/notifications/mark_read",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/mobile/notifications/mark_read", "host": ["{{base_url}}"], "path": ["mobile","notifications","mark_read"] },
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {\n    \"db\": \"{{db}}\",\n    \"mobile_token\": \"{{mobile_token}}\",\n    \"ids\": []\n  }\n}" } }
+        }
+      ]
+    }
+  ]
+}

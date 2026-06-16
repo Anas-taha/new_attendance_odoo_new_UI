@@ -7,6 +7,7 @@ import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/services/hr_service.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
 import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
+import 'package:hr_app_odoo/services/simple_hr_service.dart';
 
 class LoginController extends GetxController {
   TextEditingController emailController = TextEditingController();
@@ -68,20 +69,20 @@ class LoginController extends GetxController {
           final hrService = HrService();
           final employee = await hrService.getCurrentEmployee();
           if (employee != null) {
-            OdooRPCService.instance.setCurrentEmployeeId(employee.profile?.id??0);
+            OdooRPCService.instance.setCurrentEmployeeId(
+              employee.profile?.id ?? 0,
+            );
           }
-          // // if (!mounted) return;
-          // final l10n = AppLocalizations.of(Get.context!)!;
-          // ScaffoldMessenger.of(Get.context!).showSnackBar(
-          //   SnackBar(
-          //     content: Text(
-          //       l10n.welcomeName(employee?.name ?? emailController.text.trim()),
-          //     ),
-          //     backgroundColor: Colors.green,
-          //   ),
-          // );
+
+          final profile = await SimpleHrService().getProfile();
+          final needsFaceRegistration = profile.profile?.hasImage != true;
+
           isLoading.value = false;
-          Get.offAllNamed(AppRoutes.home);
+          if (needsFaceRegistration) {
+            Get.offAllNamed(AppRoutes.registerFace);
+          } else {
+            Get.offAllNamed(AppRoutes.home);
+          }
         } else {
           isLoading.value = false;
           ScaffoldMessenger.of(Get.context!).showSnackBar(
