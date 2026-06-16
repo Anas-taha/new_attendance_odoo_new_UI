@@ -469,5 +469,12 @@
   "registerFaceDescription": "Take a clear photo of your face to enable attendance check-in",
   "registerFaceContinue": "Save and Continue",
   "registerFaceImageRequired": "Please take a photo before continuing",
-  "registerFaceUploadFailed": "Failed to upload face image. Please try again."
+  "registerFaceUploadFailed": "Failed to upload face image. Please try again.",
+  "biometricLoginReason": "Authenticate to sign in quickly",
+  "enableBiometricTitle": "Enable biometric login?",
+  "enableBiometricMessage": "Use fingerprint or face ID to sign in faster next time.",
+  "enableBiometricConfirm": "Enable",
+  "enableBiometricReason": "Confirm to enable biometric login",
+  "loginWithBiometric": "Sign in with biometrics",
+  "notNow": "Not now"
 }

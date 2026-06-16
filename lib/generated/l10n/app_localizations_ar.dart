@@ -1130,4 +1130,26 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get registerFaceUploadFailed =>
       'فشل رفع صورة الوجه. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get biometricLoginReason => 'تحقق من هويتك لتسجيل الدخول بسرعة';
+
+  @override
+  String get enableBiometricTitle => 'تفعيل تسجيل الدخول البيومتري؟';
+
+  @override
+  String get enableBiometricMessage =>
+      'استخدم بصمة الإصبع أو التعرف على الوجه لتسجيل دخول أسرع في المرة القادمة.';
+
+  @override
+  String get enableBiometricConfirm => 'تفعيل';
+
+  @override
+  String get enableBiometricReason => 'أكد لتفعيل تسجيل الدخول البيومتري';
+
+  @override
+  String get loginWithBiometric => 'تسجيل الدخول بالبصمة';
+
+  @override
+  String get notNow => 'ليس الآن';
 }

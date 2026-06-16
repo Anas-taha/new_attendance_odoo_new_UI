@@ -1142,4 +1142,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get registerFaceUploadFailed =>
       'Failed to upload face image. Please try again.';
+
+  @override
+  String get biometricLoginReason => 'Authenticate to sign in quickly';
+
+  @override
+  String get enableBiometricTitle => 'Enable biometric login?';
+
+  @override
+  String get enableBiometricMessage =>
+      'Use fingerprint or face ID to sign in faster next time.';
+
+  @override
+  String get enableBiometricConfirm => 'Enable';
+
+  @override
+  String get enableBiometricReason => 'Confirm to enable biometric login';
+
+  @override
+  String get loginWithBiometric => 'Sign in with biometrics';
+
+  @override
+  String get notNow => 'Not now';
 }

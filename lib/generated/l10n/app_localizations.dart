@@ -2203,6 +2203,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to upload face image. Please try again.'**
   String get registerFaceUploadFailed;
+
+  /// No description provided for @biometricLoginReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to sign in quickly'**
+  String get biometricLoginReason;
+
+  /// No description provided for @enableBiometricTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable biometric login?'**
+  String get enableBiometricTitle;
+
+  /// No description provided for @enableBiometricMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fingerprint or face ID to sign in faster next time.'**
+  String get enableBiometricMessage;
+
+  /// No description provided for @enableBiometricConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get enableBiometricConfirm;
+
+  /// No description provided for @enableBiometricReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm to enable biometric login'**
+  String get enableBiometricReason;
+
+  /// No description provided for @loginWithBiometric.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with biometrics'**
+  String get loginWithBiometric;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
 }
 
 class _AppLocalizationsDelegate

@@ -16,6 +16,7 @@ class LocalStorageService {
   static const String _savedNameKey = 'saved_name';
   static const String _savedAddressKey = 'saved_address';
   static const String _savedPasswordKey = 'saved_password';
+  static const String _biometricLoginEnabledKey = 'biometric_login_enabled';
   static const String _localeLanguageKey = 'locale_language';
   static const String _localeCountryKey = 'locale_country';
 
@@ -315,6 +316,17 @@ class LocalStorageService {
     await prefs.remove(_savedEmailKey);
     await prefs.remove(_savedPasswordKey);
     await prefs.remove(_savedNameKey);
+    await prefs.remove(_biometricLoginEnabledKey);
+  }
+
+  Future<bool> isBiometricLoginEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_biometricLoginEnabledKey) ?? false;
+  }
+
+  Future<void> setBiometricLoginEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_biometricLoginEnabledKey, enabled);
   }
 
   /// Save selected locale (e.g. 'en', 'ar')

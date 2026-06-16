@@ -11,6 +11,7 @@ class CustomDialog {
   }) {
     return showDialog(
       context: Get.context!,
+      barrierDismissible: barrierDismissible,
       builder: (_) {
         return StatefulBuilder(
           builder: (context, setState) {

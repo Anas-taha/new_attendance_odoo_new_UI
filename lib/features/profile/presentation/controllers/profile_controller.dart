@@ -95,11 +95,7 @@ class ProfileController extends GetxController {
             text: l10n.logOut,
             onTap: () async {
               final storage = LocalStorageService();
-              await storage.saveLastCredentials(
-                email: '',
-                password: '',
-                name: '',
-              );
+              await storage.clearSavedCredentials();
               Get.offAllNamed(AppRoutes.login);
             },
           ),

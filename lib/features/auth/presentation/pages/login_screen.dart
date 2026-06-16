@@ -82,6 +82,47 @@ class LoginScreen extends StatelessWidget {
                 loginController.handleLogin();
               },
             ),
+            Obx(() {
+              if (!loginController.isBiometricAvailable.value ||
+                  !loginController.isBiometricEnabled.value) {
+                return const SizedBox.shrink();
+              }
+
+              return Column(
+                children: [
+                  16.verticalSpace,
+                  GestureDetector(
+                    onTap: loginController.tryBiometricLogin,
+                    child: Container(
+                      width: double.infinity,
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.appFAFAFABackGround2,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.appE5E5E5Border),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.fingerprint,
+                            color: AppColors.app670379Sedondary2,
+                            size: 22.w,
+                          ),
+                          8.horizontalSpace,
+                          CustomText(
+                            text: context.appWords.loginWithBiometric,
+                            fontSize: 15.w,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.app670379Sedondary2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
           ],
         ),
       ),
