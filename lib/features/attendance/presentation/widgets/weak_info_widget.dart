@@ -57,7 +57,7 @@ class WeakInfoWidget extends StatelessWidget {
                     ),
                   ),
                   2.verticalSpace,
-                  if (weekInfo.holidays == null || weekInfo.dateFrom!.isEmpty)
+                  if (isSelected && (weekInfo.holidays?.isNotEmpty ?? false))
                     AnimatedCrossFade(
                       firstCurve: Curves.easeInOut,
                       secondCurve: Curves.easeInOut,
@@ -65,17 +65,33 @@ class WeakInfoWidget extends StatelessWidget {
                           ? CrossFadeState.showFirst
                           : CrossFadeState.showSecond,
                       firstChild: Column(
-                        children: List.generate(
-                          2,
-                          (index) => AttendanceInfoDateCardWidget(
+                        children: weekInfo.holidays!.map((holiday) {
+                          final item = holiday is Map
+                              ? holiday
+                              : <String, dynamic>{};
+                          return AttendanceInfoDateCardWidget(
                             state: AttendanceStateEnum.holidays,
-                            date: weekInfo.dateFrom ?? '',
-                            value: '3 أيام (اجازه مرضية)',
-                          ),
-                        ),
+                            date:
+                                item['date_from']?.toString() ??
+                                item['date']?.toString() ??
+                                weekInfo.dateFrom ??
+                                '',
+                            value:
+                                item['name']?.toString() ??
+                                item['title']?.toString() ??
+                                '${weekInfo.holidaysCount ?? 0}',
+                          );
+                        }).toList(),
                       ),
                       secondChild: SizedBox.shrink(),
                       duration: const Duration(milliseconds: 300),
+                    )
+                  else if (isSelected && (weekInfo.holidaysCount ?? 0) > 0)
+                    AttendanceInfoDateCardWidget(
+                      state: AttendanceStateEnum.holidays,
+                      date:
+                          '${weekInfo.dateFrom ?? ''} - ${weekInfo.dateTo ?? ''}',
+                      value: '${weekInfo.holidaysCount}',
                     ),
                 ],
               ),

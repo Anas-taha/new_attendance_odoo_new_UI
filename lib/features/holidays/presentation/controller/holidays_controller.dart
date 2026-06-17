@@ -1,51 +1,64 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
 import 'package:hr_app_odoo/features/holidays/data/repositories/holiday_repo_impl.dart';
 import 'package:hr_app_odoo/features/holidays/domain/repositories/holidays_repository.dart';
 import 'package:hr_app_odoo/models/holiday_model.dart';
 import 'package:hr_app_odoo/services/extension.dart';
+import 'package:hr_app_odoo/services/simple_hr_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
-import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
-import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
-import 'package:table_calendar/table_calendar.dart';
-
 enum HolidayStateEnum { all, approved, rejected, pending, cancelled, draft }
 
 class HolidaysController extends GetxController {
-  HolidaysController({HolidaysRepository? holidaysRepository})
-    : _profileRepository = holidaysRepository ?? HolidayRepositoryImpl();
+  HolidaysController({
+    HolidaysRepository? holidaysRepository,
+    SimpleHrService? simpleHrService,
+  }) : _profileRepository = holidaysRepository ?? HolidayRepositoryImpl(),
+       _simpleHrService = simpleHrService ?? SimpleHrService();
 
   final HolidaysRepository _profileRepository;
+  final SimpleHrService _simpleHrService;
 
-  Rx<bool> loading = Rx<bool>(false);
+  RxBool loading = false.obs;
   HolidaysModel holidays = HolidaysModel();
   List<Leaves> leaves = [];
+  List<Map<String, dynamic>> leaveTypes = [];
   Rx<HolidayStateEnum> selectedHolidayState = HolidayStateEnum.all.obs;
-  TextEditingController holidayTypeController = TextEditingController();
-  TextEditingController holidayStartDateController = TextEditingController();
-  TextEditingController holidayEndDateController = TextEditingController();
-  TextEditingController holidayReasonController = TextEditingController();
+  TextEditingController filterStartDateController = TextEditingController();
+  TextEditingController requestStartDateController = TextEditingController();
+  TextEditingController requestEndDateController = TextEditingController();
+  TextEditingController requestReasonController = TextEditingController();
+  int? selectedFilterLeaveTypeId;
+  int? selectedRequestLeaveTypeId;
+
+  List<String> get leaveTypeOptions => leaveTypes
+      .map((type) => type['name']?.toString() ?? '')
+      .where((name) => name.isNotEmpty)
+      .toList();
+
   @override
   void onReady() {
     selectedHolidayState.value = HolidayStateEnum.all;
-    holidayTypeController.text = '';
-    holidayStartDateController.text = '';
-    holidayEndDateController.text = '';
-    holidayReasonController.text = '';
+    filterStartDateController.text = '';
+    resetRequestForm();
+    loadLeaveTypes();
     getHolidays();
     super.onReady();
   }
 
+  void resetRequestForm() {
+    requestStartDateController.text = '';
+    requestEndDateController.text = '';
+    requestReasonController.text = '';
+    selectedRequestLeaveTypeId = null;
+  }
+
   @override
   void onClose() {
-    holidayTypeController.dispose();
-    holidayStartDateController.dispose();
-    holidayEndDateController.dispose();
-    holidayReasonController.dispose();
+    filterStartDateController.dispose();
+    requestStartDateController.dispose();
+    requestEndDateController.dispose();
+    requestReasonController.dispose();
     super.onClose();
   }
 
@@ -57,41 +70,109 @@ class HolidaysController extends GetxController {
   //   holidayReasonController.text = '';
   // }
 
-  void getHolidays() async {
+  Future<void> loadLeaveTypes() async {
+    leaveTypes = await _simpleHrService.getHolidayStatusTypes();
+    update();
+  }
+
+  Future<void> getHolidays() async {
     loading.value = true;
+    update();
     final result = await _profileRepository.getHolidays();
     if (result != null) {
       holidays = result;
       leaves = result.leaves ?? [];
     }
     loading.value = false;
+    update();
   }
 
   void changeHolidayState(HolidayStateEnum newState) {
     selectedHolidayState.value = newState;
-    leaves =
-        holidays.leaves
-            ?.where(
-              (leave) => leave.holidayStatus == newState.name.toLowerCase(),
-            )
-            .toList() ??
-        [];
+    if (newState == HolidayStateEnum.all) {
+      leaves = holidays.leaves ?? [];
+    } else {
+      leaves =
+          holidays.leaves
+              ?.where(
+                (leave) => leave.holidayStatus == newState.name.toLowerCase(),
+              )
+              .toList() ??
+          [];
+    }
+    update();
   }
 
-  void selectHoolidayType(String type) {
-    holidayTypeController.text = type;
+  void selectFilterLeaveType(String type) {
+    for (final leaveType in leaveTypes) {
+      if (leaveType['name']?.toString() == type) {
+        selectedFilterLeaveTypeId = leaveType['id'] as int?;
+        break;
+      }
+    }
   }
 
-  void selectStartDate(String title) {
+  void selectRequestLeaveType(String type) {
+    for (final leaveType in leaveTypes) {
+      if (leaveType['name']?.toString() == type) {
+        selectedRequestLeaveTypeId = leaveType['id'] as int?;
+        break;
+      }
+    }
+  }
+
+  Future<void> submitLeaveRequest() async {
+    final l10n = Get.context!.appWords;
+    if (requestStartDateController.text.isEmpty ||
+        requestEndDateController.text.isEmpty) {
+      Get.snackbar(l10n.leaveRequest, l10n.selectDate);
+      return;
+    }
+
+    loading.value = true;
+    update();
+
+    final leaveTypeId =
+        selectedRequestLeaveTypeId ??
+        (leaveTypes.isNotEmpty ? leaveTypes.first['id'] as int? : 1);
+
+    final success = await _simpleHrService.createLeave({
+      'holiday_status_id': leaveTypeId,
+      'request_date_from': requestStartDateController.text,
+      'request_date_to': requestEndDateController.text,
+      'name': requestReasonController.text,
+    });
+
+    loading.value = false;
+    update();
+
+    if (success) {
+      resetRequestForm();
+      await getHolidays();
+      Get.back();
+      return;
+    }
+
+    Get.snackbar(l10n.leaveRequest, l10n.failedToCreateExpense);
+  }
+
+  void selectFilterStartDate(String title) {
     CustomCalender.calenderDialog(
-      contorller: holidayStartDateController,
+      contorller: filterStartDateController,
       title: title,
     );
   }
 
-  void selectEndDate(String title) {
+  void selectRequestStartDate(String title) {
     CustomCalender.calenderDialog(
-      contorller: holidayEndDateController,
+      contorller: requestStartDateController,
+      title: title,
+    );
+  }
+
+  void selectRequestEndDate(String title) {
+    CustomCalender.calenderDialog(
+      contorller: requestEndDateController,
       title: title,
     );
   }

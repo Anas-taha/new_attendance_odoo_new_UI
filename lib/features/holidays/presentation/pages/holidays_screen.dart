@@ -29,6 +29,7 @@ class HolidaysScreen extends StatelessWidget {
             child: CustomButton(
               text: context.appWords.leaveRequest,
               onTap: () {
+                controller.resetRequestForm();
                 Get.toNamed(AppRoutes.requestHoliday);
               },
             ),
@@ -43,20 +44,20 @@ class HolidaysScreen extends StatelessWidget {
                   Expanded(
                     child: CustomDropDown(
                       hintText: context.appWords.leaveType,
-                      itemList: ['1', '2', '3'],
-                      onSelect: (type) {
-                        controller.selectHoolidayType(type);
-                      },
+                      itemList: controller.leaveTypeOptions.isNotEmpty
+                          ? controller.leaveTypeOptions
+                          : [context.appWords.leaveType],
+                      onSelect: controller.selectFilterLeaveType,
                     ),
                   ),
                   7.horizontalSpace,
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => controller.selectStartDate(
+                      onTap: () => controller.selectFilterStartDate(
                         context.appWords.startDate,
                       ),
                       child: CustomTextField(
-                        controller: controller.holidayStartDateController,
+                        controller: controller.filterStartDateController,
                         enabled: false,
                         usePrefixCalender: true,
                         useSuffixArrow: true,
@@ -105,7 +106,7 @@ class HolidaysScreen extends StatelessWidget {
                           );
                         },
                         separatorBuilder: (context, index) => 16.verticalSpace,
-                        itemCount: 1,
+                        itemCount: controller.leaves.length,
                       ),
                     ),
             ],

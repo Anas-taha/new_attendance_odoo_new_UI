@@ -91,20 +91,27 @@ class HomeScreen extends StatelessWidget {
                 16.verticalSpace,
 
                 Obx(() {
-                  if (controller.lastNotivication.value.isEmpty) {
+                  if (controller.recentNotifications.isEmpty) {
                     return Center(child: NoNotificationWidget(height: 30));
                   }
                   return Expanded(
                     child: ListView.separated(
-                      itemCount: 1,
+                      itemCount: controller.recentNotifications.length,
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
                       separatorBuilder: (context, index) => 13.verticalSpace,
                       itemBuilder: (context, index) {
+                        final notification =
+                            controller.recentNotifications[index];
                         return NotificationCardWidget(
-                          title: 'تم الموافقة على طلب الإجازة',
-                          date: 'منذ يومين',
+                          title: notification.title ?? '',
+                          date: notification.date?.getDateOnly(
+                                fallback: context
+                                    .appWords.notificationsRelativeTwoDaysAgo,
+                              ) ??
+                              '',
+                          state: notification.state,
                         );
                       },
                     ),

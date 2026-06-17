@@ -21,6 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines,
     this.hintLocationTop = false,
     this.hintFontWeight,
+    this.obscureText = false,
   });
   TextEditingController controller;
 
@@ -33,6 +34,7 @@ class CustomTextField extends StatelessWidget {
   int? maxLines;
   bool hintLocationTop;
   FontWeight? hintFontWeight;
+  bool obscureText;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -49,7 +51,8 @@ class CustomTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           enabled: enabled,
-          maxLines: maxLines,
+          maxLines: obscureText ? 1 : maxLines,
+          obscureText: obscureText,
           decoration: InputDecoration(
             filled: true,
             hint: CustomText(

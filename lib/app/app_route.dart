@@ -114,7 +114,10 @@ class AppPages {
     ),
     // GetPage(name: AppRoutes.contracts, page: () => const ContractsScreen()),
     // GetPage(name: AppRoutes.timeOff, page: () => const TeamOffScreen()),
-    // GetPage(name: AppRoutes.requestHoliday, page: () => RequestHolidayScreen()),
+    GetPage(
+      name: AppRoutes.requestHoliday,
+      page: () => const RequestHolidayScreen(),
+    ),
     GetPage(
       name: AppRoutes.profile,
       page: () => ProfileScreen(),

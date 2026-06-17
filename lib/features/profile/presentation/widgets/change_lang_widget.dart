@@ -5,6 +5,7 @@ import 'package:hr_app_odoo/app/app_image.dart';
 import 'package:hr_app_odoo/app/app_locale.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
 class ChangeLangWidget extends StatelessWidget {
@@ -60,7 +61,9 @@ class ChangeLangWidget extends StatelessWidget {
             ),
             8.horizontalSpace,
             CustomText(
-              text: lang == 'ar' ? 'اللغه العربية' : 'English',
+              text: lang == 'ar'
+                  ? context.appWords.arabic
+                  : context.appWords.english,
               fontSize: 14.w,
               color: AppColors.app6C757DText5,
             ),

@@ -74,6 +74,7 @@ class LoginScreen extends StatelessWidget {
               controller: loginController.passwordController,
               hintText: context.appWords.password,
               hintLocationTop: true,
+              obscureText: true,
             ),
             28.verticalSpace,
             CustomButton(

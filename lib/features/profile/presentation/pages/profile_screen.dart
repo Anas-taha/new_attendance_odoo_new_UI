@@ -195,10 +195,10 @@ class ProfileScreen extends StatelessWidget {
                                       ),
                                       child: Row(
                                         children: [
-                                          CustomImage(
-                                            image: AppImage.changeLang,
-                                            height: 30.h,
-                                            width: 30.h,
+                                          Icon(
+                                            Icons.logout,
+                                            size: 30.h,
+                                            color: AppColors.appF44336Error,
                                           ),
                                           5.horizontalSpace,
                                           CustomText(

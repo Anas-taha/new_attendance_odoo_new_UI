@@ -10,6 +10,9 @@ import 'package:hr_app_odoo/custom_widgets/custom_dialog/custom_dialog.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text_field/custom_text_field.dart';
 import 'package:hr_app_odoo/features/home/data/repositories/home_repository_impl.dart';
+import 'package:hr_app_odoo/features/notification/data/repositories/notification_repository_impl.dart';
+import 'package:hr_app_odoo/features/notification/domain/repositories/notification_repository.dart';
+import 'package:hr_app_odoo/models/notification_model.dart';
 import 'package:hr_app_odoo/features/home/domain/repositories/home_repository.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/models/check_in_model.dart';
@@ -44,8 +47,12 @@ class HomeErrorMessageEvent extends HomeUiEvent {
 }
 
 class HomeController extends GetxController {
-  HomeController({HomeRepository? homeRepository})
-    : _homeRepository = homeRepository ?? HomeRepositoryImpl();
+  HomeController({
+    HomeRepository? homeRepository,
+    NotificationRepository? notificationRepository,
+  }) : _homeRepository = homeRepository ?? HomeRepositoryImpl(),
+       _notificationRepository =
+           notificationRepository ?? NotificationRepositoryImpl();
   TextEditingController addressController = TextEditingController();
   RxInt seconds = 0.obs;
   RxBool isCheckedIn = false.obs;
@@ -57,10 +64,11 @@ class HomeController extends GetxController {
   Rx<String> totalToday = Rx<String>("00:00:00");
   Rx<String> beforeTime = Rx<String>("00:00");
   Rxn<HomeUiEvent> uiEvent = Rxn<HomeUiEvent>();
-  RxList<String> lastNotivication = RxList<String>([]);
+  RxList<Notifications> recentNotifications = RxList<Notifications>([]);
   RxString userName = ''.obs;
 
   final HomeRepository _homeRepository;
+  final NotificationRepository _notificationRepository;
   RxBool isLoading = false.obs;
   RxString address = ''.obs;
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
@@ -94,6 +102,18 @@ class HomeController extends GetxController {
     getCurrentDate();
     timeIsAm();
     setPosition();
+    loadRecentNotifications();
+  }
+
+  Future<void> loadRecentNotifications() async {
+    try {
+      final model = await _notificationRepository.getNotification();
+      recentNotifications.assignAll(
+        (model.notifications ?? []).take(3).toList(),
+      );
+    } catch (e) {
+      recentNotifications.clear();
+    }
   }
 
   @override

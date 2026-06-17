@@ -66,8 +66,12 @@ class NotificationScreen extends StatelessWidget {
                                   controller.notifications[index].title ?? '',
                               date:
                                   controller.notifications[index].date
-                                      ?.getDateOnly() ??
-                                  'منذ يومين',
+                                      ?.getDateOnly(
+                                        fallback: context
+                                            .appWords
+                                            .notificationsRelativeTwoDaysAgo,
+                                      ) ??
+                                  context.appWords.notificationsRelativeTwoDaysAgo,
                             ),
                           );
                         },
