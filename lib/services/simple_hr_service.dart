@@ -112,8 +112,12 @@ class SimpleHrService {
         return CheckInModel.fromJson(result);
       }
       return CheckInModel();
-    } catch (e) {
-      print('❌ Error getting attendance summary: $e');
+    } catch (e, stackTrace) {
+      log(
+        'Error attendance/check: $e',
+        name: 'SimpleHrService',
+        stackTrace: stackTrace,
+      );
       return CheckInModel();
     }
   }

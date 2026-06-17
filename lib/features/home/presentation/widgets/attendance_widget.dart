@@ -94,6 +94,9 @@ class AttendanceWidget extends StatelessWidget {
           ),
           8.verticalSpace,
           Obx(() {
+            homeController.elapsed.value;
+            homeController.totalToday.value;
+            homeController.isCheckedIn.value;
             return Row(
               children: [
                 CustomText(
@@ -113,13 +116,10 @@ class AttendanceWidget extends StatelessWidget {
           8.verticalSpace,
           Obx(
             () => CustomButton(
-              text: homeController.isRunning.value
+              text: homeController.isCheckedIn.value
                   ? context.appWords.checkOut
                   : context.appWords.checkIn,
-              onTap: () {
-                homeController.checkIn();
-                
-              },
+              onTap: homeController.handleFaceAttendance,
             ),
           ),
         ],

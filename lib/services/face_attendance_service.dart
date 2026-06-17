@@ -304,18 +304,26 @@ class FaceAttendanceService {
   /// Get current attendance status
   Future<Map<String, dynamic>> getCurrentAttendanceStatus() async {
     try {
-      final result = await _callOdooMethod('hr.attendance', 'search_read', [
-        [
-          ['employee_id', '=', OdooRPCService.instance.currentEmployeeId],
+      final employeeId = OdooRPCService.instance.currentEmployeeId;
+      if (employeeId == null) {
+        log('⚠️ No employee ID for attendance status', name: 'FaceAttendanceService');
+        return {'is_checked_in': false, 'attendance_id': null};
+      }
+
+      final result = await OdooRPCService.instance.searchRead(
+        model: 'hr.attendance',
+        domain: [
+          ['employee_id', '=', employeeId],
           ['check_out', '=', false],
         ],
-        ['id', 'check_in', 'check_out'],
-      ]);
+        fields: ['id', 'check_in', 'check_out'],
+        limit: 1,
+      );
 
       if (result['success'] &&
           result['data'] != null &&
-          result['data'].isNotEmpty) {
-        final attendance = result['data'][0];
+          (result['data'] as List).isNotEmpty) {
+        final attendance = (result['data'] as List).first;
         return {
           'is_checked_in': true,
           'attendance_id': attendance['id'],
@@ -324,8 +332,12 @@ class FaceAttendanceService {
       }
 
       return {'is_checked_in': false, 'attendance_id': null};
-    } catch (e) {
-      print('❌ Error getting current attendance status: $e');
+    } catch (e, stackTrace) {
+      log(
+        '❌ Error getting current attendance status: $e',
+        name: 'FaceAttendanceService',
+        stackTrace: stackTrace,
+      );
       return {'is_checked_in': false, 'attendance_id': null};
     }
   }
@@ -352,9 +364,10 @@ class FaceAttendanceService {
 
       print('🔍 Performing check-in with data: $attendanceData');
 
-      final result = await _callOdooMethod('hr.attendance', 'create', [
-        attendanceData,
-      ]);
+      final result = await OdooRPCService.instance.create(
+        model: 'hr.attendance',
+        values: attendanceData,
+      );
 
       if (result['success']) {
         _geoFieldsSupported = useGeo;
@@ -409,10 +422,11 @@ class FaceAttendanceService {
 
       print('🔍 Performing check-out with data: $checkoutData');
 
-      final result = await _callOdooMethod('hr.attendance', 'write', [
-        attendanceId,
-        checkoutData,
-      ]);
+      final result = await OdooRPCService.instance.write(
+        model: 'hr.attendance',
+        recordId: attendanceId,
+        values: checkoutData,
+      );
 
       if (result['success']) {
         _geoFieldsSupported = useGeo;
@@ -442,64 +456,6 @@ class FaceAttendanceService {
         'action': 'check_out',
         'error': 'Exception during check-out: $e',
       };
-    }
-  }
-
-  /// Call Odoo method
-  Future<Map<String, dynamic>> _callOdooMethod(
-    String model,
-    String method,
-    List<dynamic> args,
-  ) async {
-    try {
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
-
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'HR App Flutter Face Attendance',
-          'Accept': 'application/json',
-        },
-        body: json.encode({
-          'jsonrpc': '2.0',
-          'method': 'call',
-          'params': {
-            'service': 'object',
-            'method': 'execute_kw',
-            'args': [
-              OdooRPCService.instance.currentDatabase,
-              OdooRPCService.instance.currentUserId,
-              OdooRPCService.instance.currentPassword,
-              model,
-              method,
-              args,
-            ],
-          },
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-
-        if (jsonResponse['error'] != null) {
-          return {
-            'success': false,
-            'error':
-                jsonResponse['error']['data']['message'] ??
-                'Odoo method call failed',
-          };
-        }
-
-        return {'success': true, 'data': jsonResponse['result']};
-      } else {
-        return {
-          'success': false,
-          'error': 'HTTP Error: ${response.statusCode}',
-        };
-      }
-    } catch (e) {
-      return {'success': false, 'error': 'Exception: $e'};
     }
   }
 
@@ -542,7 +498,9 @@ class FaceAttendanceService {
         };
       }
 
-      final url = Uri.parse('${OdooConfig.serverRootUrl}/submit_face');
+      final url = Uri.parse(OdooConfig.rootEndpoint('submit_face'));
+      log('POST $url (submit_face)', name: 'FaceAttendanceService');
+
       final response = await http
           .post(
             url,
@@ -560,36 +518,74 @@ class FaceAttendanceService {
           )
           .timeout(Duration(milliseconds: OdooConfig.writeTimeout));
 
-      print('📨 Response status: ${response.statusCode}');
+      log(
+        '📨 submit_face status: ${response.statusCode}',
+        name: 'FaceAttendanceService',
+      );
 
-      if (response.statusCode == 200) {
-        final message = _extractMessageFromHtml(response.body);
-        final isSuccess = message.contains('Success') || message.contains('✅');
-
-        // Determine if it was check-in or check-out from the message
-        String action = 'unknown';
-        if (message.toLowerCase().contains('check') &&
-            message.toLowerCase().contains('in')) {
-          action = 'check_in';
-        } else if (message.toLowerCase().contains('check') &&
-            message.toLowerCase().contains('out')) {
-          action = 'check_out';
-        }
-
-        if (isSuccess) {
-          print('✅ Face attendance successful: $message');
-          return {'success': true, 'message': message, 'action': action};
-        } else {
-          print('❌ Face attendance failed: $message');
-          return {'success': false, 'error': message};
-        }
-      } else {
-        return {'success': false, 'error': 'HTTP ${response.statusCode}'};
+      if (response.statusCode != 200) {
+        _logHttpError('submit_face', url, response);
+        return {
+          'success': false,
+          'error': _httpErrorMessage('submit_face', response),
+        };
       }
-    } catch (e) {
-      print('❌ Face verification error: $e');
+
+      final message = _extractMessageFromHtml(response.body);
+      final isSuccess = message.contains('Success') || message.contains('✅');
+
+      // Determine if it was check-in or check-out from the message
+      String action = 'unknown';
+      if (message.toLowerCase().contains('check') &&
+          message.toLowerCase().contains('in')) {
+        action = 'check_in';
+      } else if (message.toLowerCase().contains('check') &&
+          message.toLowerCase().contains('out')) {
+        action = 'check_out';
+      }
+
+      if (isSuccess) {
+        print('✅ Face attendance successful: $message');
+        return {'success': true, 'message': message, 'action': action};
+      }
+
+      print('❌ Face attendance failed: $message');
+      return {'success': false, 'error': message};
+    } catch (e, stackTrace) {
+      log(
+        '❌ Face verification error: $e',
+        name: 'FaceAttendanceService',
+        stackTrace: stackTrace,
+      );
       return {'success': false, 'error': 'Face verification failed: $e'};
     }
+  }
+
+  void _logHttpError(String label, Uri url, http.Response response) {
+    log('❌ $label → HTTP ${response.statusCode}', name: 'FaceAttendanceService');
+    log('   URL: $url', name: 'FaceAttendanceService');
+    log(
+      '   Location: ${response.headers['location'] ?? response.headers['Location'] ?? 'n/a'}',
+      name: 'FaceAttendanceService',
+    );
+    final body = response.body;
+    log(
+      '   Body: ${body.length > 500 ? '${body.substring(0, 500)}...' : body}',
+      name: 'FaceAttendanceService',
+    );
+  }
+
+  String _httpErrorMessage(String label, http.Response response) {
+    final location = response.headers['location'] ?? response.headers['Location'];
+    if (response.statusCode == 301 || response.statusCode == 302) {
+      return '$label: HTTP ${response.statusCode} redirect'
+          '${location != null ? ' → $location' : ''}. '
+          'Check OdooConfig.baseUrl matches Postman base_url.';
+    }
+    final snippet = response.body.length > 120
+        ? '${response.body.substring(0, 120)}...'
+        : response.body;
+    return '$label: HTTP ${response.statusCode}${snippet.isNotEmpty ? ' — $snippet' : ''}';
   }
 
   /// Submit face attendance with automatic fallback
@@ -616,8 +612,11 @@ class FaceAttendanceService {
         return controllerResult;
       }
 
-      // If face recognition fails (no matching face, etc.), check error
       final error = controllerResult['error']?.toString() ?? '';
+      log(
+        '⚠️ submit_face failed: $error',
+        name: 'FaceAttendanceService',
+      );
 
       // If it's a face matching issue, don't fallback - return the error
       if (error.contains('No matching face') ||

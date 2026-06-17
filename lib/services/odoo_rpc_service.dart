@@ -73,6 +73,26 @@ class OdooRPCService {
     print('   isAuthenticated: $isAuthenticated');
   }
 
+  void _logHttpError(String label, Uri url, http.Response response) {
+    log('❌ $label → HTTP ${response.statusCode}', name: 'OdooRPCService');
+    log('   URL: $url', name: 'OdooRPCService');
+    log(
+      '   Location: ${response.headers['location'] ?? response.headers['Location'] ?? 'n/a'}',
+      name: 'OdooRPCService',
+    );
+    final body = response.body;
+    log(
+      '   Body: ${body.length > 500 ? '${body.substring(0, 500)}...' : body}',
+      name: 'OdooRPCService',
+    );
+  }
+
+  List<dynamic> _jsonRpcAuthArgs() => [
+        _database,
+        0,
+        mobileToken ?? '',
+      ];
+
   /// Authenticate with Odoo.sh using web session
   Future<HrLogin> authenticate({
     required String username,
@@ -214,7 +234,7 @@ class OdooRPCService {
     }
 
     try {
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
+      final url = Uri.parse(OdooConfig.jsonRpcUrl);
 
       final response = await http
           .post(
@@ -232,9 +252,7 @@ class OdooRPCService {
                 'service': 'object',
                 'method': 'execute_kw',
                 'args': [
-                  _database,
-                  _userId,
-                  _password,
+                  ..._jsonRpcAuthArgs(),
                   model,
                   method,
                   args ?? [],
@@ -244,6 +262,10 @@ class OdooRPCService {
             }),
           )
           .timeout(Duration(milliseconds: OdooConfig.readTimeout));
+
+      if (response.statusCode != 200) {
+        _logHttpError('executeRPC/$model.$method', url, response);
+      }
 
       if (response.statusCode == 200) {
         try {
@@ -266,7 +288,8 @@ class OdooRPCService {
       } else {
         return {
           'success': false,
-          'error': 'HTTP Error: ${response.statusCode}',
+          'error':
+              'HTTP Error: ${response.statusCode} - ${response.headers['location'] ?? response.body}',
         };
       }
     } catch (e) {
@@ -292,11 +315,28 @@ class OdooRPCService {
 
     try {
       // For Odoo.sh, we need to use the standard JSON-RPC endpoint with proper session context
-      final url = Uri.parse('${OdooConfig.baseUrl}$apiUrl');
+      final url = Uri.parse(OdooConfig.mobileEndpoint(apiUrl));
+      log(
+        name: 'OdooRPCService',
+        'POST $url (attendance API)',
+      );
       log(
         name: 'OdooRPCServiceData',
-        'database: $_database,token: $_mobileToken, model: $apiUrl',
+        'database: $_database, token: $_mobileToken, api: $apiUrl',
       );
+
+      final params = <String, dynamic>{
+        'db': _database,
+        'mobile_token': _mobileToken,
+      };
+      if (state != null) params['state'] = state;
+      if (date_from != null) params['date_from'] = date_from;
+      if (date_to != null) params['date_to'] = date_to;
+      if (leave_type_id != null) params['leave_type_id'] = leave_type_id;
+      if (latitude != null) params['latitude'] = latitude;
+      if (longitude != null) params['longitude'] = longitude;
+      if (address != null) params['address'] = address;
+
       final response = await http
           .post(
             url,
@@ -306,24 +346,16 @@ class OdooRPCService {
               'Accept': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
             },
-            body: json.encode({
-              "params": {
-                "db": "$_database",
-                "mobile_token": "$_mobileToken",
-                "date_from": "$date_from",
-                "date_to": "$date_to",
-                "state": "$state",
-                "leave_type_id": "$leave_type_id",
-                "latitude": "$latitude",
-                "longitude": "$longitude",
-                "address": "$address",
-              },
-            }),
+            body: json.encode({'params': params}),
           )
           .timeout(Duration(milliseconds: OdooConfig.readTimeout));
 
       log(name: 'OdooRPCService', ' response status: ${response.statusCode}');
-      log(name: 'OdooRPCService', 'response body: ${response.body}');
+      if (response.statusCode != 200) {
+        _logHttpError('callOdooApi/$apiUrl', url, response);
+      } else {
+        log(name: 'OdooRPCService', 'response body: ${response.body}');
+      }
 
       if (response.statusCode == 200) {
         try {
@@ -384,11 +416,20 @@ class OdooRPCService {
 
     try {
       // For Odoo.sh, we need to use the standard JSON-RPC endpoint with proper session context
-      final url = Uri.parse('${OdooConfig.baseUrl}jsonrpc');
+      final url = Uri.parse(OdooConfig.jsonRpcUrl);
       log(
         name: 'OdooRPCServiceData',
         'database: $_database,token: $_mobileToken, model: $model, fields: $fields,limit: $limit',
       );
+      final searchDomain = domain ??
+          (listInsideArgs != null ? <List<dynamic>>[listInsideArgs] : <List<dynamic>>[]);
+      final kwargs = <String, dynamic>{
+        'fields': fields ?? [],
+        'limit': limit ?? OdooConfig.defaultPageSize,
+      };
+      if (offset != null) kwargs['offset'] = offset;
+      if (order != null) kwargs['order'] = order;
+
       final response = await http
           .post(
             url,
@@ -405,18 +446,11 @@ class OdooRPCService {
                 'service': 'object',
                 'method': 'execute_kw',
                 'args': [
-                  _database,
-                  1,
-                  OdooConfig.token,
+                  ..._jsonRpcAuthArgs(),
                   model,
-                  "search_read",
-                  [
-                    listInsideArgs != null ? [listInsideArgs] : [],
-                  ],
-                  {
-                    "fields": fields ?? [],
-                    "limit": limit ?? OdooConfig.defaultPageSize,
-                  },
+                  'search_read',
+                  [searchDomain],
+                  kwargs,
                 ],
               },
             }),
@@ -424,7 +458,11 @@ class OdooRPCService {
           .timeout(Duration(milliseconds: OdooConfig.readTimeout));
 
       print('🔍 Odoo.sh searchRead response status: ${response.statusCode}');
-      print('🔍 Odoo.sh searchRead response body < $model >: ${response.body}');
+      if (response.statusCode != 200) {
+        _logHttpError('searchRead/$model', url, response);
+      } else {
+        print('🔍 Odoo.sh searchRead response body < $model >: ${response.body}');
+      }
 
       if (response.statusCode == 200) {
         try {
@@ -480,7 +518,7 @@ class OdooRPCService {
 
     try {
       // For Odoo.sh, we need to use the standard JSON-RPC endpoint with proper session context
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
+      final url = Uri.parse(OdooConfig.jsonRpcUrl);
 
       final response = await http
           .post(
@@ -498,9 +536,7 @@ class OdooRPCService {
                 'service': 'object',
                 'method': 'execute_kw',
                 'args': [
-                  _database,
-                  _userId,
-                  _password,
+                  ..._jsonRpcAuthArgs(),
                   model,
                   'create',
                   [values],
@@ -558,7 +594,7 @@ class OdooRPCService {
       // Try multiple approaches for Odoo.sh compatibility
 
       // Approach 1: Try with standard JSON-RPC and sudo context
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
+      final url = Uri.parse(OdooConfig.jsonRpcUrl);
 
       final requestBody = {
         'jsonrpc': '2.0',
@@ -567,9 +603,7 @@ class OdooRPCService {
           'service': 'object',
           'method': 'execute_kw',
           'args': [
-            _database,
-            _userId,
-            _password,
+            ..._jsonRpcAuthArgs(),
             model,
             'create',
             [values],
@@ -653,7 +687,7 @@ class OdooRPCService {
   ) async {
     try {
       print('🔍 Trying Odoo.sh specific context approach...');
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
+      final url = Uri.parse(OdooConfig.jsonRpcUrl);
 
       final response = await http
           .post(
@@ -671,9 +705,7 @@ class OdooRPCService {
                 'service': 'object',
                 'method': 'execute_kw',
                 'args': [
-                  _database,
-                  _userId,
-                  _password,
+                  ..._jsonRpcAuthArgs(),
                   model,
                   'create',
                   [values],
@@ -729,7 +761,7 @@ class OdooRPCService {
     Map<String, dynamic> values,
   ) async {
     try {
-      final url = Uri.parse('${OdooConfig.baseUrl}/jsonrpc');
+      final url = Uri.parse(OdooConfig.jsonRpcUrl);
 
       final response = await http
           .post(
@@ -747,9 +779,7 @@ class OdooRPCService {
                 'service': 'object',
                 'method': 'execute_kw',
                 'args': [
-                  _database,
-                  _userId,
-                  _password,
+                  ..._jsonRpcAuthArgs(),
                   model,
                   'create',
                   [values],

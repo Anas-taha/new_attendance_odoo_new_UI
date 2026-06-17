@@ -1,6 +1,8 @@
 class OdooConfig {
   // Odoo server configuration - fixed values
   static const String baseUrl = 'http://168.231.106.200:8193/mobile/';
+    // static const String baseUrl = 'https://al-shalawi.gulftriangle.net/mobile/';
+
   // static const String database = 'al-shalawi';
   static const String database = 'hr_mobile_test';
   static const String apiVersion = '1.0';
@@ -46,6 +48,21 @@ class OdooConfig {
       return url.substring(0, url.length - 1);
     }
     return url;
+  }
+
+  /// POST {{base_url}}/mobile/jsonrpc (no double slash).
+  static String get jsonRpcUrl => '${baseUrl}jsonrpc';
+
+  /// POST {{base_url}}/mobile/{path}
+  static String mobileEndpoint(String path) {
+    final normalized = path.startsWith('/') ? path.substring(1) : path;
+    return '$baseUrl$normalized';
+  }
+
+  /// POST {{base_url}}/{path} — e.g. /submit_face, /face_attendance
+  static String rootEndpoint(String path) {
+    final normalized = path.startsWith('/') ? path.substring(1) : path;
+    return '$serverRootUrl/$normalized';
   }
 
   /// Get the full URL for a specific endpoint

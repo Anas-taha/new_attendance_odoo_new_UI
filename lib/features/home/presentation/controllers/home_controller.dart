@@ -19,8 +19,10 @@ import 'package:hr_app_odoo/models/check_in_model.dart';
 import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/services/extension.dart';
+import 'package:hr_app_odoo/services/face_attendance_service.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
 import 'package:hr_app_odoo/services/location_service.dart';
+import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 
 sealed class HomeUiEvent {
   const HomeUiEvent();
@@ -52,14 +54,16 @@ class HomeController extends GetxController {
     HomeRepository? homeRepository,
     NotificationRepository? notificationRepository,
     LocationService? locationService,
+    FaceAttendanceService? faceAttendanceService,
   }) : _homeRepository = homeRepository ?? HomeRepositoryImpl(),
        _notificationRepository =
            notificationRepository ?? NotificationRepositoryImpl(),
-       _locationService = locationService ?? LocationService();
+       _locationService = locationService ?? LocationService(),
+       _faceService = faceAttendanceService ?? FaceAttendanceService.instance;
   TextEditingController addressController = TextEditingController();
   RxInt seconds = 0.obs;
   RxBool isCheckedIn = false.obs;
-  Rx<DateTime?> checkInDateTime = DateTime.now().obs;
+  final checkInDateTime = Rxn<DateTime>();
   Timer? timer;
   Rx<HrEmployee?> currentEmployee = Rx<HrEmployee?>(null);
   Rx<String> checkInTime = Rx<String>("--:--:--");
@@ -73,6 +77,7 @@ class HomeController extends GetxController {
   final HomeRepository _homeRepository;
   final NotificationRepository _notificationRepository;
   final LocationService _locationService;
+  final FaceAttendanceService _faceService;
   RxBool isResolvingLocation = false.obs;
   RxBool isLoading = false.obs;
   RxString address = ''.obs;
@@ -108,6 +113,24 @@ class HomeController extends GetxController {
     timeIsAm();
     resolveLocationAndAddress();
     loadRecentNotifications();
+    _initializeAttendance();
+  }
+
+  Future<void> _initializeAttendance() async {
+    await _ensureEmployeeId();
+    await loadEmployeeData();
+    await loadTodayAttendance();
+  }
+
+  Future<void> _ensureEmployeeId() async {
+    if (OdooRPCService.instance.currentEmployeeId != null) {
+      return;
+    }
+
+    final employee = await _homeRepository.getCurrentEmployee();
+    if (employee?.profile?.id != null) {
+      OdooRPCService.instance.setCurrentEmployeeId(employee!.profile!.id!);
+    }
   }
 
   Future<void> resolveLocationAndAddress({bool forceRefresh = false}) async {
@@ -246,8 +269,11 @@ class HomeController extends GetxController {
 
   void _startTimer() {
     isRunning.value = true;
-    _timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
-      elapsed.value += const Duration(milliseconds: 10);
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (checkInDateTime.value != null) {
+        elapsed.value = DateTime.now().difference(checkInDateTime.value!);
+      }
     });
   }
 
@@ -261,13 +287,31 @@ class HomeController extends GetxController {
     elapsed.value = Duration.zero;
   }
 
+  Duration _parseHms(String value) {
+    final parts = value.split(':');
+    if (parts.length != 3) {
+      return Duration.zero;
+    }
+
+    final hours = int.tryParse(parts[0]) ?? 0;
+    final minutes = int.tryParse(parts[1]) ?? 0;
+    final seconds = int.tryParse(parts[2]) ?? 0;
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  }
+
+  String _formatHms(Duration duration) {
+    final totalSeconds = duration.inSeconds;
+    final hours = (totalSeconds ~/ 3600).toString().padLeft(2, '0');
+    final minutes = ((totalSeconds % 3600) ~/ 60).toString().padLeft(2, '0');
+    final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
+    return '$hours:$minutes:$seconds';
+  }
+
   String get formattedTime {
-    final ms = elapsed.value.inMilliseconds;
-    final hours = (ms ~/ 3600000).toString().padLeft(2, '0');
-    final minutes = (ms ~/ 60000).toString().padLeft(2, '0');
-    final seconds = ((ms % 60000) ~/ 1000).toString().padLeft(2, '0');
-    final centis = ((ms % 1000) ~/ 10).toString().padLeft(2, '0');
-    return '$hours:$minutes:$seconds.$centis';
+    final workedToday = _parseHms(totalToday.value);
+    final sessionElapsed =
+        isCheckedIn.value ? elapsed.value : Duration.zero;
+    return _formatHms(workedToday + sessionElapsed);
   }
 
   //============================================================//
@@ -318,7 +362,9 @@ class HomeController extends GetxController {
       isCheckedIn.value = (summary['is_checked_in'] as bool?) ?? false;
       todayAttendance.value =
           (summary['today_records'] as List<HrAttendance>?) ?? <HrAttendance>[];
-      checkInDateTime.value = summary['current_check_in'] as DateTime?;
+      checkInDateTime.value = summary['current_check_in'] is DateTime
+          ? summary['current_check_in'] as DateTime
+          : null;
 
       if (checkInDateTime.value != null) {
         final nowCheckIn = checkInDateTime.value!;
@@ -330,12 +376,31 @@ class HomeController extends GetxController {
 
       if (isCheckedIn.value && checkInDateTime.value != null) {
         startTimer();
+        _syncSessionTimer();
       } else {
         stopTimer();
+        _syncSessionTimer();
       }
-    } catch (e) {
-      print('Error loading attendance data: $e');
+    } catch (e, stackTrace) {
+      log(
+        'Error loading attendance data: $e',
+        name: 'HomeController',
+        stackTrace: stackTrace,
+      );
     }
+  }
+
+  void _syncSessionTimer() {
+    if (isCheckedIn.value && checkInDateTime.value != null) {
+      elapsed.value = DateTime.now().difference(checkInDateTime.value!);
+      if (!isRunning.value) {
+        _startTimer();
+      }
+      return;
+    }
+
+    _stopTimer();
+    elapsed.value = Duration.zero;
   }
 
   String getGreeting(BuildContext context) {
@@ -444,23 +509,121 @@ class HomeController extends GetxController {
     }
   }
 
-  void checkIn() async {
-    if (address.value.isEmpty) {
-      await resolveLocationAndAddress(forceRefresh: true);
-    }
-    if (address.value.isEmpty) {
-      addressDialog();
+  Future<void> handleFaceAttendance() async {
+    if (isLoading.value) {
       return;
     }
-    isLoading.value = true;
-    await _homeRepository.getAttendanceCheck(
-      latitude: position.latitude,
-      longitude: position.longitude,
-      address: address.value,
-    );
 
-    timerSwitchButton();
-    isLoading.value = false;
+    isLoading.value = true;
+    try {
+      await _ensureEmployeeId();
+
+      final status = await _faceService.getCurrentAttendanceStatus();
+      final currentlyCheckedIn = status['is_checked_in'] == true;
+
+      final imageData = await _faceService.pickImageFromGallery();
+      if (imageData['success'] != true) {
+        _showAttendanceMessage(
+          imageData['error']?.toString() ??
+              Get.context!.appWords.couldNotSelectImage,
+          isError: true,
+        );
+        return;
+      }
+
+      final latitude = (imageData['latitude'] as num?)?.toDouble();
+      final longitude = (imageData['longitude'] as num?)?.toDouble();
+      final base64Image = imageData['image'] as String?;
+
+      if (base64Image == null || base64Image.isEmpty) {
+        _showAttendanceMessage(
+          Get.context!.appWords.faceImageNotSelected,
+          isError: true,
+        );
+        return;
+      }
+
+      final resolvedAddress = (imageData['address'] as String?)?.trim();
+      if (resolvedAddress != null && resolvedAddress.isNotEmpty) {
+        address.value = resolvedAddress;
+        addressController.text = resolvedAddress;
+        await LocalStorageService().saveAddress(resolvedAddress);
+      } else if (address.value.isEmpty) {
+        await resolveLocationAndAddress(forceRefresh: true);
+      }
+
+      if (latitude != null && longitude != null) {
+        position = Position(
+          latitude: latitude,
+          longitude: longitude,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          altitudeAccuracy: 0,
+          heading: 0,
+          headingAccuracy: 0,
+          speed: 0,
+          speedAccuracy: 0,
+        );
+      }
+
+      final result = await _faceService.submitFaceAttendanceWithFallback(
+        base64Image: base64Image,
+        latitude: latitude ?? position.latitude,
+        longitude: longitude ?? position.longitude,
+        address: address.value.isNotEmpty ? address.value : resolvedAddress,
+      );
+
+      log('Attendance API result: $result', name: 'HomeController');
+
+      if (result['success'] == true) {
+        await loadTodayAttendance();
+
+        final l10n = Get.context!.appWords;
+        final action = result['action']?.toString() ?? '';
+        final message =
+            result['message']?.toString() ??
+            (action == 'check_out' || currentlyCheckedIn
+                ? l10n.checkoutCompletedSuccess
+                : l10n.checkinCompletedSuccess);
+
+        _showAttendanceMessage(message, isError: false);
+        return;
+      }
+
+      _showAttendanceMessage(
+        result['error']?.toString() ??
+            Get.context!.appWords.attendanceActionFailed,
+        isError: true,
+      );
+    } catch (e, stackTrace) {
+      log(
+        'Attendance error: $e',
+        name: 'HomeController',
+        stackTrace: stackTrace,
+      );
+      _showAttendanceMessage(
+        Get.context!.appWords.errorGeneric(e.toString()),
+        isError: true,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void _showAttendanceMessage(String message, {required bool isError}) {
+    final context = Get.context;
+    if (context == null) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   Future<dynamic> addressDialog() async {
