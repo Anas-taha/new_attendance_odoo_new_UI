@@ -476,5 +476,12 @@
   "enableBiometricConfirm": "Enable",
   "enableBiometricReason": "Confirm to enable biometric login",
   "loginWithBiometric": "Sign in with biometrics",
-  "notNow": "Not now"
+  "notNow": "Not now",
+  "biometricRequiredTitle": "Biometric login required",
+  "biometricRequiredMessage": "Use your fingerprint or face ID to sign in.",
+  "biometricDisabledInSettings": "Biometric authentication is turned off on this device. Enable fingerprint or face unlock in Settings, then try again.",
+  "openSettings": "Open Settings",
+  "retryBiometric": "Try again",
+  "biometricSetupRequired": "Biometric login must be enabled to continue.",
+  "enableBiometricRequiredMessage": "For your security, biometric login is required on this device before you can continue."
 }

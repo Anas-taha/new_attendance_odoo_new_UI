@@ -1152,4 +1152,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notNow => 'ليس الآن';
+
+  @override
+  String get biometricRequiredTitle => 'تسجيل الدخول البيومتري مطلوب';
+
+  @override
+  String get biometricRequiredMessage =>
+      'استخدم بصمة الإصبع أو التعرف على الوجه لتسجيل الدخول.';
+
+  @override
+  String get biometricDisabledInSettings =>
+      'المصادقة البيومترية معطّلة على هذا الجهاز. فعّل بصمة الإصبع أو التعرف على الوجه من الإعدادات ثم حاول مرة أخرى.';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get retryBiometric => 'حاول مرة أخرى';
+
+  @override
+  String get biometricSetupRequired =>
+      'يجب تفعيل تسجيل الدخول البيومتري للمتابعة.';
+
+  @override
+  String get enableBiometricRequiredMessage =>
+      'لأمانك، يجب تفعيل تسجيل الدخول البيومتري على هذا الجهاز قبل المتابعة.';
 }

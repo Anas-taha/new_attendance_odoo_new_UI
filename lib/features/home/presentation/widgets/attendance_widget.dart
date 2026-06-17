@@ -43,20 +43,49 @@ class AttendanceWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Obx(
-                () => GestureDetector(
-                  onTap: () {
-                    homeController.addressDialog();
-                  },
-                  child: CustomContainer(
-                    verticalPadding: 8,
-                    child: CustomText(
-                      text: homeController.address.value.isNotEmpty
-                          ? homeController.address.value
-                          : context.appWords.enterYourAddress,
-                      fontSize: 13.w,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.appPrimaryColor,
+              Expanded(
+                child: Obx(
+                  () => GestureDetector(
+                    onTap: () => homeController.resolveLocationAndAddress(
+                      forceRefresh: true,
+                    ),
+                    onLongPress: homeController.addressDialog,
+                    child: CustomContainer(
+                      verticalPadding: 8,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (homeController.isResolvingLocation.value)
+                            SizedBox(
+                              width: 14.w,
+                              height: 14.w,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.appPrimaryColor,
+                              ),
+                            )
+                          else
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 16.w,
+                              color: AppColors.appPrimaryColor,
+                            ),
+                          4.horizontalSpace,
+                          Flexible(
+                            child: CustomText(
+                              text: homeController.isResolvingLocation.value
+                                  ? context.appWords.waitingForLocation
+                                  : homeController.address.value.isNotEmpty
+                                  ? homeController.address.value
+                                  : context.appWords.enterYourAddress,
+                              fontSize: 13.w,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.appPrimaryColor,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

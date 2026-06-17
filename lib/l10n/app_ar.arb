@@ -368,5 +368,12 @@
   "enableBiometricConfirm": "تفعيل",
   "enableBiometricReason": "أكد لتفعيل تسجيل الدخول البيومتري",
   "loginWithBiometric": "تسجيل الدخول بالبصمة",
-  "notNow": "ليس الآن"
+  "notNow": "ليس الآن",
+  "biometricRequiredTitle": "تسجيل الدخول البيومتري مطلوب",
+  "biometricRequiredMessage": "استخدم بصمة الإصبع أو التعرف على الوجه لتسجيل الدخول.",
+  "biometricDisabledInSettings": "المصادقة البيومترية معطّلة على هذا الجهاز. فعّل بصمة الإصبع أو التعرف على الوجه من الإعدادات ثم حاول مرة أخرى.",
+  "openSettings": "فتح الإعدادات",
+  "retryBiometric": "حاول مرة أخرى",
+  "biometricSetupRequired": "يجب تفعيل تسجيل الدخول البيومتري للمتابعة.",
+  "enableBiometricRequiredMessage": "لأمانك، يجب تفعيل تسجيل الدخول البيومتري على هذا الجهاز قبل المتابعة."
 }

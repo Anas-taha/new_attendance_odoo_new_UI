@@ -12,7 +12,7 @@ import 'package:hr_app_odoo/features/profile/domain/repositories/profile_reposit
 import 'package:hr_app_odoo/features/profile/presentation/widgets/change_lang_widget.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
-import 'package:hr_app_odoo/services/local_storage_service.dart';
+import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 
 class ProfileController extends GetxController {
@@ -94,8 +94,8 @@ class ProfileController extends GetxController {
           CustomButton(
             text: l10n.logOut,
             onTap: () async {
-              final storage = LocalStorageService();
-              await storage.clearSavedCredentials();
+              OdooRPCService.instance.logout();
+              Get.back();
               Get.offAllNamed(AppRoutes.login);
             },
           ),

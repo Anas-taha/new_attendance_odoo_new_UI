@@ -2245,6 +2245,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not now'**
   String get notNow;
+
+  /// No description provided for @biometricRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric login required'**
+  String get biometricRequiredTitle;
+
+  /// No description provided for @biometricRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your fingerprint or face ID to sign in.'**
+  String get biometricRequiredMessage;
+
+  /// No description provided for @biometricDisabledInSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication is turned off on this device. Enable fingerprint or face unlock in Settings, then try again.'**
+  String get biometricDisabledInSettings;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// No description provided for @retryBiometric.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retryBiometric;
+
+  /// No description provided for @biometricSetupRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric login must be enabled to continue.'**
+  String get biometricSetupRequired;
+
+  /// No description provided for @enableBiometricRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'For your security, biometric login is required on this device before you can continue.'**
+  String get enableBiometricRequiredMessage;
 }
 
 class _AppLocalizationsDelegate

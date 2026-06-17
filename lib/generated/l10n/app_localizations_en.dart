@@ -1164,4 +1164,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notNow => 'Not now';
+
+  @override
+  String get biometricRequiredTitle => 'Biometric login required';
+
+  @override
+  String get biometricRequiredMessage =>
+      'Use your fingerprint or face ID to sign in.';
+
+  @override
+  String get biometricDisabledInSettings =>
+      'Biometric authentication is turned off on this device. Enable fingerprint or face unlock in Settings, then try again.';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get retryBiometric => 'Try again';
+
+  @override
+  String get biometricSetupRequired =>
+      'Biometric login must be enabled to continue.';
+
+  @override
+  String get enableBiometricRequiredMessage =>
+      'For your security, biometric login is required on this device before you can continue.';
 }

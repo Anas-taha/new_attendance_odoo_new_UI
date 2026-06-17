@@ -49,7 +49,7 @@ class AppPages {
   static final pages = [
     GetPage(
       name: AppRoutes.login,
-      page: () => LoginScreen(),
+      page: () => const LoginScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
       }),

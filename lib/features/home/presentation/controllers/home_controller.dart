@@ -20,6 +20,7 @@ import 'package:hr_app_odoo/models/hr_attendance.dart';
 import 'package:hr_app_odoo/models/hr_employee.dart';
 import 'package:hr_app_odoo/services/extension.dart';
 import 'package:hr_app_odoo/services/local_storage_service.dart';
+import 'package:hr_app_odoo/services/location_service.dart';
 
 sealed class HomeUiEvent {
   const HomeUiEvent();
@@ -50,9 +51,11 @@ class HomeController extends GetxController {
   HomeController({
     HomeRepository? homeRepository,
     NotificationRepository? notificationRepository,
+    LocationService? locationService,
   }) : _homeRepository = homeRepository ?? HomeRepositoryImpl(),
        _notificationRepository =
-           notificationRepository ?? NotificationRepositoryImpl();
+           notificationRepository ?? NotificationRepositoryImpl(),
+       _locationService = locationService ?? LocationService();
   TextEditingController addressController = TextEditingController();
   RxInt seconds = 0.obs;
   RxBool isCheckedIn = false.obs;
@@ -69,6 +72,8 @@ class HomeController extends GetxController {
 
   final HomeRepository _homeRepository;
   final NotificationRepository _notificationRepository;
+  final LocationService _locationService;
+  RxBool isResolvingLocation = false.obs;
   RxBool isLoading = false.obs;
   RxString address = ''.obs;
   Rx<List<HrAttendance>> todayAttendance = Rx<List<HrAttendance>>([]);
@@ -101,8 +106,63 @@ class HomeController extends GetxController {
     getUserName();
     getCurrentDate();
     timeIsAm();
-    setPosition();
+    resolveLocationAndAddress();
     loadRecentNotifications();
+  }
+
+  Future<void> resolveLocationAndAddress({bool forceRefresh = false}) async {
+    if (isResolvingLocation.value) {
+      return;
+    }
+
+    isResolvingLocation.value = true;
+    try {
+      final currentPosition = await _locationService.getCurrentPosition();
+      if (currentPosition == null) {
+        if (address.value.isEmpty) {
+          _showLocationError();
+        }
+        return;
+      }
+
+      position = currentPosition;
+
+      final locationLabel = await _locationService.getCityDistrictLabel(
+        latitude: currentPosition.latitude,
+        longitude: currentPosition.longitude,
+      );
+
+      if (locationLabel == null || locationLabel.isEmpty) {
+        if (address.value.isEmpty) {
+          _showLocationError();
+        }
+        return;
+      }
+
+      if (forceRefresh || address.value.isEmpty || address.value != locationLabel) {
+        address.value = locationLabel;
+        addressController.text = locationLabel;
+        await LocalStorageService().saveAddress(locationLabel);
+      }
+    } catch (e) {
+      log('resolveLocationAndAddress failed: $e');
+      if (address.value.isEmpty) {
+        _showLocationError();
+      }
+    } finally {
+      isResolvingLocation.value = false;
+    }
+  }
+
+  void _showLocationError() {
+    final l10n = Get.context?.appWords;
+    if (l10n == null) {
+      return;
+    }
+    Get.snackbar(
+      l10n.locationTracking,
+      l10n.locationPermissionDenied,
+    );
   }
 
   Future<void> loadRecentNotifications() async {
@@ -159,7 +219,6 @@ class HomeController extends GetxController {
   void getAddress() async {
     address.value = await LocalStorageService().getSavedAddress() ?? '';
     addressController.text = address.value;
-    log('asxasfcqwevfc: $address');
   }
 
   void timeIsAm() {
@@ -386,12 +445,15 @@ class HomeController extends GetxController {
   }
 
   void checkIn() async {
-    if (address.value.isEmpty || address.value == '') {
+    if (address.value.isEmpty) {
+      await resolveLocationAndAddress(forceRefresh: true);
+    }
+    if (address.value.isEmpty) {
       addressDialog();
       return;
     }
     isLoading.value = true;
-    var result = await _homeRepository.getAttendanceCheck(
+    await _homeRepository.getAttendanceCheck(
       latitude: position.latitude,
       longitude: position.longitude,
       address: address.value,
@@ -399,42 +461,6 @@ class HomeController extends GetxController {
 
     timerSwitchButton();
     isLoading.value = false;
-  }
-
-  void setPosition() async {
-    isLoading.value = true;
-    position = await getCurrentLocation();
-    log(name: 'latitude', 'position: ${position.latitude}');
-    log(name: 'longitude', 'position: ${position.longitude}');
-    isLoading.value = false;
-  }
-
-  Future<Position> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permission denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permission permanently denied');
-    }
-
-    return await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
   }
 
   Future<dynamic> addressDialog() async {
