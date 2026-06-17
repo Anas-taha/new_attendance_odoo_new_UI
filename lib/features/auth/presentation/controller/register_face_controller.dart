@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
 import 'package:hr_app_odoo/generated/l10n/app_localizations.dart';
 import 'package:hr_app_odoo/services/face_attendance_service.dart';
+import 'package:hr_app_odoo/services/odoo_rpc_service.dart';
 
 class RegisterFaceController extends GetxController {
   RegisterFaceController({FaceAttendanceService? faceService})
@@ -49,7 +50,7 @@ class RegisterFaceController extends GetxController {
   }
 
   Future<void> saveAndContinue() async {
-    if (!hasCapturedImage.value) {
+    if (!hasCapturedImage.value || faceImageBytes.value == null) {
       _showMessage(
         AppLocalizations.of(Get.context!)!.registerFaceImageRequired,
         isError: true,
@@ -57,31 +58,23 @@ class RegisterFaceController extends GetxController {
       return;
     }
 
+    final userId = OdooRPCService.instance.currentUserId;
+    if (userId == null) {
+      _showMessage(
+        AppLocalizations.of(Get.context!)!.authFailed,
+        isError: true,
+      );
+      return;
+    }
+
     isLoading.value = true;
     try {
-      final result = await _faceService.submitFaceAttendanceWithFallback(
-        base64Image: _base64Image!,
-        latitude: _latitude ?? 0.0,
-        longitude: _longitude ?? 0.0,
-        address: _address,
+      final result = await _faceService.uploadUserImage(
+        userId: userId,
+        imageBytes: faceImageBytes.value!,
       );
 
       if (result['success'] == true) {
-        final action = result['action']?.toString() ?? '';
-        final message = result['message']?.toString();
-        if (message != null && message.isNotEmpty) {
-          _showMessage(message, isError: false);
-        } else if (action == 'check_in') {
-          _showMessage(
-            AppLocalizations.of(Get.context!)!.checkinCompletedSuccess,
-            isError: false,
-          );
-        } else if (action == 'check_out') {
-          _showMessage(
-            AppLocalizations.of(Get.context!)!.checkoutCompletedSuccess,
-            isError: false,
-          );
-        }
         Get.offAllNamed(AppRoutes.home);
         return;
       }

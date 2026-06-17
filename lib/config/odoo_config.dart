@@ -65,6 +65,12 @@ class OdooConfig {
     return '$serverRootUrl/$normalized';
   }
 
+  /// GET/POST {{server_root}}/api/v1/{path}
+  static String apiV1Endpoint(String path) {
+    final normalized = path.startsWith('/') ? path.substring(1) : path;
+    return '$serverRootUrl/api/v1/$normalized';
+  }
+
   /// Get the full URL for a specific endpoint
   static String getEndpointUrl(String endpoint) {
     return '$baseUrl$endpoint';

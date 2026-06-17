@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
@@ -475,6 +476,70 @@ class FaceAttendanceService {
         message.contains("Invalid field 'in_longitude'") ||
         message.contains("Invalid field 'out_latitude'") ||
         message.contains("Invalid field 'out_longitude'");
+  }
+
+  /// Upload user face image via POST /api/v1/user/upload_image (multipart).
+  Future<Map<String, dynamic>> uploadUserImage({
+    required int userId,
+    required Uint8List imageBytes,
+    String filename = 'face.jpg',
+  }) async {
+    try {
+      final url = Uri.parse(OdooConfig.apiV1Endpoint('user/upload_image'));
+      log('POST $url (upload_image)', name: 'FaceAttendanceService');
+
+      final request = http.MultipartRequest('POST', url)
+        ..fields['user_id'] = userId.toString()
+        ..files.add(
+          http.MultipartFile.fromBytes(
+            'image_file',
+            imageBytes,
+            filename: filename,
+          ),
+        );
+
+      final streamedResponse = await request.send().timeout(
+        Duration(milliseconds: OdooConfig.writeTimeout),
+      );
+      final response = await http.Response.fromStream(streamedResponse);
+
+      log(
+        '📨 upload_image status: ${response.statusCode}',
+        name: 'FaceAttendanceService',
+      );
+
+      if (response.statusCode != 200) {
+        _logHttpError('upload_image', url, response);
+        return {
+          'success': false,
+          'error': _httpErrorMessage('upload_image', response),
+        };
+      }
+
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse is! Map<String, dynamic>) {
+        return {'success': false, 'error': 'Invalid upload response'};
+      }
+
+      if (jsonResponse['success'] == true) {
+        return {
+          'success': true,
+          'has_image': jsonResponse['has_image'] ?? true,
+        };
+      }
+
+      return {
+        'success': false,
+        'error': jsonResponse['error']?.toString() ?? 'Upload failed',
+      };
+    } catch (e, stackTrace) {
+      log(
+        '❌ uploadUserImage error: $e',
+        name: 'FaceAttendanceService',
+        stackTrace: stackTrace,
+      );
+      return {'success': false, 'error': 'Upload failed: $e'};
+    }
   }
 
   /// Submit face attendance via Odoo's /submit_face controller endpoint
