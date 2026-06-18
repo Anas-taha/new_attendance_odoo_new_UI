@@ -119,7 +119,11 @@ class AttendanceWidget extends StatelessWidget {
               text: homeController.isCheckedIn.value
                   ? context.appWords.checkOut
                   : context.appWords.checkIn,
-              onTap: homeController.handleFaceAttendance,
+              onTap: () {
+                if (!homeController.isLoading.value) {
+                  homeController.handleAttendance();
+                }
+              },
             ),
           ),
         ],

@@ -37,6 +37,9 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<HrEmployee?> getCurrentEmployee() => _hrService.getCurrentEmployee();
 
   @override
+  Future<HrEmployee?> getProfile() => _simpleHrService.getProfile();
+
+  @override
   Future<Map<String, dynamic>> getTodayAttendanceSummary() =>
       _hrService.getTodayAttendanceSummary();
 

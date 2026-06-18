@@ -23,6 +23,8 @@ class HolidaysController extends GetxController {
   HolidaysModel holidays = HolidaysModel();
   List<Leaves> leaves = [];
   List<Map<String, dynamic>> leaveTypes = [];
+  final Map<String, int> _leaveTypeLabelToId = {};
+  List<String> _leaveTypeLabels = [];
   Rx<HolidayStateEnum> selectedHolidayState = HolidayStateEnum.all.obs;
   TextEditingController filterStartDateController = TextEditingController();
   TextEditingController requestStartDateController = TextEditingController();
@@ -31,10 +33,7 @@ class HolidaysController extends GetxController {
   int? selectedFilterLeaveTypeId;
   int? selectedRequestLeaveTypeId;
 
-  List<String> get leaveTypeOptions => leaveTypes
-      .map((type) => type['name']?.toString() ?? '')
-      .where((name) => name.isNotEmpty)
-      .toList();
+  List<String> get leaveTypeOptions => _leaveTypeLabels;
 
   @override
   void onReady() {
@@ -71,7 +70,33 @@ class HolidaysController extends GetxController {
   // }
 
   Future<void> loadLeaveTypes() async {
-    leaveTypes = await _simpleHrService.getHolidayStatusTypes();
+    final types = await _simpleHrService.getHolidayStatusTypes();
+    leaveTypes = [];
+    _leaveTypeLabelToId.clear();
+    _leaveTypeLabels = [];
+
+    final seenIds = <int>{};
+    final nameCounts = <String, int>{};
+
+    for (final type in types) {
+      final id = type['id'] as int?;
+      final name = type['name']?.toString().trim() ?? '';
+      if (id == null || name.isEmpty || seenIds.contains(id)) {
+        continue;
+      }
+      seenIds.add(id);
+      nameCounts[name] = (nameCounts[name] ?? 0) + 1;
+      leaveTypes.add(type);
+    }
+
+    for (final type in leaveTypes) {
+      final id = type['id'] as int;
+      final name = type['name']!.toString().trim();
+      final label = (nameCounts[name] ?? 0) > 1 ? '$name ($id)' : name;
+      _leaveTypeLabels.add(label);
+      _leaveTypeLabelToId[label] = id;
+    }
+
     update();
   }
 
@@ -103,22 +128,12 @@ class HolidaysController extends GetxController {
     update();
   }
 
-  void selectFilterLeaveType(String type) {
-    for (final leaveType in leaveTypes) {
-      if (leaveType['name']?.toString() == type) {
-        selectedFilterLeaveTypeId = leaveType['id'] as int?;
-        break;
-      }
-    }
+  void selectFilterLeaveType(String label) {
+    selectedFilterLeaveTypeId = _leaveTypeLabelToId[label];
   }
 
-  void selectRequestLeaveType(String type) {
-    for (final leaveType in leaveTypes) {
-      if (leaveType['name']?.toString() == type) {
-        selectedRequestLeaveTypeId = leaveType['id'] as int?;
-        break;
-      }
-    }
+  void selectRequestLeaveType(String label) {
+    selectedRequestLeaveTypeId = _leaveTypeLabelToId[label];
   }
 
   Future<void> submitLeaveRequest() async {

@@ -108,17 +108,24 @@ class SimpleHrService {
         longitude: longitude,
         address: address,
       );
-      if (result['status'] == 'success') {
+      log(name: 'SimpleHrService', 'attendance/check response: $result');
+      if (result is Map<String, dynamic> && result['status'] == 'success') {
         return CheckInModel.fromJson(result);
       }
-      return CheckInModel();
+      if (result is Map && result['message'] != null) {
+        log(
+          name: 'SimpleHrService',
+          'attendance/check failed: ${result['message']}',
+        );
+      }
+      return CheckInModel(status: result is Map ? result['status']?.toString() : 'error');
     } catch (e, stackTrace) {
       log(
         'Error attendance/check: $e',
         name: 'SimpleHrService',
         stackTrace: stackTrace,
       );
-      return CheckInModel();
+      return CheckInModel(status: 'error');
     }
   }
 

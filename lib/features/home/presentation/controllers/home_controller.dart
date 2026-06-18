@@ -117,7 +117,6 @@ class HomeController extends GetxController {
   }
 
   Future<void> _initializeAttendance() async {
-    await _ensureEmployeeId();
     await loadEmployeeData();
     await loadTodayAttendance();
   }
@@ -127,7 +126,13 @@ class HomeController extends GetxController {
       return;
     }
 
-    final employee = await _homeRepository.getCurrentEmployee();
+    final profileId = currentEmployee.value?.profile?.id;
+    if (profileId != null) {
+      OdooRPCService.instance.setCurrentEmployeeId(profileId);
+      return;
+    }
+
+    final employee = await _homeRepository.getProfile();
     if (employee?.profile?.id != null) {
       OdooRPCService.instance.setCurrentEmployeeId(employee!.profile!.id!);
     }
@@ -201,7 +206,10 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
+    _stopTimer();
     _timer?.cancel();
+    timer?.cancel();
+    addressController.dispose();
     super.onClose();
   }
 
@@ -282,11 +290,6 @@ class HomeController extends GetxController {
     _timer?.cancel();
   }
 
-  void reset() {
-    _stopTimer();
-    elapsed.value = Duration.zero;
-  }
-
   Duration _parseHms(String value) {
     final parts = value.split(':');
     if (parts.length != 3) {
@@ -314,6 +317,40 @@ class HomeController extends GetxController {
     return _formatHms(workedToday + sessionElapsed);
   }
 
+  /// Parses Odoo datetimes like `2026-06-18 05:50:09` or ISO-8601.
+  DateTime? _parseOdooDateTime(dynamic raw) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw is DateTime) {
+      return raw.toLocal();
+    }
+    if (raw is! String) {
+      return null;
+    }
+
+    final value = raw.trim();
+    if (value.isEmpty) {
+      return null;
+    }
+
+    final normalized = value.contains('T') ? value : value.replaceFirst(' ', 'T');
+    final parsed =
+        DateTime.tryParse(normalized) ?? DateTime.tryParse('${normalized}Z');
+    return parsed?.toLocal();
+  }
+
+  void _syncSessionTimer() {
+    if (isCheckedIn.value && checkInDateTime.value != null) {
+      elapsed.value = DateTime.now().difference(checkInDateTime.value!);
+      _startTimer();
+      return;
+    }
+
+    _stopTimer();
+    elapsed.value = Duration.zero;
+  }
+
   //============================================================//
   void startTimer() {
     timer?.cancel();
@@ -332,20 +369,23 @@ class HomeController extends GetxController {
     seconds.value = 0;
   }
 
-  // @override
-  // void onClose() {
-  //   timer?.cancel();
-  //   super.onClose();
-  // }
-
   Future<void> loadEmployeeData() async {
     try {
-      final employee = await _homeRepository.getCurrentEmployee();
-      if (employee != null) {
+      final employee = await _homeRepository.getProfile();
+      if (employee?.profile != null) {
         currentEmployee.value = employee;
+        _applyProfileAttendance(employee!.profile);
+        if (employee.profile!.id != null) {
+          OdooRPCService.instance.setCurrentEmployeeId(employee.profile!.id!);
+        }
+        _syncSessionTimer();
       }
-    } catch (e) {
-      print('Error loading employee data: $e');
+    } catch (e, stackTrace) {
+      log(
+        'Error loading profile: $e',
+        name: 'HomeController',
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -359,48 +399,76 @@ class HomeController extends GetxController {
       final summary = await _homeRepository.getTodayAttendanceSummary();
       totalToday.value =
           (summary['total_worked_hours'] as String?) ?? '00:00:00';
-      isCheckedIn.value = (summary['is_checked_in'] as bool?) ?? false;
       todayAttendance.value =
           (summary['today_records'] as List<HrAttendance>?) ?? <HrAttendance>[];
-      checkInDateTime.value = summary['current_check_in'] is DateTime
-          ? summary['current_check_in'] as DateTime
-          : null;
 
-      if (checkInDateTime.value != null) {
-        final nowCheckIn = checkInDateTime.value!;
-        checkInTime.value =
-            '${nowCheckIn.hour.toString().padLeft(2, '0')}:${nowCheckIn.minute.toString().padLeft(2, '0')}:${nowCheckIn.second.toString().padLeft(2, '0')}';
-      } else {
-        checkInTime.value = '--:--:--';
+      final summaryCheckedIn = (summary['is_checked_in'] as bool?) ?? false;
+      final summaryCheckIn = _parseOdooDateTime(summary['current_check_in']);
+
+      if (summaryCheckedIn && summaryCheckIn != null) {
+        isCheckedIn.value = true;
+        checkInDateTime.value = summaryCheckIn;
+      } else if (!summaryCheckedIn && !_isProfileCheckedIn()) {
+        isCheckedIn.value = false;
+        checkInDateTime.value = null;
+      } else if (_isProfileCheckedIn()) {
+        _applyProfileAttendance(currentEmployee.value?.profile);
       }
 
-      if (isCheckedIn.value && checkInDateTime.value != null) {
-        startTimer();
-        _syncSessionTimer();
-      } else {
-        stopTimer();
-        _syncSessionTimer();
-      }
+      _updateCheckInTimeLabel();
+      _syncSessionTimer();
     } catch (e, stackTrace) {
       log(
         'Error loading attendance data: $e',
         name: 'HomeController',
         stackTrace: stackTrace,
       );
+      if (_isProfileCheckedIn()) {
+        _applyProfileAttendance(currentEmployee.value?.profile);
+        _syncSessionTimer();
+      }
     }
   }
 
-  void _syncSessionTimer() {
-    if (isCheckedIn.value && checkInDateTime.value != null) {
-      elapsed.value = DateTime.now().difference(checkInDateTime.value!);
-      if (!isRunning.value) {
-        _startTimer();
-      }
+  bool _isProfileCheckedIn() {
+    final state =
+        currentEmployee.value?.profile?.attendanceState?.toLowerCase();
+    return state == 'checked_in';
+  }
+
+  void _applyProfileAttendance(Profile? profile) {
+    if (profile == null) {
       return;
     }
 
-    _stopTimer();
-    elapsed.value = Duration.zero;
+    final state = profile.attendanceState?.toLowerCase();
+    final last = profile.lastAttendance;
+    final checkedIn =
+        state == 'checked_in' ||
+        (last?.checkOut == null && (last?.checkIn?.isNotEmpty ?? false));
+
+    if (checkedIn && last?.checkIn != null) {
+      isCheckedIn.value = true;
+      checkInDateTime.value = _parseOdooDateTime(last!.checkIn);
+      _updateCheckInTimeLabel();
+      return;
+    }
+
+    if (state == 'checked_out' || last?.checkOut != null) {
+      isCheckedIn.value = false;
+      checkInDateTime.value = null;
+      checkInTime.value = '--:--:--';
+    }
+  }
+
+  void _updateCheckInTimeLabel() {
+    if (checkInDateTime.value != null) {
+      final t = checkInDateTime.value!;
+      checkInTime.value =
+          '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}:${t.second.toString().padLeft(2, '0')}';
+      return;
+    }
+    checkInTime.value = '--:--:--';
   }
 
   String getGreeting(BuildContext context) {
@@ -509,7 +577,7 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> handleFaceAttendance() async {
+  Future<void> handleAttendance() async {
     if (isLoading.value) {
       return;
     }
@@ -517,6 +585,17 @@ class HomeController extends GetxController {
     isLoading.value = true;
     try {
       await _ensureEmployeeId();
+
+      if (address.value.isEmpty) {
+        await resolveLocationAndAddress(forceRefresh: true);
+      }
+      if (address.value.isEmpty) {
+        _showAttendanceMessage(
+          Get.context!.appWords.enterYourAddress,
+          isError: true,
+        );
+        return;
+      }
 
       final status = await _faceService.getCurrentAttendanceStatus();
       final currentlyCheckedIn = status['is_checked_in'] == true;
@@ -548,9 +627,11 @@ class HomeController extends GetxController {
         address.value = resolvedAddress;
         addressController.text = resolvedAddress;
         await LocalStorageService().saveAddress(resolvedAddress);
-      } else if (address.value.isEmpty) {
-        await resolveLocationAndAddress(forceRefresh: true);
       }
+
+      final lat = latitude ?? position.latitude;
+      final lon = longitude ?? position.longitude;
+      final addr = address.value.isNotEmpty ? address.value : resolvedAddress ?? '';
 
       if (latitude != null && longitude != null) {
         position = Position(
@@ -567,16 +648,32 @@ class HomeController extends GetxController {
         );
       }
 
-      final result = await _faceService.submitFaceAttendanceWithFallback(
+      Map<String, dynamic> result =
+          await _faceService.submitFaceAttendanceWithFallback(
         base64Image: base64Image,
-        latitude: latitude ?? position.latitude,
-        longitude: longitude ?? position.longitude,
-        address: address.value.isNotEmpty ? address.value : resolvedAddress,
+        latitude: lat,
+        longitude: lon,
+        address: addr,
       );
+
+      if (result['success'] != true &&
+          result['use_attendance_check_fallback'] == true) {
+        log(
+          '↪️ Falling back to POST /mobile/attendance/check',
+          name: 'HomeController',
+        );
+        result = await _submitAttendanceCheck(
+          latitude: lat,
+          longitude: lon,
+          address: addr,
+          currentlyCheckedIn: currentlyCheckedIn,
+        );
+      }
 
       log('Attendance API result: $result', name: 'HomeController');
 
       if (result['success'] == true) {
+        await loadEmployeeData();
         await loadTodayAttendance();
 
         final l10n = Get.context!.appWords;
@@ -609,6 +706,64 @@ class HomeController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Postman: POST /mobile/attendance/check
+  Future<Map<String, dynamic>> _submitAttendanceCheck({
+    required double latitude,
+    required double longitude,
+    required String address,
+    required bool currentlyCheckedIn,
+  }) async {
+    final checkResult = await _homeRepository.getAttendanceCheck(
+      latitude: latitude,
+      longitude: longitude,
+      address: address,
+    );
+
+    if (checkResult.status == 'success') {
+      _applyCheckInModel(checkResult);
+      return {
+        'success': true,
+        'action': checkResult.action ?? (currentlyCheckedIn ? 'check_out' : 'check_in'),
+        'message': null,
+      };
+    }
+
+    return {
+      'success': false,
+      'error': checkResult.status ?? 'Attendance check failed',
+    };
+  }
+
+  void _applyCheckInModel(CheckInModel model) {
+    final action = model.action?.toLowerCase();
+    final state = model.attendanceState?.toLowerCase();
+    final checkedOut = action == 'check_out' || state == 'checked_out';
+
+    if (checkedOut) {
+      isCheckedIn.value = false;
+      checkInDateTime.value = null;
+      checkInTime.value = '--:--:--';
+      _syncSessionTimer();
+      return;
+    }
+
+    isCheckedIn.value =
+        action == 'check_in' ||
+        state == 'checked_in' ||
+        (model.checkOut == null && model.checkIn != null);
+
+    final parsedCheckIn = _parseOdooDateTime(model.checkIn);
+    if (parsedCheckIn != null) {
+      checkInDateTime.value = parsedCheckIn;
+      _updateCheckInTimeLabel();
+    } else if (!isCheckedIn.value) {
+      checkInDateTime.value = null;
+      checkInTime.value = '--:--:--';
+    }
+
+    _syncSessionTimer();
   }
 
   void _showAttendanceMessage(String message, {required bool isError}) {

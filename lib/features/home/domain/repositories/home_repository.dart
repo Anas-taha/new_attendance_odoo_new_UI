@@ -9,6 +9,8 @@ abstract class HomeRepository {
   });
   Future<HrEmployee?> getCurrentEmployee();
 
+  Future<HrEmployee?> getProfile();
+
   Future<Map<String, dynamic>> getTodayAttendanceSummary();
 
   Future<bool> checkIn();

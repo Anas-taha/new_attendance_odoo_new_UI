@@ -389,15 +389,15 @@ class OdooRPCService {
             'error': 'Failed to parse JSON response: $e',
           };
         }
-      } else {
-        return {
-          'success': false,
-          'error': 'HTTP Error: ${response.statusCode} - ${response.body}',
-        };
       }
+
+      return {
+        'status': 'error',
+        'message': 'HTTP Error: ${response.statusCode} - ${response.body}',
+      };
     } catch (e) {
-      print('🔍 Odoo.sh searchRead error: $e');
-      return {'success': false, 'error': e.toString()};
+      print('🔍 Odoo.sh callOdooApi error: $e');
+      return {'status': 'error', 'message': e.toString()};
     }
   }
 

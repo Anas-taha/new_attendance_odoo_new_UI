@@ -566,22 +566,14 @@ class FaceAttendanceService {
       final url = Uri.parse(OdooConfig.rootEndpoint('submit_face'));
       log('POST $url (submit_face)', name: 'FaceAttendanceService');
 
-      final response = await http
-          .post(
-            url,
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'User-Agent': 'HR App Flutter Face Attendance',
-            },
-            body: {
-              'mobile_token': mobileToken,
-              'face_image': 'data:image/jpeg;base64,$base64Image',
-              'latitude': latitude?.toString() ?? '',
-              'longitude': longitude?.toString() ?? '',
-              'address': address ?? '',
-            },
-          )
-          .timeout(Duration(milliseconds: OdooConfig.writeTimeout));
+      final request = http.MultipartRequest('POST', url)
+        ..fields['mobile_token'] = mobileToken
+        ..fields['face_image'] = 'data:image/jpeg;base64,$base64Image'
+        ..fields['latitude'] = latitude?.toString() ?? ''
+        ..fields['longitude'] = longitude?.toString() ?? ''
+        ..fields['address'] = address ?? '';
+
+      final response = await _sendMultipartWithRedirect(request);
 
       log(
         '📨 submit_face status: ${response.statusCode}',
@@ -593,6 +585,7 @@ class FaceAttendanceService {
         return {
           'success': false,
           'error': _httpErrorMessage('submit_face', response),
+          'use_attendance_check_fallback': true,
         };
       }
 
@@ -690,18 +683,53 @@ class FaceAttendanceService {
         return controllerResult;
       }
 
-      // For other errors (network, endpoint not available), try direct RPC
-      print('⚠️ Controller failed, falling back to direct RPC...');
-      return await submitFaceAttendance(
-        base64Image: base64Image,
-        latitude: latitude,
-        longitude: longitude,
-        address: address,
-      );
+      // For other errors (301, network, etc.) signal caller to use /mobile/attendance/check
+      return {
+        'success': false,
+        'error': error,
+        'use_attendance_check_fallback': true,
+      };
     } catch (e) {
       print('❌ Error in submitFaceAttendanceWithFallback: $e');
-      return {'success': false, 'error': 'Attendance submission failed: $e'};
+      return {
+        'success': false,
+        'error': 'Attendance submission failed: $e',
+        'use_attendance_check_fallback': true,
+      };
     }
+  }
+
+  Future<http.Response> _sendMultipartWithRedirect(
+    http.MultipartRequest request,
+  ) async {
+    var streamedResponse = await request.send().timeout(
+      Duration(milliseconds: OdooConfig.writeTimeout),
+    );
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 301 || response.statusCode == 302) {
+      final location =
+          response.headers['location'] ?? response.headers['Location'];
+      if (location != null && location.isNotEmpty) {
+        final redirectUri = location.startsWith('http')
+            ? Uri.parse(location)
+            : Uri.parse(
+                '${request.url.scheme}://${request.url.authority}$location',
+              );
+        log(
+          '↪️ submit_face redirect → $redirectUri',
+          name: 'FaceAttendanceService',
+        );
+        final redirectRequest = http.MultipartRequest('POST', redirectUri)
+          ..fields.addAll(request.fields);
+        streamedResponse = await redirectRequest.send().timeout(
+          Duration(milliseconds: OdooConfig.writeTimeout),
+        );
+        response = await http.Response.fromStream(streamedResponse);
+      }
+    }
+
+    return response;
   }
 
   /// Get face attendance page URL for web view

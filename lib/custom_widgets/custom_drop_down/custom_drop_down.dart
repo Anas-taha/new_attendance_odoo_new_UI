@@ -24,8 +24,53 @@ class CustomDropDown extends StatefulWidget {
 
 class _CustomDropDownState extends State<CustomDropDown> {
   final valueListenable = ValueNotifier<String?>(null);
+
+  @override
+  void initState() {
+    super.initState();
+    valueListenable.value = _resolveInitialValue();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomDropDown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final resolved = _resolveInitialValue();
+    if (valueListenable.value != resolved) {
+      valueListenable.value = resolved;
+    }
+  }
+
+  @override
+  void dispose() {
+    valueListenable.dispose();
+    super.dispose();
+  }
+
+  List<String> get _uniqueItems {
+    final unique = <String>[];
+    for (final item in widget.itemList) {
+      if (item.isNotEmpty && !unique.contains(item)) {
+        unique.add(item);
+      }
+    }
+    return unique;
+  }
+
+  String? _resolveInitialValue() {
+    final items = _uniqueItems;
+    if (widget.value != null && items.contains(widget.value)) {
+      return widget.value;
+    }
+    if (valueListenable.value != null && items.contains(valueListenable.value)) {
+      return valueListenable.value;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final items = _uniqueItems;
+
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         isExpanded: true,
@@ -39,7 +84,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
           fontWeight: FontWeight.w500,
         ),
 
-        items: widget.itemList.map((e) {
+        items: items.map((e) {
           return DropdownItem<String>(value: e, child: Text(e));
         }).toList(),
 
