@@ -27,14 +27,29 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.hr.app_odoo"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    flavorDimensions += "tenant"
+    productFlavors {
+        create("bluehr") {
+            dimension = "tenant"
+            applicationId = "com.bluehr.hr"
+            resValue("string", "app_name", "BLUE HR")
+        }
+        create("alshalawi") {
+            dimension = "tenant"
+            applicationId = "com.alshalawi.hr"
+            resValue("string", "app_name", "ALSHALAWI")
+        }
+        create("smartfitness") {
+            dimension = "tenant"
+            applicationId = "com.smartfitness.hr"
+            resValue("string", "app_name", "SMART FITNESS")
+        }
     }
     
     signingConfigs {

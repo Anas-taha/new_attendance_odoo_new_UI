@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hr_app_odoo/config/tenant_config.dart';
 import 'package:hr_app_odoo/app/app_bending.dart';
 import 'package:hr_app_odoo/app/app_locale.dart';
 import 'package:hr_app_odoo/app/app_route.dart';
@@ -30,8 +31,8 @@ class HrApp extends StatelessWidget {
             initialRoute: AppRoutes.login,
             getPages: AppPages.pages,
             debugShowCheckedModeBanner: false,
-            title: 'ALSHALAWI',
-            theme: appTheme,
+            title: TenantConfig.appName,
+            theme: buildAppTheme(seedColor: TenantConfig.primaryColor),
             locale: controller.locale,
             fallbackLocale: const Locale('ar'),
             localizationsDelegates:

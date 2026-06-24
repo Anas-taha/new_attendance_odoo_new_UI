@@ -332,7 +332,7 @@ class HolidaysController extends GetxController {
       case HolidayStateEnum.cancelled:
         return AppColors.appC6B8FFSedondary3;
       case HolidayStateEnum.draft:
-        return AppColors.primary500;
+        return AppColors.primary;
     }
   }
 
@@ -349,7 +349,7 @@ class HolidaysController extends GetxController {
       case HolidayStateEnum.cancelled:
         return AppColors.appF9F5FACardBG4;
       case HolidayStateEnum.draft:
-        return AppColors.primary100;
+        return AppColors.primary;
     }
   }
 

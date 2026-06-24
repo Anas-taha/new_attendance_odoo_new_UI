@@ -1,0 +1,8 @@
+{
+  "TENANT_ID": "bluehr",
+  "APP_NAME": "BLUE HR",
+  "APPLICATION_ID": "com.bluehr.hr",
+  "ODOO_BASE_URL": "http://168.231.106.200:8193/mobile/",
+  "ODOO_DATABASE": "hr_mobile_test",
+  "PRIMARY_COLOR": "670379"
+}

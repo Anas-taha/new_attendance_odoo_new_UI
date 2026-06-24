@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 /// App color palette (same as main.dart theme)
 abstract class AppColors {
   // primary
-  static const Color appPrimaryColor = Color(0xFF22004C);
+  static const Color appPrimaryColor = Color(0xFF39493f);
   //secodry
   static const Color app5700A8Sedondary1 = Color(0xFFF8F9FF);
-  static const Color app670379Sedondary2 = Color(0xFF670379);
+  static final Color app670379Sedondary2 = primary900;
   static const Color appC6B8FFSedondary3 = Color(0xFFC6B8FF);
-  static const Color app8A3159Sedondary4 = Color(0xFF8A3159);
+  static final Color app8A3159Sedondary4 = primary500;
   // text
   static const Color app1A1A1AText1 = Color(0xFF1A1A1A);
   static const Color appA0A0A0Text2 = Color(0xFFA0A0A0);
@@ -43,66 +43,96 @@ abstract class AppColors {
   static const Color appF44336Error = Color(0xFFF44336);
   static const Color appF59E0BWorning = Color(0xFFF59E0B);
 
-  static const Color primary50 = Color(0xFFF8F9FF);
-  static const Color primary100 = Color(0xFFE9EBF5);
-  static const Color primary200 = Color(0xFFC3CBE1);
-  static const Color primary300 = Color(0xFF9DA4CA);
-  static const Color primary400 = Color(0xFF767DB3);
-  static const Color primary500 = Color(0xFF6B46C1);
-  static const Color primary600 = Color(0xFF5230A2);
-  static const Color primary700 = Color(0xFF402484);
-  static const Color primary800 = Color(0xFF2D1B66);
-  static const Color primary900 = Color(0xFF1B1148);
+  static const Color primary = Color(0xFFa41526);
+  static const Color secondary = Color(0xFF000000);
 
-  static const Color primary = Color(0xFF6B46C1);
-  static const Color secondary = Color(0xFFFF573D);
+  static Color get primary50 => primaryShadesFrom(primary)[50]!;
+  static Color get primary100 => primaryShadesFrom(primary)[100]!;
+  static Color get primary200 => primaryShadesFrom(primary)[200]!;
+  static Color get primary300 => primaryShadesFrom(primary)[300]!;
+  static Color get primary400 => primaryShadesFrom(primary)[400]!;
+  static Color get primary500 => primaryShadesFrom(primary)[500]!;
+  static Color get primary600 => primaryShadesFrom(primary)[600]!;
+  static Color get primary700 => primaryShadesFrom(primary)[700]!;
+  static Color get primary800 => primaryShadesFrom(primary)[800]!;
+  static Color get primary900 => primaryShadesFrom(primary)[900]!;
+}
+
+/// Builds Material-style primary shades (50–900) from a base [color].
+Map<int, Color> primaryShadesFrom(Color color) {
+  const shadeKeys = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+  const strengths = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+
+  return Map.fromIterables(
+    shadeKeys,
+    strengths.map((strength) => _shadeFromPrimary(color, strength)),
+  );
+}
+
+Color _shadeFromPrimary(Color color, double strength) {
+  final blend = 0.5 - strength;
+  int channel(double component) {
+    final value = (component * 255).round();
+    return (value + ((blend < 0 ? value : (255 - value)) * blend))
+        .round()
+        .clamp(0, 255);
+  }
+
+  return Color.fromARGB(
+    (color.a * 255).round(),
+    channel(color.r),
+    channel(color.g),
+    channel(color.b),
+  );
 }
 
 /// Primary swatch for the app
-final MaterialColor appPrimarySwatch =
-    MaterialColor(0xFF22004C, const <int, Color>{
-      50: AppColors.primary50,
-      100: AppColors.primary100,
-      200: AppColors.primary200,
-      300: AppColors.primary300,
-      400: AppColors.primary400,
-      500: AppColors.primary500,
-      600: AppColors.primary600,
-      700: AppColors.primary700,
-      800: AppColors.primary800,
-      900: AppColors.primary900,
-    });
+final MaterialColor appPrimarySwatch = MaterialColor(
+  AppColors.primary.toARGB32(),
+  primaryShadesFrom(AppColors.primary),
+);
 
-/// App theme using the same colors as the original main.dart
-ThemeData get appTheme => ThemeData(
-  fontFamily: 'NotoSansArabic',
-  primarySwatch: appPrimarySwatch,
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: AppColors.primary,
-    primary: AppColors.primary,
-    secondary: AppColors.secondary,
-  ),
-  useMaterial3: true,
-  appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.primary,
-    foregroundColor: Colors.white,
-    elevation: 0,
-  ),
-  dropdownMenuTheme: DropdownMenuThemeData(
-    menuStyle: MenuStyle(
-      shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+/// App theme; pass [seedColor] for tenant-specific branding.
+ThemeData buildAppTheme({Color? seedColor}) {
+  final primary = seedColor ?? AppColors.primary;
+  final swatch = MaterialColor(
+    primary.toARGB32(),
+    primaryShadesFrom(primary),
+  );
+
+  return ThemeData(
+    fontFamily: 'NotoSansArabic',
+    primarySwatch: swatch,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: primary,
+      primary: primary,
+      secondary: AppColors.secondary,
+    ),
+    useMaterial3: true,
+    appBarTheme: AppBarTheme(
+      backgroundColor: primary,
+      foregroundColor: Colors.white,
+      elevation: 0,
+    ),
+    dropdownMenuTheme: DropdownMenuThemeData(
+      menuStyle: MenuStyle(
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
       ),
     ),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white,
-      elevation: 2,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-      minimumSize: const Size(88, 48),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        minimumSize: const Size(88, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     ),
-  ),
-);
+  );
+}
+
+/// Default theme for non-flavor local runs.
+ThemeData get appTheme => buildAppTheme();

@@ -1,10 +1,8 @@
-class OdooConfig {
-  // Odoo server configuration - fixed values
-  static const String baseUrl = 'http://168.231.106.200:8193/mobile/';
-    // static const String baseUrl = 'https://al-shalawi.gulftriangle.net/mobile/';
+import 'package:hr_app_odoo/config/tenant_config.dart';
 
-  // static const String database = 'al-shalawi';
-  static const String database = 'hr_mobile_test';
+class OdooConfig {
+  static String get baseUrl => TenantConfig.odooBaseUrl;
+  static String get database => TenantConfig.odooDatabase;
   static const String apiVersion = '1.0';
   static String token = '';
   // API endpoints
