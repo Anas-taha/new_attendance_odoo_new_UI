@@ -129,6 +129,48 @@ class SimpleHrService {
     }
   }
 
+  static const _leaveSearchReadFields = [
+    'name',
+    'holiday_status_id',
+    'date_from',
+    'date_to',
+    'number_of_days',
+    'state',
+  ];
+
+  /// Postman: hr.leave — search_read via /mobile/jsonrpc
+  Future<List<Leaves>?> searchLeavesFromApi({List<int>? holidayStatusIds}) async {
+    try {
+      final domain = <List<dynamic>>[];
+      if (holidayStatusIds != null && holidayStatusIds.isNotEmpty) {
+        if (holidayStatusIds.length == 1) {
+          domain.add(['holiday_status_id', '=', holidayStatusIds.first]);
+        } else {
+          domain.add(['holiday_status_id', 'in', holidayStatusIds]);
+        }
+      }
+
+      final result = await _odooService.searchRead(
+        model: 'hr.leave',
+        fields: _leaveSearchReadFields,
+        domain: domain,
+        limit: 100,
+      );
+
+      if (result['success'] != true || result['data'] == null) {
+        return null;
+      }
+
+      final data = result['data'] as List<dynamic>;
+      return data
+          .map((item) => Leaves.fromSearchRead(item as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('❌ Error search_read hr.leave: $e');
+      return null;
+    }
+  }
+
   Future<HolidaysModel> getHolidays() async {
     try {
       final result = await _odooService.callOdooApi(
@@ -254,19 +296,68 @@ class SimpleHrService {
     }
   }
 
-  /// Create a new leave request
-  Future<bool> createLeave(Map<String, dynamic> leaveData) async {
+  /// Create a new leave request (Postman: hr.leave — create via jsonrpc).
+  Future<Map<String, dynamic>> createLeave(Map<String, dynamic> leaveData) async {
     try {
+      final payload = Map<String, dynamic>.from(leaveData);
+      if (payload['request_date_from'] != null) {
+        payload['request_date_from'] =
+            _normalizeLeaveDate(payload['request_date_from'].toString());
+      }
+      if (payload['request_date_to'] != null) {
+        payload['request_date_to'] =
+            _normalizeLeaveDate(payload['request_date_to'].toString());
+      }
+
       final result = await _odooService.create(
         model: 'hr.leave',
-        values: leaveData,
+        values: payload,
       );
 
-      return result['success'] ?? false;
+      if (result['success'] == true) {
+        return {'success': true, 'id': result['data']};
+      }
+
+      return {
+        'success': false,
+        'error': result['error']?.toString() ?? 'Create failed',
+      };
     } catch (e) {
       print('❌ Error creating leave: $e');
-      return false;
+      return {'success': false, 'error': e.toString()};
     }
+  }
+
+  String _normalizeLeaveDate(String raw) {
+    final value = raw.trim();
+    if (value.isEmpty) {
+      return value;
+    }
+
+    if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
+      return value;
+    }
+
+    final parts = value.split('/');
+    if (parts.length == 3) {
+      final day = int.tryParse(parts[0]);
+      final month = int.tryParse(parts[1]);
+      final year = int.tryParse(parts[2]);
+      if (day != null && month != null && year != null) {
+        return '${year.toString().padLeft(4, '0')}-'
+            '${month.toString().padLeft(2, '0')}-'
+            '${day.toString().padLeft(2, '0')}';
+      }
+    }
+
+    final parsed = DateTime.tryParse(value.replaceFirst(' ', 'T'));
+    if (parsed != null) {
+      return '${parsed.year.toString().padLeft(4, '0')}-'
+          '${parsed.month.toString().padLeft(2, '0')}-'
+          '${parsed.day.toString().padLeft(2, '0')}';
+    }
+
+    return value;
   }
 
   /// Update a leave request

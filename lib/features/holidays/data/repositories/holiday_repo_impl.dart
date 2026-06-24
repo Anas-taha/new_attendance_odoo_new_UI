@@ -19,4 +19,8 @@ class HolidayRepositoryImpl implements HolidaysRepository {
     }
     return null;
   }
+
+  @override
+  Future<List<Leaves>?> searchLeaves({List<int>? holidayStatusIds}) =>
+      _hrService.searchLeavesFromApi(holidayStatusIds: holidayStatusIds);
 }

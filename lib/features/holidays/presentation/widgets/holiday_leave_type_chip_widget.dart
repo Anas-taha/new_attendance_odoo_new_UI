@@ -3,15 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart';
 
-class HolidaySelectStateCardWidget extends StatelessWidget {
-  const HolidaySelectStateCardWidget({
+class HolidayLeaveTypeChipWidget extends StatelessWidget {
+  const HolidayLeaveTypeChipWidget({
     super.key,
-    required this.title,
+    required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
-  final String title;
+  final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -37,7 +37,7 @@ class HolidaySelectStateCardWidget extends StatelessWidget {
         ),
         child: Center(
           child: CustomText(
-            text: title,
+            text: label,
             fontSize: 12.w,
             fontWeight: FontWeight.w400,
             color: isSelected

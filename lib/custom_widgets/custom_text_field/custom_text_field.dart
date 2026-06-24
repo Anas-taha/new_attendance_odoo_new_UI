@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hr_app_odoo/app/app_image.dart';
@@ -11,7 +9,6 @@ class CustomTextField extends StatelessWidget {
   CustomTextField({
     super.key,
     required this.controller,
-
     this.enabled = true,
     this.prefixIcon,
     this.usePrefixCalender = false,
@@ -22,9 +19,11 @@ class CustomTextField extends StatelessWidget {
     this.hintLocationTop = false,
     this.hintFontWeight,
     this.obscureText = false,
+    this.height,
+    this.fontSize,
   });
-  TextEditingController controller;
 
+  TextEditingController controller;
   bool enabled;
   Widget? prefixIcon;
   Widget? suffixIcon;
@@ -35,53 +34,85 @@ class CustomTextField extends StatelessWidget {
   bool hintLocationTop;
   FontWeight? hintFontWeight;
   bool obscureText;
+  final double? height;
+  final double? fontSize;
+
+  double get _fontSize => fontSize ?? 12.w;
+
   @override
   Widget build(BuildContext context) {
+    final field = SizedBox(
+      height: height,
+      child: TextFormField(
+        controller: controller,
+        enabled: enabled,
+        maxLines: obscureText ? 1 : maxLines,
+        obscureText: obscureText,
+        style: TextStyle(
+          fontSize: _fontSize,
+          fontWeight: FontWeight.w500,
+          color: AppColors.app1A1A1AText1,
+        ),
+        decoration: InputDecoration(
+          filled: true,
+          isDense: height != null,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 10.w,
+            vertical: height != null ? 0 : 14,
+          ),
+          hint: Text(
+            hintLocationTop ? '' : hintText ?? '',
+            style: TextStyle(
+              fontSize: _fontSize,
+              fontWeight: FontWeight.w500,
+              color: AppColors.appA0A0A0Text2,
+            ),
+          ),
+          fillColor: AppColors.appFAFAFABackGround2,
+          prefixIcon: usePrefixCalender
+              ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: CustomImage(
+                    image: AppImage.calender,
+                    height: 18.h,
+                    width: 18.w,
+                  ),
+                )
+              : prefixIcon,
+          prefixIconConstraints: BoxConstraints(
+            minWidth: usePrefixCalender ? 36.w : 0,
+            minHeight: height ?? 48.h,
+          ),
+          border: _borderStyle(),
+          enabledBorder: _borderStyle(),
+          focusedBorder: _borderStyle(),
+          disabledBorder: _borderStyle(),
+          suffixIcon: useSuffixArrow
+              ? Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: AppColors.appA0A0A0Text2,
+                  size: 22,
+                )
+              : suffixIcon,
+        ),
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (hintLocationTop == true)
+        if (hintLocationTop)
           CustomText(
             text: hintText ?? '',
             fontSize: 14,
             fontWeight: hintFontWeight ?? FontWeight.w500,
             color: AppColors.app1A1A1AText1,
           ),
-        8.verticalSpace,
-        TextFormField(
-          controller: controller,
-          enabled: enabled,
-          maxLines: obscureText ? 1 : maxLines,
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            filled: true,
-            hint: CustomText(
-              text: hintLocationTop ? '' : hintText ?? '',
-              color: AppColors.appA0A0A0Text2,
-              fontSize: 12.w,
-              fontWeight: FontWeight.w500,
-            ),
-            fillColor: AppColors.appFAFAFABackGround2,
-            prefixIcon: usePrefixCalender
-                ? Container(
-                    padding: EdgeInsets.all(10),
-                    child: CustomImage(image: AppImage.calender),
-                  )
-                : prefixIcon,
-            border: _borderStyle(),
-            suffixIcon: useSuffixArrow
-                ? Icon(
-                    Icons.keyboard_arrow_down_sharp,
-                    color: AppColors.appA0A0A0Text2,
-                    size: 30,
-                  )
-                : suffixIcon,
-          ),
-        ),
+        if (hintLocationTop) 8.verticalSpace,
+        field,
       ],
     );
   }
-
   OutlineInputBorder _borderStyle() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(10)),

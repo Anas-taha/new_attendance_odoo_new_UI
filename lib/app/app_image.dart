@@ -16,4 +16,9 @@ class AppImage {
   static const String arabic = '$imageUrl/arabic.svg';
   static const String english = '$imageUrl/english.svg';
   static const String animeflag = '$imageUrl/anime_flag.png';
+  static const String registerFacePlaceholder =
+      '$imageUrl/register_face_placeholder.jpg';
+  static const String registerFaceScanOverlay =
+      '$imageUrl/register_face_scan_overlay.svg';
+  static const String registerFaceBack = '$imageUrl/register_face_back.svg';
 }

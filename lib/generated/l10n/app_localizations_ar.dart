@@ -64,6 +64,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get networkUnavailable =>
+      'لا يوجد اتصال بالشبكة. تحقق من الإنترنت وحاول مرة أخرى.';
+
+  @override
   String get logout => 'تسجيل الخروج';
 
   @override
@@ -71,6 +75,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancel => 'إلغاء';
+
+  @override
+  String get ok => 'موافق';
 
   @override
   String get loggedOutSuccess => 'تم تسجيل الخروج بنجاح';
@@ -613,6 +620,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get failedToCreateExpense => 'فشل إنشاء المصروف';
 
   @override
+  String get failedToCreateLeaveRequest =>
+      'فشل إرسال طلب الإجازة. يرجى المحاولة مرة أخرى.';
+
+  @override
   String errorCreatingExpense(String error) {
     return 'خطأ في إنشاء المصروف: $error';
   }
@@ -1115,11 +1126,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get attendanceStatusFullDay => 'يوم كامل ✅';
 
   @override
-  String get registerFaceTitle => 'تسجيل الوجه';
+  String get registerFaceTitle => 'إضافة بصمة الوجه';
 
   @override
   String get registerFaceDescription =>
-      'التقط صورة واضحة لوجهك لتفعيل تسجيل الحضور';
+      'قم بتسجيل وجهك لتفعيل تسجيل الحضور والانصراف بسهولة وأمان';
+
+  @override
+  String get registerFaceInstructionsTitle => 'بعض التعليمات لسهوله التسجيل';
+
+  @override
+  String get registerFaceInstruction1 => 'وجّه وجهك داخل الإطار';
+
+  @override
+  String get registerFaceInstruction2 => 'تأكد من وجود إضاءة جيدة';
+
+  @override
+  String get registerFaceInstruction3 => 'تجنب ارتداء نظارات داكنة';
 
   @override
   String get registerFaceContinue => 'حفظ ومتابعة';
@@ -1162,10 +1185,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get biometricDisabledInSettings =>
-      'المصادقة البيومترية معطّلة على هذا الجهاز. فعّل بصمة الإصبع أو التعرف على الوجه من الإعدادات ثم حاول مرة أخرى.';
+      'لا توجد بصمة إصبع أو تعرف على وجه مسجّلة على هذا الجهاز. افتح إعدادات الهاتف، سجّل بصمة إصبع أو وجه من الأمان (أو Face ID على iPhone)، ثم عد وحاول مرة أخرى.';
 
   @override
-  String get openSettings => 'فتح الإعدادات';
+  String get biometricCreateInSettingsTitle =>
+      'إعداد بصمة الإصبع أو التعرف على الوجه';
+
+  @override
+  String get biometricCreateInSettingsMessage =>
+      'لتسجيل الدخول، يجب أولاً تسجيل بصمة إصبع أو وجه من إعدادات الهاتف.';
+
+  @override
+  String get openSettings => 'فتح إعدادات الهاتف';
+
+  @override
+  String get createBiometricInSettings => 'الإعداد من الإعدادات';
 
   @override
   String get retryBiometric => 'حاول مرة أخرى';
@@ -1177,4 +1211,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get enableBiometricRequiredMessage =>
       'لأمانك، يجب تفعيل تسجيل الدخول البيومتري على هذا الجهاز قبل المتابعة.';
+
+  @override
+  String get biometricNotSupported =>
+      'هذا الجهاز لا يدعم المصادقة البيومترية. لا يمكن تسجيل الدخول.';
 }

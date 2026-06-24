@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:hr_app_odoo/custom_widgets/custom_calender/custom_calender.dart';
 import 'package:hr_app_odoo/features/attendance/data/model/attendance_model.dart';
@@ -35,6 +36,7 @@ class AttendanceController extends GetxController {
   late AnimationController pulseController;
   late AnimationController slideController;
   TextEditingController dateController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
   RxList<String> weekCards = ['Week 1', 'Week 2', 'Week 3', 'Week 4'].obs;
   RxInt selectedWeekCard = 0.obs;
   Rx<List<AttendanceModel>> allAttendanceRecords = Rx<List<AttendanceModel>>(
@@ -44,26 +46,88 @@ class AttendanceController extends GetxController {
   @override
   void onReady() {
     selectedWeekCard.value = -1;
-    getAttendanceSummary();
+    _setDateField(selectedDate);
+    getAttendanceSummary(forDate: selectedDate);
     super.onReady();
   }
 
   @override
   void onClose() {
+    dateController.dispose();
     log(name: "ProfileControllerState", "onClose");
     super.onClose();
   }
 
-  Future<void> getAttendanceSummary() async {
+  void _setDateField(DateTime date) {
+    dateController.text = DateFormat('d/M/yyyy').format(date);
+  }
+
+  String _formatApiDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  (DateTime start, DateTime end) _monthRangeFor(DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end = DateTime(date.year, date.month + 1, 0);
+    return (start, end);
+  }
+
+  DateTime? _parseSelectedDate() {
+    final raw = dateController.text.trim();
+    if (raw.isEmpty) {
+      return null;
+    }
+    try {
+      return DateFormat('d/M/yyyy').parse(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  int? _weekIndexForDate(DateTime date, List<AttendanceWeek> weeks) {
+    final day = DateTime(date.year, date.month, date.day);
+    for (var i = 0; i < weeks.length; i++) {
+      final from = DateTime.tryParse(weeks[i].dateFrom ?? '');
+      final to = DateTime.tryParse(weeks[i].dateTo ?? '');
+      if (from == null || to == null) {
+        continue;
+      }
+      final start = DateTime(from.year, from.month, from.day);
+      final end = DateTime(to.year, to.month, to.day);
+      if (!day.isBefore(start) && !day.isAfter(end)) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  Future<void> getAttendanceSummary({DateTime? forDate}) async {
+    final targetDate = forDate ?? _parseSelectedDate() ?? selectedDate;
+    selectedDate = targetDate;
+    _setDateField(targetDate);
+
+    final (monthStart, monthEnd) = _monthRangeFor(targetDate);
     isLoading.value = true;
-    attendanceSummary = await _attendanceRepository.getAttendanceSummary();
+    attendanceSummary = await _attendanceRepository.getAttendanceSummary(
+      dateFrom: _formatApiDate(monthStart),
+      dateTo: _formatApiDate(monthEnd),
+    );
     log(
       name: 'getAttendanceSummary',
       'result: ${attendanceSummary.totals?.earlyLeaves ?? 0} ',
     );
     attendanceTotals = attendanceSummary.totals ?? AttendanceTotals();
     weekInfo = attendanceSummary.weeks ?? [];
-    log(name: 'getAttendanceSummary', 'weekInfo: ${weekInfo[0].dateFrom} ');
+    if (weekInfo.isNotEmpty) {
+      log(
+        name: 'getAttendanceSummary',
+        'weekInfo: ${weekInfo.first.dateFrom}',
+      );
+    }
+
+    final weekIndex = _weekIndexForDate(targetDate, weekInfo);
+    selectedWeekCard.value = weekIndex ?? -1;
+
     isLoading.value = false;
     update();
   }
@@ -194,7 +258,13 @@ class AttendanceController extends GetxController {
   void selectDate() {
     final ctx = Get.context;
     final title = ctx == null ? '' : AppLocalizations.of(ctx)!.selectDate;
-    CustomCalender.calenderDialog(contorller: dateController, title: title);
+    CustomCalender.calenderDialog(
+      contorller: dateController,
+      title: title,
+      onDateSelected: (date) {
+        getAttendanceSummary(forDate: date);
+      },
+    );
   }
 
   // Future<void> loadAttendanceData() async {

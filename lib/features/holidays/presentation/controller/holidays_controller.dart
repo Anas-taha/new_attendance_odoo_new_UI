@@ -9,6 +9,13 @@ import 'package:hr_app_odoo/services/simple_hr_service.dart';
 import 'package:hr_app_odoo/theme/app_theme.dart';
 enum HolidayStateEnum { all, approved, rejected, pending, cancelled, draft }
 
+class LeaveTypeFilter {
+  const LeaveTypeFilter({required this.id, required this.label});
+
+  final int? id;
+  final String label;
+}
+
 class HolidaysController extends GetxController {
   HolidaysController({
     HolidaysRepository? holidaysRepository,
@@ -21,28 +28,38 @@ class HolidaysController extends GetxController {
 
   RxBool loading = false.obs;
   HolidaysModel holidays = HolidaysModel();
-  List<Leaves> leaves = [];
+  final RxList<Leaves> leaves = RxList<Leaves>();
   List<Map<String, dynamic>> leaveTypes = [];
+  List<LeaveTypeFilter> leaveTypeFilters = [];
   final Map<String, int> _leaveTypeLabelToId = {};
+  final Map<String, Set<int>> _leaveTypeNameToIds = {};
   List<String> _leaveTypeLabels = [];
+  Rxn<int> selectedFilterLeaveTypeId = Rxn<int>();
   Rx<HolidayStateEnum> selectedHolidayState = HolidayStateEnum.all.obs;
+  List<Leaves> _leavesByType = [];
+  int? selectedRequestLeaveTypeId;
   TextEditingController filterStartDateController = TextEditingController();
   TextEditingController requestStartDateController = TextEditingController();
   TextEditingController requestEndDateController = TextEditingController();
   TextEditingController requestReasonController = TextEditingController();
-  int? selectedFilterLeaveTypeId;
-  int? selectedRequestLeaveTypeId;
 
   List<String> get leaveTypeOptions => _leaveTypeLabels;
 
   @override
   void onReady() {
+    selectedFilterLeaveTypeId.value = null;
     selectedHolidayState.value = HolidayStateEnum.all;
     filterStartDateController.text = '';
     resetRequestForm();
-    loadLeaveTypes();
-    getHolidays();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initialize();
+    });
     super.onReady();
+  }
+
+  Future<void> _initialize() async {
+    await loadLeaveTypes();
+    await getHolidays();
   }
 
   void resetRequestForm() {
@@ -73,10 +90,10 @@ class HolidaysController extends GetxController {
     final types = await _simpleHrService.getHolidayStatusTypes();
     leaveTypes = [];
     _leaveTypeLabelToId.clear();
+    _leaveTypeNameToIds.clear();
     _leaveTypeLabels = [];
 
     final seenIds = <int>{};
-    final nameCounts = <String, int>{};
 
     for (final type in types) {
       final id = type['id'] as int?;
@@ -85,51 +102,137 @@ class HolidaysController extends GetxController {
         continue;
       }
       seenIds.add(id);
-      nameCounts[name] = (nameCounts[name] ?? 0) + 1;
       leaveTypes.add(type);
+      _leaveTypeNameToIds.putIfAbsent(name, () => {}).add(id);
     }
 
-    for (final type in leaveTypes) {
-      final id = type['id'] as int;
-      final name = type['name']!.toString().trim();
-      final label = (nameCounts[name] ?? 0) > 1 ? '$name ($id)' : name;
-      _leaveTypeLabels.add(label);
-      _leaveTypeLabelToId[label] = id;
+    for (final entry in _leaveTypeNameToIds.entries) {
+      _leaveTypeLabels.add(entry.key);
+      _leaveTypeLabelToId[entry.key] = entry.value.first;
     }
+
+    final allLabel = Get.context?.appWords.all ?? 'All';
+    leaveTypeFilters = [
+      LeaveTypeFilter(id: null, label: allLabel),
+      ..._leaveTypeNameToIds.entries.map(
+        (entry) => LeaveTypeFilter(
+          id: entry.value.first,
+          label: entry.key,
+        ),
+      ),
+    ];
 
     update();
   }
 
-  Future<void> getHolidays() async {
-    loading.value = true;
-    update();
-    final result = await _profileRepository.getHolidays();
-    if (result != null) {
-      holidays = result;
-      leaves = result.leaves ?? [];
+  void _applyStatusFilter() {
+    if (selectedHolidayState.value == HolidayStateEnum.all) {
+      leaves.assignAll(_leavesByType);
+      return;
     }
-    loading.value = false;
-    update();
+
+    leaves.assignAll(
+      _leavesByType.where(
+        (leave) => holidayStateFromLeave(leave) == selectedHolidayState.value,
+      ),
+    );
   }
 
   void changeHolidayState(HolidayStateEnum newState) {
     selectedHolidayState.value = newState;
-    if (newState == HolidayStateEnum.all) {
-      leaves = holidays.leaves ?? [];
+    _applyStatusFilter();
+  }
+
+  void _applyLeavesFilter() {
+    final allLeaves = holidays.leaves ?? [];
+    final typeId = selectedFilterLeaveTypeId.value;
+    if (typeId == null) {
+      leaves.assignAll(allLeaves);
     } else {
-      leaves =
-          holidays.leaves
-              ?.where(
-                (leave) => leave.holidayStatus == newState.name.toLowerCase(),
-              )
-              .toList() ??
-          [];
+      final matchingIds = _matchingTypeIds(typeId);
+      leaves.assignAll(
+        allLeaves.where((leave) => matchingIds.contains(leave.leaveTypeId)),
+      );
     }
-    update();
+    _leavesByType = List<Leaves>.from(leaves);
+    _applyStatusFilter();
+  }
+
+  Set<int> _matchingTypeIds(int typeId) {
+    return _leaveTypeNameToIds.values.firstWhere(
+      (ids) => ids.contains(typeId),
+      orElse: () => {typeId},
+    );
+  }
+
+  Future<void> _loadLeavesForFilter() async {
+    final typeId = selectedFilterLeaveTypeId.value;
+    final statusIds = typeId == null ? null : _matchingTypeIds(typeId).toList();
+
+    loading.value = true;
+
+    final apiLeaves = await _profileRepository.searchLeaves(
+      holidayStatusIds: statusIds,
+    );
+
+    if (apiLeaves != null) {
+      if (typeId == null) {
+        holidays = HolidaysModel(
+          status: 'success',
+          count: apiLeaves.length,
+          leaves: apiLeaves,
+        );
+      }
+      _leavesByType = apiLeaves;
+      _applyStatusFilter();
+    } else if (typeId == null) {
+      final result = await _profileRepository.getHolidays();
+      if (result != null) {
+        holidays = result;
+        _leavesByType = result.leaves ?? [];
+        _applyStatusFilter();
+      }
+    } else {
+      _applyLeavesFilter();
+    }
+
+    loading.value = false;
+  }
+
+  void changeLeaveTypeFilter(int? leaveTypeId) {
+    selectedFilterLeaveTypeId.value = leaveTypeId;
+    selectedHolidayState.value = HolidayStateEnum.all;
+    _loadLeavesForFilter();
+  }
+
+  HolidayStateEnum holidayStateFromLeave(Leaves leave) {
+    switch (leave.holidayStatus?.toLowerCase()) {
+      case 'approved':
+      case 'validate':
+        return HolidayStateEnum.approved;
+      case 'rejected':
+      case 'refuse':
+        return HolidayStateEnum.rejected;
+      case 'pending':
+      case 'confirm':
+        return HolidayStateEnum.pending;
+      case 'cancelled':
+      case 'cancel':
+        return HolidayStateEnum.cancelled;
+      case 'draft':
+        return HolidayStateEnum.draft;
+      default:
+        return HolidayStateEnum.pending;
+    }
+  }
+
+  Future<void> getHolidays() async {
+    await _loadLeavesForFilter();
   }
 
   void selectFilterLeaveType(String label) {
-    selectedFilterLeaveTypeId = _leaveTypeLabelToId[label];
+    selectedFilterLeaveTypeId.value = _leaveTypeLabelToId[label];
+    _loadLeavesForFilter();
   }
 
   void selectRequestLeaveType(String label) {
@@ -138,6 +241,10 @@ class HolidaysController extends GetxController {
 
   Future<void> submitLeaveRequest() async {
     final l10n = Get.context!.appWords;
+    if (selectedRequestLeaveTypeId == null) {
+      Get.snackbar(l10n.leaveRequest, l10n.leaveType);
+      return;
+    }
     if (requestStartDateController.text.isEmpty ||
         requestEndDateController.text.isEmpty) {
       Get.snackbar(l10n.leaveRequest, l10n.selectDate);
@@ -145,30 +252,50 @@ class HolidaysController extends GetxController {
     }
 
     loading.value = true;
-    update();
 
-    final leaveTypeId =
-        selectedRequestLeaveTypeId ??
-        (leaveTypes.isNotEmpty ? leaveTypes.first['id'] as int? : 1);
-
-    final success = await _simpleHrService.createLeave({
-      'holiday_status_id': leaveTypeId,
+    final result = await _simpleHrService.createLeave({
+      'holiday_status_id': selectedRequestLeaveTypeId,
       'request_date_from': requestStartDateController.text,
       'request_date_to': requestEndDateController.text,
-      'name': requestReasonController.text,
+      'name': requestReasonController.text.trim().isEmpty
+          ? l10n.leaveRequest
+          : requestReasonController.text.trim(),
     });
 
     loading.value = false;
-    update();
 
-    if (success) {
+    if (result['success'] == true) {
       resetRequestForm();
       await getHolidays();
       Get.back();
       return;
     }
 
-    Get.snackbar(l10n.leaveRequest, l10n.failedToCreateExpense);
+    Get.snackbar(
+      l10n.leaveRequest,
+      _leaveSubmitErrorMessage(l10n, result['error']?.toString()),
+    );
+  }
+
+  String _leaveSubmitErrorMessage(dynamic l10n, String? error) {
+    if (error == null || error.isEmpty) {
+      return l10n.failedToCreateLeaveRequest;
+    }
+
+    final normalized = error.toLowerCase();
+    if (normalized.contains('network is unreachable') ||
+        normalized.contains('socketexception') ||
+        normalized.contains('failed host lookup') ||
+        normalized.contains('connection timed out') ||
+        normalized.contains('connection refused')) {
+      return l10n.networkUnavailable;
+    }
+
+    if (normalized.contains('not authenticated')) {
+      return l10n.authFailed;
+    }
+
+    return l10n.connectionError(error);
   }
 
   void selectFilterStartDate(String title) {

@@ -56,7 +56,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.registerFace,
-      page: () => RegisterFaceScreen(),
+      page: () => const RegisterFaceScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut<RegisterFaceController>(
           () => RegisterFaceController(),

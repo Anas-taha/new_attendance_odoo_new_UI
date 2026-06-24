@@ -76,15 +76,17 @@ class HrAttendance {
     }).toList();
   }
 
-  /// Calculate total worked hours for today
+  /// Calculate total worked hours for today (includes active sessions).
   static String calculateTotalWorkedHours(List<HrAttendance> todayRecords) {
     if (todayRecords.isEmpty) return '00:00:00';
 
+    final now = DateTime.now();
     int totalSeconds = 0;
     for (final record in todayRecords) {
-      final duration = record.getWorkedDuration();
-      if (duration != null) {
-        totalSeconds += duration.inSeconds;
+      if (record.checkOut != null) {
+        totalSeconds += record.checkOut!.difference(record.checkIn).inSeconds;
+      } else {
+        totalSeconds += now.difference(record.checkIn).inSeconds;
       }
     }
 

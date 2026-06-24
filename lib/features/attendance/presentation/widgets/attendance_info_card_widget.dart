@@ -45,11 +45,14 @@ class AttendanceInfoCardWidget extends StatelessWidget {
               ],
             ),
             8.verticalSpace,
-            CustomText(
-              text: text(),
-              color: AppColors.appPrimaryColor,
-              fontSize: 14.w,
-              fontWeight: FontWeight.w400,
+            Flexible(
+              child: CustomText(
+                text: text(),
+                color: AppColors.appPrimaryColor,
+                textAlign: TextAlign.center,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ],
         ),

@@ -200,6 +200,12 @@ abstract class AppLocalizations {
   /// **'Connection error: {error}'**
   String connectionError(String error);
 
+  /// No description provided for @networkUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Network unavailable. Check your internet connection and try again.'**
+  String get networkUnavailable;
+
   /// No description provided for @logout.
   ///
   /// In en, this message translates to:
@@ -217,6 +223,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 
   /// No description provided for @loggedOutSuccess.
   ///
@@ -1244,6 +1256,12 @@ abstract class AppLocalizations {
   /// **'Failed to create expense'**
   String get failedToCreateExpense;
 
+  /// No description provided for @failedToCreateLeaveRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit leave request. Please try again.'**
+  String get failedToCreateLeaveRequest;
+
   /// No description provided for @errorCreatingExpense.
   ///
   /// In en, this message translates to:
@@ -2177,14 +2195,38 @@ abstract class AppLocalizations {
   /// No description provided for @registerFaceTitle.
   ///
   /// In en, this message translates to:
-  /// **'Register Your Face'**
+  /// **'Add Face ID'**
   String get registerFaceTitle;
 
   /// No description provided for @registerFaceDescription.
   ///
   /// In en, this message translates to:
-  /// **'Take a clear photo of your face to enable attendance check-in'**
+  /// **'Register your face to enable easy and secure attendance check-in and check-out'**
   String get registerFaceDescription;
+
+  /// No description provided for @registerFaceInstructionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips for easy registration'**
+  String get registerFaceInstructionsTitle;
+
+  /// No description provided for @registerFaceInstruction1.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your face inside the frame'**
+  String get registerFaceInstruction1;
+
+  /// No description provided for @registerFaceInstruction2.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure you have good lighting'**
+  String get registerFaceInstruction2;
+
+  /// No description provided for @registerFaceInstruction3.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid wearing dark sunglasses'**
+  String get registerFaceInstruction3;
 
   /// No description provided for @registerFaceContinue.
   ///
@@ -2261,14 +2303,32 @@ abstract class AppLocalizations {
   /// No description provided for @biometricDisabledInSettings.
   ///
   /// In en, this message translates to:
-  /// **'Biometric authentication is turned off on this device. Enable fingerprint or face unlock in Settings, then try again.'**
+  /// **'No fingerprint or face ID is set up on this device. Open your phone Settings, register a fingerprint or face ID under Security (or Face ID & Passcode on iPhone), then return and try again.'**
   String get biometricDisabledInSettings;
+
+  /// No description provided for @biometricCreateInSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up fingerprint or face ID'**
+  String get biometricCreateInSettingsTitle;
+
+  /// No description provided for @biometricCreateInSettingsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To sign in, you need to register a fingerprint or face ID in your phone Settings first.'**
+  String get biometricCreateInSettingsMessage;
 
   /// No description provided for @openSettings.
   ///
   /// In en, this message translates to:
-  /// **'Open Settings'**
+  /// **'Open phone Settings'**
   String get openSettings;
+
+  /// No description provided for @createBiometricInSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up in Settings'**
+  String get createBiometricInSettings;
 
   /// No description provided for @retryBiometric.
   ///
@@ -2287,6 +2347,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'For your security, biometric login is required on this device before you can continue.'**
   String get enableBiometricRequiredMessage;
+
+  /// No description provided for @biometricNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This device does not support biometric authentication. Sign-in is not allowed.'**
+  String get biometricNotSupported;
 }
 
 class _AppLocalizationsDelegate

@@ -15,8 +15,14 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   final AttendanceReportService _attendanceReportService;
 
   @override
-  Future<AttendanceSummaryModel> getAttendanceSummary() async =>
-      await _attendanceReportService.getAttendanceSummary();
+  Future<AttendanceSummaryModel> getAttendanceSummary({
+    String? dateFrom,
+    String? dateTo,
+  }) async =>
+      await _attendanceReportService.getAttendanceSummary(
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+      );
 
   // @override
   // Future<List<AttendanceModel>> getAllAttendance() =>

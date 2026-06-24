@@ -317,6 +317,91 @@ class HomeController extends GetxController {
     return _formatHms(workedToday + sessionElapsed);
   }
 
+  bool _isToday(DateTime dateTime) {
+    final now = DateTime.now();
+    return dateTime.year == now.year &&
+        dateTime.month == now.month &&
+        dateTime.day == now.day;
+  }
+
+  void _addToTotalToday(Duration duration) {
+    if (duration <= Duration.zero) {
+      return;
+    }
+    totalToday.value = _formatHms(_parseHms(totalToday.value) + duration);
+  }
+
+  Duration? _durationBetweenAttendanceTimes(
+    String? checkInRaw,
+    String? checkOutRaw,
+  ) {
+    final checkIn = _parseOdooDateTime(checkInRaw);
+    if (checkIn == null) {
+      return null;
+    }
+    final checkOut = _parseOdooDateTime(checkOutRaw) ?? DateTime.now();
+    final duration = checkOut.difference(checkIn);
+    if (duration.isNegative) {
+      return null;
+    }
+    return duration;
+  }
+
+  void _mergeCheckoutSessionIntoTotal({
+    String? checkInRaw,
+    String? checkOutRaw,
+  }) {
+    final fromModel = _durationBetweenAttendanceTimes(checkInRaw, checkOutRaw);
+    if (fromModel != null && _isToday(_parseOdooDateTime(checkInRaw)!)) {
+      _addToTotalToday(fromModel);
+      return;
+    }
+
+    if (checkInDateTime.value != null && _isToday(checkInDateTime.value!)) {
+      final session = elapsed.value > Duration.zero
+          ? elapsed.value
+          : DateTime.now().difference(checkInDateTime.value!);
+      _addToTotalToday(session);
+    }
+  }
+
+  void _syncTotalTodayFromRecords(List<HrAttendance> records) {
+    if (records.isEmpty) {
+      return;
+    }
+    final calculated = HrAttendance.calculateTotalWorkedHours(records);
+    if (calculated != '00:00:00') {
+      totalToday.value = calculated;
+    }
+  }
+
+  void _syncTotalTodayFromProfile(Profile? profile) {
+    if (profile == null) {
+      return;
+    }
+
+    final last = profile.lastAttendance;
+    if (last?.checkIn == null) {
+      return;
+    }
+
+    final checkIn = _parseOdooDateTime(last!.checkIn);
+    if (checkIn == null || !_isToday(checkIn)) {
+      return;
+    }
+
+    final duration = _durationBetweenAttendanceTimes(last.checkIn, last.checkOut);
+    if (duration == null || duration <= Duration.zero) {
+      return;
+    }
+
+    final current = _parseHms(totalToday.value);
+    if (current >= duration) {
+      return;
+    }
+    totalToday.value = _formatHms(duration);
+  }
+
   /// Parses Odoo datetimes like `2026-06-18 05:50:09` or ISO-8601.
   DateTime? _parseOdooDateTime(dynamic raw) {
     if (raw == null) {
@@ -375,6 +460,9 @@ class HomeController extends GetxController {
       if (employee?.profile != null) {
         currentEmployee.value = employee;
         _applyProfileAttendance(employee!.profile);
+        if (!isCheckedIn.value) {
+          _syncTotalTodayFromProfile(employee.profile);
+        }
         if (employee.profile!.id != null) {
           OdooRPCService.instance.setCurrentEmployeeId(employee.profile!.id!);
         }
@@ -397,10 +485,21 @@ class HomeController extends GetxController {
   Future<void> loadTodayAttendance() async {
     try {
       final summary = await _homeRepository.getTodayAttendanceSummary();
-      totalToday.value =
-          (summary['total_worked_hours'] as String?) ?? '00:00:00';
-      todayAttendance.value =
+      final records =
           (summary['today_records'] as List<HrAttendance>?) ?? <HrAttendance>[];
+      todayAttendance.value = records;
+
+      _syncTotalTodayFromRecords(records);
+
+      final summaryTotal =
+          (summary['total_worked_hours'] as String?) ?? '00:00:00';
+      if (totalToday.value == '00:00:00' && summaryTotal != '00:00:00') {
+        totalToday.value = summaryTotal;
+      }
+
+      if (totalToday.value == '00:00:00') {
+        _syncTotalTodayFromProfile(currentEmployee.value?.profile);
+      }
 
       final summaryCheckedIn = (summary['is_checked_in'] as bool?) ?? false;
       final summaryCheckIn = _parseOdooDateTime(summary['current_check_in']);
@@ -426,6 +525,8 @@ class HomeController extends GetxController {
       if (_isProfileCheckedIn()) {
         _applyProfileAttendance(currentEmployee.value?.profile);
         _syncSessionTimer();
+      } else {
+        _syncTotalTodayFromProfile(currentEmployee.value?.profile);
       }
     }
   }
@@ -458,6 +559,7 @@ class HomeController extends GetxController {
       isCheckedIn.value = false;
       checkInDateTime.value = null;
       checkInTime.value = '--:--:--';
+      _syncTotalTodayFromProfile(profile);
     }
   }
 
@@ -547,6 +649,7 @@ class HomeController extends GetxController {
         isCheckedIn.value = false;
         checkOutTime =
             '${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')}';
+        _mergeCheckoutSessionIntoTotal();
         checkInDateTime.value = null;
         stopTimer();
         await loadTodayAttendance();
@@ -742,6 +845,10 @@ class HomeController extends GetxController {
     final checkedOut = action == 'check_out' || state == 'checked_out';
 
     if (checkedOut) {
+      _mergeCheckoutSessionIntoTotal(
+        checkInRaw: model.checkIn,
+        checkOutRaw: model.checkOut,
+      );
       isCheckedIn.value = false;
       checkInDateTime.value = null;
       checkInTime.value = '--:--:--';

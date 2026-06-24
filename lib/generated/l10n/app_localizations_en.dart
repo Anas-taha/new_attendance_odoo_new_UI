@@ -65,6 +65,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get networkUnavailable =>
+      'Network unavailable. Check your internet connection and try again.';
+
+  @override
   String get logout => 'Logout';
 
   @override
@@ -72,6 +76,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get ok => 'OK';
 
   @override
   String get loggedOutSuccess => 'Logged out successfully';
@@ -617,6 +624,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToCreateExpense => 'Failed to create expense';
 
   @override
+  String get failedToCreateLeaveRequest =>
+      'Failed to submit leave request. Please try again.';
+
+  @override
   String errorCreatingExpense(String error) {
     return 'Error creating expense: $error';
   }
@@ -1126,11 +1137,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attendanceStatusFullDay => 'Full day ✅';
 
   @override
-  String get registerFaceTitle => 'Register Your Face';
+  String get registerFaceTitle => 'Add Face ID';
 
   @override
   String get registerFaceDescription =>
-      'Take a clear photo of your face to enable attendance check-in';
+      'Register your face to enable easy and secure attendance check-in and check-out';
+
+  @override
+  String get registerFaceInstructionsTitle => 'Tips for easy registration';
+
+  @override
+  String get registerFaceInstruction1 => 'Keep your face inside the frame';
+
+  @override
+  String get registerFaceInstruction2 => 'Make sure you have good lighting';
+
+  @override
+  String get registerFaceInstruction3 => 'Avoid wearing dark sunglasses';
 
   @override
   String get registerFaceContinue => 'Save and Continue';
@@ -1174,10 +1197,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get biometricDisabledInSettings =>
-      'Biometric authentication is turned off on this device. Enable fingerprint or face unlock in Settings, then try again.';
+      'No fingerprint or face ID is set up on this device. Open your phone Settings, register a fingerprint or face ID under Security (or Face ID & Passcode on iPhone), then return and try again.';
 
   @override
-  String get openSettings => 'Open Settings';
+  String get biometricCreateInSettingsTitle => 'Set up fingerprint or face ID';
+
+  @override
+  String get biometricCreateInSettingsMessage =>
+      'To sign in, you need to register a fingerprint or face ID in your phone Settings first.';
+
+  @override
+  String get openSettings => 'Open phone Settings';
+
+  @override
+  String get createBiometricInSettings => 'Set up in Settings';
 
   @override
   String get retryBiometric => 'Try again';
@@ -1189,4 +1222,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get enableBiometricRequiredMessage =>
       'For your security, biometric login is required on this device before you can continue.';
+
+  @override
+  String get biometricNotSupported =>
+      'This device does not support biometric authentication. Sign-in is not allowed.';
 }

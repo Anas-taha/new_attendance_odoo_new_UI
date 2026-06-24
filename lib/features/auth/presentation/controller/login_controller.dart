@@ -27,7 +27,16 @@ class LoginController extends GetxController {
   RxBool isBiometricEnabled = false.obs;
   RxBool hasSavedCredentials = false.obs;
   RxBool isBiometricRequired = false.obs;
+  Rx<BiometricAvailability> biometricAvailability =
+      BiometricAvailability.notSupported.obs;
   bool _autoBiometricAttempted = false;
+
+  @override
+  void onReady() {
+    super.onReady();
+    prefillSavedCredentials();
+    _refreshBiometricState();
+  }
 
   @override
   void onClose() {
@@ -63,7 +72,18 @@ class LoginController extends GetxController {
       return;
     }
 
-    await _handleRequiredBiometricLogin(context: activeContext);
+    final availability = await _biometricAuth.getAvailability();
+    biometricAvailability.value = availability;
+    isBiometricAvailable.value =
+        availability == BiometricAvailability.ready;
+    if (availability != BiometricAvailability.ready) {
+      return;
+    }
+
+    await _handleRequiredBiometricLogin(
+      context: activeContext,
+      showAvailabilityErrors: false,
+    );
   }
 
   Future<void> _refreshBiometricState() async {
@@ -81,8 +101,33 @@ class LoginController extends GetxController {
         hasSavedCredentials.value && isBiometricEnabled.value;
 
     final availability = await _biometricAuth.getAvailability();
+    biometricAvailability.value = availability;
     isBiometricAvailable.value =
         availability == BiometricAvailability.ready;
+  }
+
+  Future<bool> _ensureBiometricReadyForLogin() async {
+    final availability = await _biometricAuth.getAvailability();
+    biometricAvailability.value = availability;
+    isBiometricAvailable.value =
+        availability == BiometricAvailability.ready;
+
+    if (availability == BiometricAvailability.ready) {
+      return true;
+    }
+
+    final activeContext = Get.context;
+    if (activeContext == null) {
+      return false;
+    }
+
+    final l10n = AppLocalizations.of(activeContext)!;
+    if (availability == BiometricAvailability.disabledInSettings) {
+      await _showBiometricSettingsDialog(l10n);
+    } else {
+      await _showBiometricNotSupportedDialog(l10n);
+    }
+    return false;
   }
 
   Future<void> prefillSavedCredentials() async {
@@ -117,7 +162,10 @@ class LoginController extends GetxController {
     await _handleRequiredBiometricLogin(context: context);
   }
 
-  Future<void> _handleRequiredBiometricLogin({BuildContext? context}) async {
+  Future<void> _handleRequiredBiometricLogin({
+    BuildContext? context,
+    bool showAvailabilityErrors = true,
+  }) async {
     if (isLoading.value) {
       return;
     }
@@ -136,6 +184,10 @@ class LoginController extends GetxController {
       return;
     }
 
+    if (showAvailabilityErrors && !await _ensureBiometricReadyForLogin()) {
+      return;
+    }
+
     if (context != null && !context.mounted) {
       return;
     }
@@ -146,20 +198,6 @@ class LoginController extends GetxController {
     }
 
     final l10n = AppLocalizations.of(activeContext)!;
-
-    final availability = await _biometricAuth.getAvailability();
-    isBiometricAvailable.value =
-        availability == BiometricAvailability.ready;
-
-    if (availability == BiometricAvailability.disabledInSettings) {
-      await _showBiometricSettingsDialog(l10n);
-      return;
-    }
-
-    if (availability != BiometricAvailability.ready) {
-      _showSnackBar(l10n.biometricSetupRequired, isError: true);
-      return;
-    }
 
     final authenticated = await _biometricAuth.authenticate(
       reason: l10n.biometricLoginReason,
@@ -182,6 +220,9 @@ class LoginController extends GetxController {
     await _refreshBiometricState();
 
     if (isBiometricRequired.value) {
+      if (!await _ensureBiometricReadyForLogin()) {
+        return;
+      }
       await tryBiometricLogin();
       return;
     }
@@ -232,10 +273,6 @@ class LoginController extends GetxController {
       if (offerBiometricSetup) {
         final enabled = await _requireBiometricLoginSetup();
         if (!enabled) {
-          _showSnackBar(
-            AppLocalizations.of(Get.context!)!.biometricSetupRequired,
-            isError: true,
-          );
           return;
         }
       }
@@ -270,8 +307,14 @@ class LoginController extends GetxController {
 
   Future<bool> _requireBiometricLoginSetup() async {
     final availability = await _biometricAuth.getAvailability();
+    biometricAvailability.value = availability;
+
     if (availability == BiometricAvailability.notSupported) {
-      return true;
+      final l10n = AppLocalizations.of(Get.context!);
+      if (l10n != null) {
+        await _showBiometricNotSupportedDialog(l10n);
+      }
+      return false;
     }
 
     if (availability == BiometricAvailability.disabledInSettings) {
@@ -320,6 +363,14 @@ class LoginController extends GetxController {
               text: l10n.enableBiometricConfirm,
               onTap: () => Get.back(result: true),
             ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () async {
+                Get.back();
+                await _showBiometricSettingsDialog(l10n);
+              },
+              child: Text(l10n.createBiometricInSettings),
+            ),
           ],
         ),
       );
@@ -332,6 +383,10 @@ class LoginController extends GetxController {
         reason: l10n.enableBiometricReason,
       );
       if (!verified) {
+        final availability = await _biometricAuth.getAvailability();
+        if (availability == BiometricAvailability.disabledInSettings) {
+          await _showBiometricSettingsDialog(l10n);
+        }
         continue;
       }
 
@@ -349,7 +404,7 @@ class LoginController extends GetxController {
         mainAxisSize: MainAxisSize.min,
         children: [
           CustomText(
-            text: l10n.biometricRequiredTitle,
+            text: l10n.biometricCreateInSettingsTitle,
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.app1A1A1AText1,
@@ -357,9 +412,17 @@ class LoginController extends GetxController {
           ),
           const SizedBox(height: 8),
           CustomText(
-            text: l10n.biometricDisabledInSettings,
+            text: l10n.biometricCreateInSettingsMessage,
             fontSize: 13,
             fontWeight: FontWeight.w500,
+            color: AppColors.appA0A0A0Text2,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          CustomText(
+            text: l10n.biometricDisabledInSettings,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
             color: AppColors.appA0A0A0Text2,
             textAlign: TextAlign.center,
           ),
@@ -373,15 +436,55 @@ class LoginController extends GetxController {
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Get.back();
-              tryBiometricLogin();
+              await _refreshBiometricState();
+              if (biometricAvailability.value ==
+                  BiometricAvailability.ready) {
+                await tryBiometricLogin();
+              }
             },
             child: Text(l10n.retryBiometric),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showBiometricNotSupportedDialog(AppLocalizations l10n) async {
+    await CustomDialog.dialog(
+      barrierDismissible: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomText(
+            text: l10n.biometricRequiredTitle,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: AppColors.app1A1A1AText1,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          CustomText(
+            text: l10n.biometricNotSupported,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: AppColors.appA0A0A0Text2,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          CustomButton(
+            text: l10n.ok,
+            onTap: () => Get.back(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> openBiometricSettings() async {
+    await _biometricAuth.openDeviceSettings();
+    await _refreshBiometricState();
   }
 
   void _showSnackBar(String message, {required bool isError}) {

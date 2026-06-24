@@ -27,9 +27,11 @@
       "error": {"type": "String"}
     }
   },
+  "networkUnavailable": "Network unavailable. Check your internet connection and try again.",
   "logout": "Logout",
   "logoutConfirm": "Are you sure you want to logout?",
   "cancel": "Cancel",
+  "ok": "OK",
   "loggedOutSuccess": "Logged out successfully",
   "logoutError": "Error during logout: {error}",
   "@logoutError": {
@@ -257,6 +259,7 @@
   "pleaseSelectCategory": "Please select a category",
   "expenseCreatedSuccess": "Expense created successfully!",
   "failedToCreateExpense": "Failed to create expense",
+  "failedToCreateLeaveRequest": "Failed to submit leave request. Please try again.",
   "errorCreatingExpense": "Error creating expense: {error}",
   "@errorCreatingExpense": {
     "placeholders": {
@@ -465,8 +468,12 @@
   "attendanceStatusLeftEarly": "Left early ⚠️",
   "attendanceStatusLate": "Late ⏰",
   "attendanceStatusFullDay": "Full day ✅",
-  "registerFaceTitle": "Register Your Face",
-  "registerFaceDescription": "Take a clear photo of your face to enable attendance check-in",
+  "registerFaceTitle": "Add Face ID",
+  "registerFaceDescription": "Register your face to enable easy and secure attendance check-in and check-out",
+  "registerFaceInstructionsTitle": "Tips for easy registration",
+  "registerFaceInstruction1": "Keep your face inside the frame",
+  "registerFaceInstruction2": "Make sure you have good lighting",
+  "registerFaceInstruction3": "Avoid wearing dark sunglasses",
   "registerFaceContinue": "Save and Continue",
   "registerFaceImageRequired": "Please take a photo before continuing",
   "registerFaceUploadFailed": "Failed to upload face image. Please try again.",
@@ -479,9 +486,13 @@
   "notNow": "Not now",
   "biometricRequiredTitle": "Biometric login required",
   "biometricRequiredMessage": "Use your fingerprint or face ID to sign in.",
-  "biometricDisabledInSettings": "Biometric authentication is turned off on this device. Enable fingerprint or face unlock in Settings, then try again.",
-  "openSettings": "Open Settings",
+  "biometricDisabledInSettings": "No fingerprint or face ID is set up on this device. Open your phone Settings, register a fingerprint or face ID under Security (or Face ID & Passcode on iPhone), then return and try again.",
+  "biometricCreateInSettingsTitle": "Set up fingerprint or face ID",
+  "biometricCreateInSettingsMessage": "To sign in, you need to register a fingerprint or face ID in your phone Settings first.",
+  "openSettings": "Open phone Settings",
+  "createBiometricInSettings": "Set up in Settings",
   "retryBiometric": "Try again",
   "biometricSetupRequired": "Biometric login must be enabled to continue.",
-  "enableBiometricRequiredMessage": "For your security, biometric login is required on this device before you can continue."
+  "enableBiometricRequiredMessage": "For your security, biometric login is required on this device before you can continue.",
+  "biometricNotSupported": "This device does not support biometric authentication. Sign-in is not allowed."
 }

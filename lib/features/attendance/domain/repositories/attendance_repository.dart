@@ -1,7 +1,10 @@
 import 'package:hr_app_odoo/models/attendance_model.dart';
 
 abstract class AttendanceRepository {
-  Future<AttendanceSummaryModel> getAttendanceSummary();
+  Future<AttendanceSummaryModel> getAttendanceSummary({
+    String? dateFrom,
+    String? dateTo,
+  });
 
   // Future<HrEmployee?> getCurrentEmployee();
 

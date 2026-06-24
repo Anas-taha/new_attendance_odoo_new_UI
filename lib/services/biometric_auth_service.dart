@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -10,6 +13,8 @@ enum BiometricAvailability {
 class BiometricAuthService {
   BiometricAuthService({LocalAuthentication? auth})
     : _auth = auth ?? LocalAuthentication();
+
+  static const _settingsChannel = MethodChannel('hr_app_odoo/biometric_settings');
 
   final LocalAuthentication _auth;
 
@@ -48,5 +53,13 @@ class BiometricAuthService {
     }
   }
 
-  Future<void> openDeviceSettings() => openAppSettings();
+  Future<void> openDeviceSettings() async {
+    if (Platform.isAndroid) {
+      try {
+        await _settingsChannel.invokeMethod<void>('openSecuritySettings');
+        return;
+      } catch (_) {}
+    }
+    await openAppSettings();
+  }
 }

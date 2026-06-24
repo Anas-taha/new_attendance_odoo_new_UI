@@ -21,13 +21,16 @@ class AttendanceReportService {
   /// Uses the /attendance_location/objects endpoint
   ///
 
-  Future<AttendanceSummaryModel> getAttendanceSummary() async {
+  Future<AttendanceSummaryModel> getAttendanceSummary({
+    String? dateFrom,
+    String? dateTo,
+  }) async {
     try {
       final result = await _odooService.callOdooApi(
         apiUrl: 'attendance/summary',
         state: null,
-        date_from: null,
-        date_to: null,
+        date_from: dateFrom,
+        date_to: dateTo,
       );
       if (result['status'] == 'success') {
         return AttendanceSummaryModel.fromJson(result);

@@ -12,6 +12,7 @@ class CustomCalender {
   static void calenderDialog({
     required TextEditingController contorller,
     String? title,
+    void Function(DateTime selectedDay)? onDateSelected,
   }) {
     showDialog(
       fullscreenDialog: false,
@@ -57,6 +58,7 @@ class CustomCalender {
                   contorller.text =
                       '${selectedDay.day}/${selectedDay.month}/${selectedDay.year}';
                   Get.back();
+                  onDateSelected?.call(selectedDay);
                 },
 
                 calendarStyle: CalendarStyle(

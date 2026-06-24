@@ -62,6 +62,61 @@ class Leaves {
     rejectedReason = json['rejected_reason'];
   }
 
+  /// Maps `hr.leave` search_read rows (Postman jsonrpc fields).
+  factory Leaves.fromSearchRead(Map<String, dynamic> json) {
+    final statusField = json['holiday_status_id'];
+    num? typeId;
+    String? typeName;
+    if (statusField is List && statusField.isNotEmpty) {
+      typeId = statusField[0] as num?;
+      if (statusField.length > 1) {
+        typeName = statusField[1]?.toString();
+      }
+    }
+
+    return Leaves(
+      id: json['id'],
+      title: typeName ?? json['name']?.toString(),
+      leaveTypeId: typeId,
+      dateFrom: _formatSearchReadDate(json['date_from']),
+      dateTo: _formatSearchReadDate(json['date_to']),
+      numberOfDays: json['number_of_days'],
+      holidayStatus: _mapOdooLeaveState(json['state']),
+      holidayReason: json['name']?.toString(),
+    );
+  }
+
+  static String? _formatSearchReadDate(dynamic raw) {
+    if (raw == null || raw == false) {
+      return null;
+    }
+    final value = raw.toString();
+    final parsed = DateTime.tryParse(value.replaceFirst(' ', 'T'));
+    if (parsed == null) {
+      return value;
+    }
+    return '${parsed.year}-'
+        '${parsed.month.toString().padLeft(2, '0')}-'
+        '${parsed.day.toString().padLeft(2, '0')}';
+  }
+
+  static String? _mapOdooLeaveState(dynamic state) {
+    switch (state?.toString()) {
+      case 'validate':
+        return 'approved';
+      case 'refuse':
+        return 'rejected';
+      case 'confirm':
+        return 'pending';
+      case 'cancel':
+        return 'cancelled';
+      case 'draft':
+        return 'draft';
+      default:
+        return state?.toString();
+    }
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
