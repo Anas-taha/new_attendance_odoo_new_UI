@@ -2234,6 +2234,12 @@ abstract class AppLocalizations {
   /// **'Save and Continue'**
   String get registerFaceContinue;
 
+  /// No description provided for @registerFaceRetake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake Photo'**
+  String get registerFaceRetake;
+
   /// No description provided for @registerFaceImageRequired.
   ///
   /// In en, this message translates to:
@@ -2245,6 +2251,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to upload face image. Please try again.'**
   String get registerFaceUploadFailed;
+
+  /// No description provided for @registerFaceNoFaceDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No clear face detected. Please retake a front-facing photo in good lighting.'**
+  String get registerFaceNoFaceDetected;
 
   /// No description provided for @biometricLoginReason.
   ///

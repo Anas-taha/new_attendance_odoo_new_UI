@@ -21,78 +21,97 @@ class RegisterFaceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<RegisterFaceController>();
 
-    return CustomScreen(
-      loading: controller.isLoading,
-      screenPadding: 20,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Align(
-              alignment: AlignmentDirectional.topStart,
-              child: GestureDetector(
-                onTap: Get.back,
-                child: SvgPicture.asset(
-                  AppImage.registerFaceBack,
-                  width: 24.w,
-                  height: 30.h,
-                  fit: BoxFit.contain,
-                  matchTextDirection: true,
-                ),
-              ),
-            ),
-            24.verticalSpace,
-            CustomText(
-              text: context.appWords.registerFaceTitle,
-              fontSize: 18.w,
-              color: AppColors.app1A1A1AText1,
-              fontWeight: FontWeight.w700,
-              textAlign: TextAlign.center,
-            ),
-            8.verticalSpace,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
-              child: CustomText(
-                text: context.appWords.registerFaceDescription,
-                fontSize: 13.w,
-                color: _descriptionColor,
-                fontWeight: FontWeight.w500,
+    return PopScope(
+      canPop: false,
+      child: CustomScreen(
+        loading: controller.isLoading,
+        screenPadding: 20,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              24.verticalSpace,
+              CustomText(
+                text: context.appWords.registerFaceTitle,
+                fontSize: 18.w,
+                color: AppColors.app1A1A1AText1,
+                fontWeight: FontWeight.w700,
                 textAlign: TextAlign.center,
               ),
-            ),
-            40.verticalSpace,
-            Obx(
-              () => _FacePreview(
-                imageBytes: controller.faceImageBytes.value,
-                hasCapturedImage: controller.hasCapturedImage.value,
-                onTap: controller.captureFace,
+              8.verticalSpace,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                child: CustomText(
+                  text: context.appWords.registerFaceDescription,
+                  fontSize: 13.w,
+                  color: _descriptionColor,
+                  fontWeight: FontWeight.w500,
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            40.verticalSpace,
-            CustomText(
-              text: context.appWords.registerFaceInstructionsTitle,
-              fontSize: 13.w,
-              fontWeight: FontWeight.w500,
-              color: AppColors.app1A1A1AText1,
-              textAlign: TextAlign.center,
-            ),
-            12.verticalSpace,
-            _InstructionItem(text: context.appWords.registerFaceInstruction1),
-            8.verticalSpace,
-            _InstructionItem(text: context.appWords.registerFaceInstruction2),
-            8.verticalSpace,
-            _InstructionItem(text: context.appWords.registerFaceInstruction3),
-            32.verticalSpace,
-            Obx(
-              () => CustomButton(
-                text: context.appWords.registerFaceContinue,
-                onTap: controller.saveAndContinue,
-                color: controller.hasCapturedImage.value
-                    ? AppColors.app670379Sedondary2
-                    : AppColors.app670379Sedondary2.withValues(alpha: 0.45),
+              40.verticalSpace,
+              Obx(
+                () => _FacePreview(
+                  imageBytes: controller.faceImageBytes.value,
+                  hasCapturedImage: controller.hasCapturedImage.value,
+                  onTap: controller.captureFace,
+                ),
               ),
-            ),
-            16.verticalSpace,
-          ],
+              16.verticalSpace,
+              Obx(() {
+                final message = controller.errorMessage.value;
+                if (message == null || message.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: CustomText(
+                    text: message,
+                    fontSize: 13.w,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.appF44336Error,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }),
+              24.verticalSpace,
+              CustomText(
+                text: context.appWords.registerFaceInstructionsTitle,
+                fontSize: 13.w,
+                fontWeight: FontWeight.w500,
+                color: AppColors.app1A1A1AText1,
+                textAlign: TextAlign.center,
+              ),
+              12.verticalSpace,
+              _InstructionItem(text: context.appWords.registerFaceInstruction1),
+              8.verticalSpace,
+              _InstructionItem(text: context.appWords.registerFaceInstruction2),
+              8.verticalSpace,
+              _InstructionItem(text: context.appWords.registerFaceInstruction3),
+              32.verticalSpace,
+              Obx(() {
+                final hasImage = controller.hasCapturedImage.value;
+                final requiresRetake = controller.requiresRetake.value;
+                final buttonText = requiresRetake || !hasImage
+                    ? context.appWords.registerFaceRetake
+                    : context.appWords.registerFaceContinue;
+
+                return CustomButton(
+                  text: buttonText,
+                  onTap: () {
+                    if (requiresRetake || !hasImage) {
+                      controller.captureFace();
+                    } else {
+                      controller.saveAndContinue();
+                    }
+                  },
+                  color: hasImage && !requiresRetake
+                      ? AppColors.primary
+                      : AppColors.primary.withValues(alpha: 0.85),
+                );
+              }),
+              16.verticalSpace,
+            ],
+          ),
         ),
       ),
     );
@@ -162,7 +181,7 @@ class _FacePreview extends StatelessWidget {
                 width: 36.w,
                 height: 36.w,
                 decoration: BoxDecoration(
-                  color: AppColors.app670379Sedondary2.withValues(alpha: 0.92),
+                  color: AppColors.primary.withValues(alpha: 0.92),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

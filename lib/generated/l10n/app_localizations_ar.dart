@@ -1148,11 +1148,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get registerFaceContinue => 'حفظ ومتابعة';
 
   @override
+  String get registerFaceRetake => 'إعادة التقاط الصورة';
+
+  @override
   String get registerFaceImageRequired => 'يرجى التقاط صورة قبل المتابعة';
 
   @override
   String get registerFaceUploadFailed =>
       'فشل رفع صورة الوجه. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get registerFaceNoFaceDetected =>
+      'لم يتم اكتشاف وجه واضح. يرجى إعادة التقاط صورة أمامية بإضاءة جيدة.';
 
   @override
   String get biometricLoginReason => 'تحقق من هويتك لتسجيل الدخول بسرعة';

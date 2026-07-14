@@ -401,6 +401,98 @@ class OdooRPCService {
     }
   }
 
+  /// POST /mobile/profile/photo — saves employee photo and auto-registers face.
+  /// Returns the raw `result` map so callers can handle `no_face_detected`.
+  Future<Map<String, dynamic>> uploadProfilePhoto({
+    required String imageBase64,
+  }) async {
+    if (!isAuthenticated) {
+      return {
+        'status': 'error',
+        'message': 'Not authenticated. Please login first.',
+      };
+    }
+
+    final token = mobileToken;
+    if (token == null || token.isEmpty) {
+      return {
+        'status': 'error',
+        'message': 'Not authenticated. Please login first.',
+      };
+    }
+
+    try {
+      final url = Uri.parse(OdooConfig.mobileEndpoint('profile/photo'));
+      final imagePayload = imageBase64.startsWith('data:')
+          ? imageBase64
+          : 'data:image/jpeg;base64,$imageBase64';
+
+      log(name: 'OdooRPCService', 'POST $url (profile/photo)');
+
+      final response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'HR App Flutter Odoo.sh',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: json.encode({
+              'jsonrpc': '2.0',
+              'method': 'call',
+              'params': {
+                'db': _database ?? OdooConfig.database,
+                'mobile_token': token,
+                'image': imagePayload,
+              },
+            }),
+          )
+          .timeout(Duration(milliseconds: OdooConfig.writeTimeout));
+
+      log(
+        name: 'OdooRPCService',
+        'profile/photo status: ${response.statusCode}',
+      );
+
+      if (response.statusCode != 200) {
+        _logHttpError('profile/photo', url, response);
+        return {
+          'status': 'error',
+          'message':
+              'HTTP Error: ${response.statusCode} - ${response.body}',
+        };
+      }
+
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse is! Map<String, dynamic>) {
+        return {'status': 'error', 'message': 'Invalid photo upload response'};
+      }
+
+      if (jsonResponse['error'] != null) {
+        final error = jsonResponse['error'];
+        final message = error is Map
+            ? (error['data']?['message'] ?? error['message'] ?? 'Upload failed')
+            : error.toString();
+        return {'status': 'error', 'message': message.toString()};
+      }
+
+      final result = jsonResponse['result'];
+      if (result is Map<String, dynamic>) {
+        return result;
+      }
+
+      return {'status': 'error', 'message': 'Invalid photo upload response'};
+    } catch (e, stackTrace) {
+      log(
+        name: 'OdooRPCService',
+        'profile/photo error: $e',
+      );
+      log(name: 'OdooRPCService', 'stack: $stackTrace');
+      return {'status': 'error', 'message': e.toString()};
+    }
+  }
+
   Future<Map<String, dynamic>> searchRead({
     required String model,
     List<List<dynamic>>? domain,

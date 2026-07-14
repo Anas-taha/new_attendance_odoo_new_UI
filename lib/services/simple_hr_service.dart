@@ -41,6 +41,17 @@ class SimpleHrService {
     }
   }
 
+  /// Upload profile photo + auto face-enrol via POST /mobile/profile/photo.
+  ///
+  /// [imageBase64] may be raw base64 or a `data:image/jpeg;base64,...` URI.
+  /// Returns a structured map — does NOT show UI dialogs so the caller can
+  /// force retake on `no_face_detected`.
+  Future<Map<String, dynamic>> uploadProfilePhoto({
+    required String imageBase64,
+  }) async {
+    return _odooService.uploadProfilePhoto(imageBase64: imageBase64);
+  }
+
   Future<SalaryModel> getPayslip() async {
     try {
       final result = await _odooService.callOdooApi(

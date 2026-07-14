@@ -1159,12 +1159,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerFaceContinue => 'Save and Continue';
 
   @override
+  String get registerFaceRetake => 'Retake Photo';
+
+  @override
   String get registerFaceImageRequired =>
       'Please take a photo before continuing';
 
   @override
   String get registerFaceUploadFailed =>
       'Failed to upload face image. Please try again.';
+
+  @override
+  String get registerFaceNoFaceDetected =>
+      'No clear face detected. Please retake a front-facing photo in good lighting.';
 
   @override
   String get biometricLoginReason => 'Authenticate to sign in quickly';

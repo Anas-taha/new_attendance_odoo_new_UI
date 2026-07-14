@@ -831,7 +831,7 @@ class FaceAttendanceService {
         image = await picker.pickImage(
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.front,
-          imageQuality: 90,
+          imageQuality: 80,
         );
       } else {
         // On desktop/web, use gallery as fallback
@@ -839,7 +839,7 @@ class FaceAttendanceService {
         try {
           image = await picker.pickImage(
             source: ImageSource.gallery,
-            imageQuality: 90,
+            imageQuality: 80,
           );
         } catch (e) {
           log('❌ Gallery picker error: $e');
@@ -922,7 +922,7 @@ class FaceAttendanceService {
         filePath,
         minWidth: 1024,
         minHeight: 1024,
-        quality: 88,
+        quality: 80,
         format: CompressFormat.jpeg,
       );
 
