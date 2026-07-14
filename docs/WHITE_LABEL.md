@@ -1,94 +1,153 @@
 # White-label / multi-company distribution
 
-Each company gets its **own Play Store / App Store listing** by building a separate flavor with a unique bundle ID, app name, icon, and Odoo server.
+Each company gets its **own Play Store / App Store listing** as a separate Flutter app that depends on the shared [`hr_core`](../packages/hr_core) package.
 
 ## Architecture
 
 ```
-tenants/
-  bluehr.json          # Company A config
-  alshalawi.json       # Company B config
-  smartfitness.json    # Smart Fitness config
-  template.json        # Copy this for new companies
-
-lib/config/
-  tenant_config.dart   # Reads compile-time values from JSON
-  odoo_config.dart     # Uses TenantConfig for API URL + database
+packages/hr_core/          Shared UI, services, routing, theme, l10n, assets
+apps/
+  bluehr/                  Standalone app (own android/, ios/, signing, bundle id)
+  alshalawi/
+  smartfitness/
+  _template/               Copy scaffold for new companies
+tool/new_company.ps1       Creates apps/<slug> from _template
 ```
 
-Build command injects tenant settings at compile time:
+Each app shell is thin: `lib/main.dart` constructs a `TenantConfig` and calls `runHrCoreApp()`.
 
-```powershell
-flutter build appbundle --release --flavor alshalawi --dart-define-from-file=tenants/alshalawi.json
-flutter build apk --release --flavor smartfitness --dart-define-from-file=tenants/smartfitness.json
-flutter build appbundle --release --flavor smartfitness --dart-define-from-file=tenants/smartfitness.json
-```
+```dart
+import 'package:flutter/material.dart';
+import 'package:hr_core/hr_core.dart';
 
-Or use the helper script:
-
-```powershell
-.\tool\build_tenant.ps1 -Tenant alshalawi -Target appbundle
-.\tool\build_tenant.ps1 -Tenant smartfitness -Target apk
-.\tool\build_tenant.ps1 -Tenant bluehr -Target run
-```
-
-## What differs per company (store requirement)
-
-| Item | Where to configure |
-|------|-------------------|
-| Play Store / App Store listing | Separate app per `applicationId` / bundle ID |
-| App name (launcher) | `tenants/*.json` → `APP_NAME` + Android `productFlavors.resValue` |
-| Odoo server URL | `ODOO_BASE_URL` in tenant JSON |
-| Odoo database | `ODOO_DATABASE` in tenant JSON |
-| Primary brand color | `PRIMARY_COLOR` in tenant JSON |
-| App icon | `android/app/src/<flavor>/res/mipmap-*` (per flavor) |
-| iOS icon / name | Xcode scheme + `Info.plist` per tenant (see below) |
-
-## Add a new company
-
-1. Copy `tenants/template.json` → `tenants/acme.json`
-2. Fill in `APP_NAME`, `APPLICATION_ID`, `ODOO_BASE_URL`, `ODOO_DATABASE`
-3. Add Android flavor in `android/app/build.gradle.kts`:
-
-```kotlin
-create("acme") {
-    dimension = "tenant"
-    applicationId = "com.acme.hr"
-    resValue("string", "app_name", "ACME HR")
+void main() {
+  runHrCoreApp(
+    config: const TenantConfig(
+      appName: 'ALSHALAWI',
+      odooBaseUrl: 'https://al-shalawi.gulftriangle.net/mobile/',
+      odooDatabase: 'al-shalawi',
+      primaryColor: Color(0xFF670379),
+      secondaryColor: Color(0xFF89734e),
+      logoAssetPath: 'assets/branding/logo.png',
+    ),
+  );
 }
 ```
 
-4. Add launcher icons under `android/app/src/acme/res/mipmap-*`
-5. (iOS) Duplicate Runner scheme → `acme`, set `PRODUCT_BUNDLE_IDENTIFIER`
-6. Build: `.\tool\build_tenant.ps1 -Tenant acme -Target appbundle`
-7. Upload the AAB/IPA to Play Console / App Store Connect as a **new app**
+## What differs per company
 
-## iOS (one listing per company)
+| Item | Where to configure |
+|------|-------------------|
+| Play Store / App Store listing | Separate app per `applicationId` / bundle ID in `apps/<slug>/` |
+| App name (launcher) | `android/.../strings.xml`, `ios/Runner/Info.plist`, `TenantConfig.appName` |
+| Odoo server URL | `TenantConfig.odooBaseUrl` in `lib/main.dart` |
+| Odoo database | `TenantConfig.odooDatabase` in `lib/main.dart` |
+| Primary brand color | `TenantConfig.primaryColor` in `lib/main.dart` (app bar, accents) |
+| Button color | `TenantConfig.secondaryColor` in `lib/main.dart` (ElevatedButton, CustomButton) |
+| App icon | `assets/branding/app_icon.png` + `flutter_launcher_icons.yaml` |
+| In-app logo (optional) | `assets/branding/logo.png` + `TenantConfig.logoAssetPath` |
+| Android signing | `android/key.properties` + `.jks` keystore (per app, gitignored) |
+| iOS signing | Xcode → Signing & Capabilities (per app, own team/provisioning) |
 
-1. Open `ios/Runner.xcworkspace`
-2. Duplicate the `Runner` scheme → name it after the tenant (e.g. `alshalawi`)
-3. Create `.xcconfig` or build configurations with unique `PRODUCT_BUNDLE_IDENTIFIER`
-4. Build:
+Shared icons (attendance, calendar, etc.) live in `packages/hr_core/assets/` and are loaded via `AppImage` using `packages/hr_core/...` paths.
 
-```bash
-flutter build ipa --flavor alshalawi --dart-define-from-file=tenants/alshalawi.json
+## Run / build a company app
+
+```powershell
+cd apps/alshalawi
+flutter pub get
+flutter run
+flutter build apk --release
+flutter build appbundle --release
 ```
 
-## CI matrix (Codemagic / GitHub Actions)
+VS Code: use launch configs **bluehr**, **alshalawi**, or **smartfitness** (each points at its app folder).
 
-Run one job per tenant:
+### Wrong launcher icon after copying a shell?
+
+Android adaptive icons use `drawable-*/ic_launcher_foreground.png` (and legacy `mipmap-*/ic_launcher_foreground.png`). If an app was copied from another shell, those PNGs may still be the **previous company's icon** even when `assets/branding/app_icon.png` is correct.
+
+Fix:
+
+```powershell
+cd apps/alshalawi
+dart run flutter_launcher_icons
+flutter clean
+flutter run
+```
+
+Uninstall the old APK from the device first if the home-screen icon is cached.
+
+## Add a new company
+
+```powershell
+.\tool\new_company.ps1 `
+  -Slug acme `
+  -AppName "ACME HR" `
+  -ApplicationId com.acme.hr `
+  -OdooBaseUrl "https://your-odoo-server.com/mobile/" `
+  -OdooDatabase your_odoo_database `
+  -PrimaryColor 670379 `
+  -SecondaryColor 89734e
+```
+
+Then:
+
+1. Replace `apps/acme/assets/branding/app_icon.png` and `logo.png`
+2. `cd apps/acme; dart run flutter_launcher_icons` (required — copies from `_template` still carry the old launcher PNGs until you regenerate)
+3. Create Android release keystore + `android/key.properties` (see below)
+4. Open `apps/acme/ios/Runner.xcworkspace` in Xcode → set Team and bundle id
+5. Build and upload AAB/IPA as a **new** store listing
+
+## Android signing (per app)
+
+Create a keystore (once per company):
+
+```powershell
+keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+```
+
+Create `apps/<slug>/android/key.properties` (do **not** commit):
+
+```properties
+storePassword=...
+keyPassword=...
+keyAlias=upload
+storeFile=../upload-keystore.jks
+```
+
+Each app's `android/app/build.gradle.kts` already reads `key.properties` when present and falls back to debug signing otherwise.
+
+## iOS (per app)
+
+Each `apps/<slug>/ios/` is a normal single-target Xcode project:
+
+1. Open `Runner.xcworkspace` in Xcode
+2. Set **Team** under Signing & Capabilities
+3. Confirm `PRODUCT_BUNDLE_IDENTIFIER` matches the company's bundle id
+4. Build: `flutter build ipa --release` from the app directory
+
+## CI matrix example
+
+Build one job per company app:
 
 ```yaml
 strategy:
   matrix:
-    tenant: [bluehr, alshalawi, smartfitness]
+    app: [bluehr, alshalawi, smartfitness]
 steps:
-  - run: flutter build appbundle --release --flavor ${{ matrix.tenant }} --dart-define-from-file=tenants/${{ matrix.tenant }}.json
+  - run: cd apps/${{ matrix.app }} && flutter pub get
+  - run: cd apps/${{ matrix.app }} && flutter analyze
+  - run: cd apps/${{ matrix.app }} && flutter build appbundle --release
 ```
 
-Use separate signing credentials per client if they own their store accounts.
+Use separate signing credentials per client when they own their store accounts.
 
 ## Store accounts
 
 - **You publish all apps**: one Google Play / Apple developer account, many apps (different bundle IDs).
-- **Each company publishes their own**: export signed AAB/IPA + give them store assets; they upload under their account.
+- **Each company publishes their own**: give them the signed AAB/IPA + store assets; they upload under their account.
+
+## Updating shared features
+
+Change code in `packages/hr_core/`. All company apps pick it up on the next `flutter pub get` / build (path dependency). Bump `hr_core` version when publishing via private Git instead of path deps.

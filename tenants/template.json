@@ -1,8 +1,0 @@
-{
-  "TENANT_ID": "S",
-  "APP_NAME": "Company Display Name",
-  "APPLICATION_ID": "com.company.hr",
-  "ODOO_BASE_URL": "https://your-odoo-server.com/mobile/",
-  "ODOO_DATABASE": "your_odoo_database",
-  "PRIMARY_COLOR": "670379"
-}

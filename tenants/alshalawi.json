@@ -1,8 +1,0 @@
-{
-  "TENANT_ID": "alshalawi",
-  "APP_NAME": "ALSHALAWI",
-  "APPLICATION_ID": "com.alshalawi.hr",
-  "ODOO_BASE_URL": "https://al-shalawi.gulftriangle.net/mobile/",
-  "ODOO_DATABASE": "al-shalawi",
-  "PRIMARY_COLOR": "670379"
-}

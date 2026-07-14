@@ -1,54 +1,56 @@
-name: iOS Build (Test Mode - No Code Signing)
+name: Monorepo CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
-  build-ios-test:
-    runs-on: macos-latest
-    
+  analyze-hr-core:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.16.0'
-        channel: 'stable'
-        
-    - name: Install dependencies
-      run: flutter pub get
-      
-    - name: Run tests
-      run: flutter test
-      
-    - name: Analyze code
-      run: flutter analyze
-      
-    - name: Build iOS app (No Code Signing)
-      run: flutter build ios --release --no-codesign
-      
-    - name: Build iOS Archive (No Code Signing)
-      run: flutter build ipa --release --no-codesign
-      
-    - name: Upload iOS Build Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ios-build-test
-        path: |
-          build/ios/ipa/*.ipa
-          build/ios/Release-iphoneos/*.app
-        retention-days: 7
-        
-    - name: Upload Build Logs
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-logs
-        path: |
-          build/ios/ios_build.log
-        retention-days: 7
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Analyze hr_core
+        run: |
+          cd packages/hr_core
+          flutter pub get
+          flutter analyze
+
+  build-android-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [bluehr, alshalawi, smartfitness]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Build ${{ matrix.app }} APK
+        run: |
+          cd apps/${{ matrix.app }}
+          flutter pub get
+          flutter analyze
+          flutter build apk --release
+
+  build-ios-matrix:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        app: [bluehr, alshalawi, smartfitness]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Build ${{ matrix.app }} iOS (no codesign)
+        run: |
+          cd apps/${{ matrix.app }}
+          flutter pub get
+          flutter analyze
+          flutter build ios --release --no-codesign

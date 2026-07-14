@@ -1,8 +1,0 @@
-{
-  "TENANT_ID": "smartfitness",
-  "APP_NAME": "SMART FITNESS",
-  "APPLICATION_ID": "com.smartfitness.hr",
-  "ODOO_BASE_URL": "https://smartfitnesssa-fitness-gym.odoo.com/",
-  "ODOO_DATABASE": "smartfitnesssa-fitness-gym-main-17599672",
-  "PRIMARY_COLOR": "a41526"
-}

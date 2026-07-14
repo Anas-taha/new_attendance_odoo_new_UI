@@ -1,53 +1,59 @@
 workflows:
-  ios-workflow:
-    name: iOS Workflow
+  hr-core-analyze:
+    name: hr_core analyze
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    scripts:
+      - name: Analyze shared package
+        script: |
+          cd packages/hr_core
+          flutter pub get
+          flutter analyze
+
+  android-matrix:
+    name: Android release matrix
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    scripts:
+      - name: Build all company AABs
+        script: |
+          for app in bluehr alshalawi smartfitness; do
+            echo "Building apps/$app"
+            cd apps/$app
+            flutter pub get
+            flutter analyze
+            flutter build appbundle --release
+            cd ../..
+          done
+    artifacts:
+      - apps/*/build/app/outputs/bundle/release/*.aab
+
+  ios-app-example:
+    name: iOS example (bluehr)
     max_build_duration: 60
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Set up keychain to be used for codesigning
-        script: |
-          keychain initialize
+      - name: Set up keychain
+        script: keychain initialize
       - name: Fetch signing files
         script: |
-          # Add your Apple Developer account details
-          app-store-connect fetch-signing-files "com.yourcompany.hrappodoo" --type IOS_APP_STORE --create
-      - name: Set up signing certificate
-        script: |
-          keychain add-certificates
-      - name: Set up provisioning profile
-        script: |
-          app-store-connect fetch-signing-files "com.yourcompany.hrappodoo" --type IOS_APP_STORE
+          app-store-connect fetch-signing-files "com.bluehr.hr" --type IOS_APP_STORE --create
+      - name: Add certificates
+        script: keychain add-certificates
       - name: Install pods
         script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Flutter analyze
+          cd apps/bluehr/ios
+          pod install
+      - name: Analyze and build IPA
         script: |
+          cd apps/bluehr
+          flutter pub get
           flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-      - name: Build ipa for distribution
-        script: |
-          flutter build ipa --release \
-            --build-name=1.0.0 \
-            --build-number=1
+          flutter build ipa --release
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-    publishing:
-      email:
-        recipients:
-          - your-email@example.com
-        notify:
-          success: true
-          failure: false
-      app_store_connect:
-        auth: integration
-        
-        # Configuration for App Store Connect
-        submit_to_testflight: true
-        submit_to_app_store: false
+      - apps/bluehr/build/ios/ipa/*.ipa

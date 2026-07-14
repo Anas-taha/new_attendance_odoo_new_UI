@@ -2,7 +2,7 @@ widgets:
   Text:
     replacement: CustomText
     # import must be a package path only (no Dart import statement).
-    import: package:hr_app_odoo/custom_widgets/custom_text/custom_text.dart
+    import: package:hr_core/src/custom_widgets/custom_text/custom_text.dart
     severity: error
 
   ElevatedButton:

@@ -5,31 +5,22 @@
       "name": "bluehr (debug)",
       "request": "launch",
       "type": "dart",
-      "args": [
-        "--flavor",
-        "bluehr",
-        "--dart-define-from-file=tenants/bluehr.json"
-      ]
+      "cwd": "${workspaceFolder}/apps/bluehr",
+      "program": "lib/main.dart"
     },
     {
       "name": "alshalawi (debug)",
       "request": "launch",
       "type": "dart",
-      "args": [
-        "--flavor",
-        "alshalawi",
-        "--dart-define-from-file=tenants/alshalawi.json"
-      ]
+      "cwd": "${workspaceFolder}/apps/alshalawi",
+      "program": "lib/main.dart"
     },
     {
       "name": "smartfitness (debug)",
       "request": "launch",
       "type": "dart",
-      "args": [
-        "--flavor",
-        "smartfitness",
-        "--dart-define-from-file=tenants/smartfitness.json"
-      ]
+      "cwd": "${workspaceFolder}/apps/smartfitness",
+      "program": "lib/main.dart"
     }
   ]
 }
