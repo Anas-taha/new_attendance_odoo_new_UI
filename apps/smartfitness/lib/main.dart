@@ -7,8 +7,8 @@ void main() {
       appName: 'SMART FITNESS',
       odooBaseUrl: 'https://smartfitnesssa-fitness-gym.odoo.com/',
       odooDatabase: 'smartfitnesssa-fitness-gym-main-17599672',
-      primaryColor: Color(0xFFa41526),
-      secondaryColor: Color(0xFF000000),
+      secondaryColor: Color(0xFFa41526),
+      primaryColor: Color(0xFF000000),
       logoAssetPath: 'assets/branding/logo.png',
     ),
   );

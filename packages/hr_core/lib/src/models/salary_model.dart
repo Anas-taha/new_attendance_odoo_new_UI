@@ -61,16 +61,22 @@ class Payslips {
     dateFrom = json['date_from'];
     dateTo = json['date_to'];
     state = json['state'];
-    basicSalary = json['basic_salary'];
-    allowances = json['allowances'];
-    deductions = json['deductions'];
-    netSalary = json['net_salary'];
+    basicSalary = _parseAmount(json['basic_salary']);
+    allowances = _parseAmount(json['allowances']);
+    deductions = _parseAmount(json['deductions']);
+    netSalary = _parseAmount(json['net_salary']);
     if (json['lines'] != null) {
       lines = <Lines>[];
       json['lines'].forEach((v) {
-        lines!.add(new Lines.fromJson(v));
+        lines!.add(Lines.fromJson(v));
       });
     }
+  }
+
+  static num _parseAmount(dynamic value) {
+    if (value == null || value == 'null' || value == 'snull') return 0;
+    if (value is num) return value;
+    return num.tryParse(value.toString()) ?? 0;
   }
 
   Map<String, dynamic> toJson() {

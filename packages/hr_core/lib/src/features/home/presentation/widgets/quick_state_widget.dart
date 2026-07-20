@@ -1,45 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
 
 class QuickStateWidget extends StatelessWidget {
-  QuickStateWidget({
+  const QuickStateWidget({
     super.key,
     required this.icon,
     required this.title,
     required this.value,
     required this.color,
   });
-  IconData icon;
-  String title;
-  String value;
-  Color color;
+
+  final IconData icon;
+  final String title;
+  final String value;
+  final Color color;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.w500,
+          Container(
+            height: 32.h,
+            width: 32.w,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
             ),
+            child: Icon(icon, color: color, size: 16.sp),
           ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
+          8.horizontalSpace,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  text: title,
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w500,
+                  color: color,
+                ),
+                CustomText(
+                  text: value,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.primary,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],

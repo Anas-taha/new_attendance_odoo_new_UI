@@ -1,4 +1,5 @@
-﻿import 'package:hr_core/src/config/tenant_config.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:hr_core/src/config/tenant_config.dart';
 
 class OdooConfig {
   OdooConfig._();
@@ -16,6 +17,19 @@ class OdooConfig {
       );
     }
   }
+
+  static TenantConfig get tenant {
+    _ensureInitialized();
+    return _config!;
+  }
+
+  static String get appName => tenant.appName;
+
+  static Color get primaryColor => tenant.primaryColor;
+
+  static Color get secondaryColor => tenant.secondaryColor;
+
+  static String? get logoAssetPath => tenant.logoAssetPath;
 
   static String get baseUrl {
     _ensureInitialized();

@@ -1,19 +1,15 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hr_core/src/custom_widgets/custom_dialog/custom_dialog.dart';
-import 'package:hr_core/src/custom_widgets/custom_text_field/custom_text_field.dart';
-import 'package:hr_core/src/services/extension.dart';
 import 'package:hr_core/src/app/app_image.dart';
-import 'package:hr_core/src/features/home/presentation/controllers/home_controller.dart';
-import 'package:hr_core/src/features/home/presentation/widgets/quick_state_widget.dart';
-import 'package:hr_core/src/features/home/presentation/widgets/time_box_widget.dart';
-import 'package:hr_core/generated/l10n/app_localizations.dart';
-import 'package:hr_core/src/theme/app_theme.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_core/src/custom_widgets/custom_container/custom_container.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_image_text_value.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_core/src/features/home/presentation/controllers/home_controller.dart';
+import 'package:hr_core/src/features/home/presentation/widgets/time_box_widget.dart';
+import 'package:hr_core/src/services/extension.dart';
+import 'package:hr_core/src/theme/app_theme.dart';
 
 class AttendanceWidget extends StatelessWidget {
   const AttendanceWidget({super.key});
@@ -21,13 +17,16 @@ class AttendanceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeController = Get.find<HomeController>();
+    final brand = Theme.of(context).colorScheme.secondary;
+    final primary = Theme.of(context).colorScheme.primary;
+
     return CustomContainer(
       color: AppColors.appFAFAFABackGround2,
       usedefaultSahdow: true,
       horizontalPadding: 16.w,
       verticalPadding: 14.h,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -35,86 +34,168 @@ class AttendanceWidget extends StatelessWidget {
                 () => Expanded(
                   child: CustomTextValueAndImage(
                     text: homeController.currentDate.value,
-                    textSize: 14.w,
-                    textColor: AppColors.appPrimaryColor,
+                    textSize: 14.sp,
+                    textColor: primary,
                     image: homeController.isAm.value
                         ? AppImage.sun
                         : AppImage.moon,
-                    imageSize: 32.w,
+                    imageSize: 28.w,
                   ),
                 ),
               ),
-              Expanded(
-                child: Obx(
-                  () => GestureDetector(
-                    onTap: () => homeController.resolveLocationAndAddress(
-                      forceRefresh: true,
-                    ),
-                    onLongPress: homeController.addressDialog,
-                    child: CustomContainer(
-                      verticalPadding: 8,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (homeController.isResolvingLocation.value)
-                            SizedBox(
-                              width: 14.w,
-                              height: 14.w,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.appPrimaryColor,
-                              ),
-                            )
-                          else
-                            Icon(
-                              Icons.location_on_outlined,
-                              size: 16.w,
-                              color: AppColors.appPrimaryColor,
-                            ),
-                          4.horizontalSpace,
-                          Flexible(
-                            child: CustomText(
-                              text: homeController.isResolvingLocation.value
-                                  ? context.appWords.waitingForLocation
-                                  : homeController.address.value.isNotEmpty
-                                  ? homeController.address.value
-                                  : context.appWords.enterYourAddress,
-                              fontSize: 13.w,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.appPrimaryColor,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+              Obx(() {
+                final checkedIn = homeController.isCheckedIn.value;
+                return Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: checkedIn
+                        ? brand.withValues(alpha: 0.12)
+                        : AppColors.appA0A0A0Text2.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: checkedIn
+                          ? brand.withValues(alpha: 0.35)
+                          : AppColors.appA0A0A0Text2.withValues(alpha: 0.25),
                     ),
                   ),
-                ),
-              ),
+                  child: CustomText(
+                    text: checkedIn
+                        ? context.appWords.checkedInActive
+                        : context.appWords.notCheckedIn,
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w600,
+                    color: checkedIn ? brand : AppColors.appA0A0A0Text2,
+                  ),
+                );
+              }),
             ],
           ),
-          8.verticalSpace,
+          10.verticalSpace,
+          Obx(
+            () => GestureDetector(
+              onTap: () => homeController.resolveLocationAndAddress(
+                forceRefresh: true,
+              ),
+              onLongPress: homeController.addressDialog,
+              child: Row(
+                children: [
+                  if (homeController.isResolvingLocation.value)
+                    SizedBox(
+                      width: 14.w,
+                      height: 14.w,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: brand,
+                      ),
+                    )
+                  else
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 16.sp,
+                      color: brand,
+                    ),
+                  4.horizontalSpace,
+                  Flexible(
+                    child: CustomText(
+                      text: homeController.isResolvingLocation.value
+                          ? context.appWords.waitingForLocation
+                          : homeController.address.value.isNotEmpty
+                              ? homeController.address.value
+                              : context.appWords.enterYourAddress,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: primary,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Obx(() {
-            homeController.elapsed.value;
-            homeController.totalToday.value;
-            homeController.isCheckedIn.value;
-            return Row(
-              children: [
-                CustomText(
-                  text: '${homeController.formattedTime} / ',
-                  fontSize: 18.w,
-                  color: AppColors.app1A1A1AText1,
-                  fontWeight: FontWeight.w500,
+            if (!homeController.isCheckedIn.value) {
+              return Padding(
+                padding: EdgeInsets.only(top: 10.h),
+                child: Row(
+                  children: [
+                    CustomText(
+                      text: '${homeController.formattedTime} / ',
+                      fontSize: 18.sp,
+                      color: AppColors.app1A1A1AText1,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    CustomText(
+                      text: homeController.totalToday.value,
+                      color: AppColors.appA0A0A0Text2,
+                      fontSize: 13.sp,
+                    ),
+                  ],
                 ),
-                CustomText(
-                  text: homeController.totalToday.value,
-                  color: AppColors.appA0A0A0Text2,
-                  fontSize: 13.w,
-                ),
-              ],
+              );
+            }
+
+            homeController.seconds.value;
+            final totalSeconds = homeController.seconds.value;
+            final hours =
+                (totalSeconds ~/ 3600).toString().padLeft(2, '0');
+            final minutes =
+                ((totalSeconds % 3600) ~/ 60).toString().padLeft(2, '0');
+            final secs = (totalSeconds % 60).toString().padLeft(2, '0');
+
+            return Padding(
+              padding: EdgeInsets.only(top: 12.h),
+              child: Column(
+                children: [
+                  CustomText(
+                    text: context.appWords.currentSession,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.appA0A0A0Text2,
+                  ),
+                  8.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TimeBoxWidget(time: hours),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.w),
+                        child: Text(
+                          ':',
+                          style: TextStyle(
+                            color: brand,
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TimeBoxWidget(time: minutes),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.w),
+                        child: Text(
+                          ':',
+                          style: TextStyle(
+                            color: brand,
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TimeBoxWidget(time: secs),
+                    ],
+                  ),
+                  6.verticalSpace,
+                  CustomText(
+                    text: context.appWords
+                        .startedAt(homeController.checkInTime.value),
+                    fontSize: 12.sp,
+                    color: AppColors.appA0A0A0Text2,
+                  ),
+                ],
+              ),
             );
           }),
-          8.verticalSpace,
+          12.verticalSpace,
           Obx(
             () => CustomButton(
               text: homeController.isCheckedIn.value
@@ -129,171 +210,6 @@ class AttendanceWidget extends StatelessWidget {
           ),
         ],
       ),
-
-      // child: Column(
-      //   children: [
-      //     const SizedBox(height: 20),
-      //     Row(
-      //       children: [
-      //         Expanded(
-      //           child: QuickStateWidget(
-      //             icon: Icons.timer,
-      //             title: AppLocalizations.of(context)!.today,
-      //             value: homeController.totalToday.value,
-      //             color: const Color(0xFF667eea),
-      //           ),
-      //         ),
-      //         const SizedBox(width: 16),
-      //         Expanded(
-      //           child: QuickStateWidget(
-      //             icon: Icons.schedule,
-      //             title: AppLocalizations.of(context)!.thisWeek,
-      //             value: homeController.beforeTime.value,
-      //             color: const Color(0xFF764ba2),
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //     const SizedBox(height: 20),
-      //     if (homeController.isCheckedIn.value) ...[
-      //       Container(
-      //         padding: const EdgeInsets.all(16),
-      //         decoration: BoxDecoration(
-      //           gradient: const LinearGradient(
-      //             colors: [Color(0xFF6B46C1), Color(0xFF9F7AEA)],
-      //             begin: Alignment.topLeft,
-      //             end: Alignment.bottomRight,
-      //           ),
-      //           borderRadius: BorderRadius.circular(12),
-      //         ),
-      //         child: Column(
-      //           children: [
-      //             Text(
-      //               AppLocalizations.of(context)!.currentSession,
-      //               style: const TextStyle(
-      //                 color: Colors.white,
-      //                 fontSize: 14,
-      //                 fontWeight: FontWeight.w500,
-      //               ),
-      //             ),
-      //             const SizedBox(height: 8),
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.center,
-      //               children: [
-      //                 TimeBoxWidget(
-      //                   time:
-      //                       '${(homeController.seconds.value ~/ 3600).toString().padLeft(2, '0')}',
-      //                 ),
-      //                 const Text(
-      //                   ' : ',
-      //                   style: TextStyle(
-      //                     color: Colors.white,
-      //                     fontSize: 24,
-      //                     fontWeight: FontWeight.bold,
-      //                   ),
-      //                 ),
-      //                 TimeBoxWidget(
-      //                   time:
-      //                       '${((homeController.seconds.value % 3600) ~/ 60).toString().padLeft(2, '0')}',
-      //                 ),
-      //                 const Text(
-      //                   ' : ',
-      //                   style: TextStyle(
-      //                     color: Colors.white,
-      //                     fontSize: 24,
-      //                     fontWeight: FontWeight.bold,
-      //                   ),
-      //                 ),
-      //                 TimeBoxWidget(
-      //                   time:
-      //                       '${(homeController.seconds.value % 60).toString().padLeft(2, '0')}',
-      //                 ),
-      //               ],
-      //             ),
-      //             const SizedBox(height: 8),
-      //             Text(
-      //               AppLocalizations.of(
-      //                 context,
-      //               )!.startedAt(homeController.checkInTime.value),
-      //               style: const TextStyle(color: Colors.white70, fontSize: 12),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       const SizedBox(height: 20),
-      //     ],
-      //     Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Text(
-      //           AppLocalizations.of(context)!.registerAttendance,
-      //           style: const TextStyle(
-      //             fontSize: 16,
-      //             fontWeight: FontWeight.bold,
-      //             color: Color(0xFF2D3748),
-      //           ),
-      //         ),
-      //         const SizedBox(height: 12),
-      //         Row(
-      //           children: [
-      //             Expanded(
-      //               child: ElevatedButton.icon(
-      //                 onPressed: () =>
-      //                     Navigator.pushNamed(context, '/face-attendance'),
-      //                 icon: Icon(
-      //                   homeController.isCheckedIn.value
-      //                       ? Icons.logout
-      //                       : Icons.login,
-      //                 ),
-      //                 label: Text(
-      //                   homeController.isCheckedIn.value
-      //                       ? AppLocalizations.of(context)!.checkOutFace
-      //                       : AppLocalizations.of(context)!.checkInFace,
-      //                 ),
-      //                 style: ElevatedButton.styleFrom(
-      //                   backgroundColor: homeController.isCheckedIn.value
-      //                       ? Colors.red[600]
-      //                       : Colors.green[600],
-      //                   foregroundColor: Colors.white,
-      //                   padding: const EdgeInsets.symmetric(vertical: 12),
-      //                   shape: RoundedRectangleBorder(
-      //                     borderRadius: BorderRadius.circular(8),
-      //                   ),
-      //                 ),
-      //               ),
-      //             ),
-      //             const SizedBox(width: 12),
-      //             Expanded(
-      //               child: OutlinedButton.icon(
-      //                 onPressed: () => Navigator.pushNamed(
-      //                   context,
-      //                   '/attendance',
-      //                   arguments: {
-      //                     'isCheckedIn': homeController.isCheckedIn.value,
-      //                     'checkInDateTime':
-      //                         homeController.checkInDateTime.value,
-      //                     'checkInTime': homeController.checkInTime.value,
-      //                     'totalWorkedHours': homeController.totalToday.value,
-      //                   },
-      //                 ),
-      //                 icon: const Icon(Icons.visibility),
-      //                 label: Text(AppLocalizations.of(context)!.viewDetails),
-      //                 style: OutlinedButton.styleFrom(
-      //                   foregroundColor: const Color(0xFF6B46C1),
-      //                   side: const BorderSide(color: Color(0xFF6B46C1)),
-      //                   padding: const EdgeInsets.symmetric(vertical: 12),
-      //                   shape: RoundedRectangleBorder(
-      //                     borderRadius: BorderRadius.circular(8),
-      //                   ),
-      //                 ),
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      // ),
     );
   }
 }

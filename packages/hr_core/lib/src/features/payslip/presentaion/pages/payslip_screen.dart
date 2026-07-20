@@ -1,18 +1,16 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hr_core/src/features/payslip/presentation/controllers/payslip_controller.dart';
-import 'package:hr_core/src/services/extension.dart';
 import 'package:hr_core/src/app/app_image.dart';
-import 'package:hr_core/src/features/payslip/presentaion/controller/payslip_controller.dart';
-import 'package:hr_core/src/theme/app_theme.dart';
-import 'package:hr_core/src/custom_widgets/custom_appbar/custom_appbar.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_core/src/custom_widgets/custom_container/custom_container.dart';
 import 'package:hr_core/src/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_core/src/custom_widgets/custom_screen/custom_screen.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_core/src/custom_widgets/custom_text_field/custom_text_field.dart';
+import 'package:hr_core/src/features/payslip/presentation/controllers/payslip_controller.dart';
+import 'package:hr_core/src/services/extension.dart';
+import 'package:hr_core/src/theme/app_theme.dart';
 
 class PayslipScreen extends StatelessWidget {
   const PayslipScreen({super.key});
@@ -66,7 +64,7 @@ class PayslipScreen extends StatelessWidget {
                   Column(
                     children: [
                       CustomText(
-                        text: controller.salary.basicSalary.toString(),
+                        text: _amountLabel(controller.salary.basicSalary),
                         color: AppColors.appFFFFFFBackGround1,
                         fontSize: 30.w,
                         fontWeight: FontWeight.w700,
@@ -100,7 +98,7 @@ class PayslipScreen extends StatelessWidget {
                       ),
                       Spacer(),
                       CustomText(
-                        text: controller.salary.allowances.toString(),
+                        text: _amountLabel(controller.salary.allowances),
                         color: AppColors.appPrimaryColor,
                         fontWeight: FontWeight.w700,
                       ),
@@ -123,7 +121,7 @@ class PayslipScreen extends StatelessWidget {
                     ),
                     Spacer(),
                     CustomText(
-                      text: controller.salary.deductions.toString(),
+                      text: _amountLabel(controller.salary.deductions),
                       color: AppColors.appF44336Error,
                       fontWeight: FontWeight.w700,
                     ),
@@ -145,7 +143,7 @@ class PayslipScreen extends StatelessWidget {
                     ),
                     Spacer(),
                     CustomText(
-                      text: controller.salary.netSalary.toString(),
+                      text: _amountLabel(controller.salary.netSalary),
                       color: AppColors.app4CAF50Success,
                       fontWeight: FontWeight.w700,
                     ),
@@ -158,4 +156,6 @@ class PayslipScreen extends StatelessWidget {
       },
     );
   }
+
+  String _amountLabel(num? value) => (value ?? 0).toString();
 }

@@ -34,15 +34,30 @@ class PayslipController extends GetxController {
 
   Future<void> getSalaries() async {
     isLoading.value = true;
-    final result = await _payslipRepository.getPayslips();
-    log(name: 'sfdbdfgjhndtyj', 'result: ${result.status} ');
-    salary = result.payslips?.first ?? Payslips();
-    update();
-    log(
-      name: 'PayslipController',
-      'result: $result salary: $salary name: ${salary.basicSalary}',
-    );
-    isLoading.value = false;
+    try {
+      final result = await _payslipRepository.getPayslips();
+      log(name: 'PayslipController', 'result: ${result.status}');
+      final payslips = result.payslips;
+      salary = (payslips != null && payslips.isNotEmpty)
+          ? payslips.first
+          : Payslips();
+      update();
+      log(
+        name: 'PayslipController',
+        'salary: $salary basicSalary: ${salary.basicSalary}',
+      );
+    } catch (e, stackTrace) {
+      log(
+        name: 'PayslipController',
+        'getSalaries failed: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      salary = Payslips();
+      update();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> getPayslipLine() async {

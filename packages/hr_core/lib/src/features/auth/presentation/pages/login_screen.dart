@@ -1,14 +1,15 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hr_core/src/services/extension.dart';
 import 'package:hr_core/src/app/app_image.dart';
+import 'package:hr_core/src/config/odoo_config.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_core/src/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_core/src/custom_widgets/custom_screen/custom_screen.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_core/src/custom_widgets/custom_text_field/custom_text_field.dart';
 import 'package:hr_core/src/features/auth/presentation/controller/login_controller.dart';
+import 'package:hr_core/src/services/extension.dart';
 import 'package:hr_core/src/theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -60,7 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              80.verticalSpace,
+              48.verticalSpace,
+              _LoginBrandHeader(),
+              24.verticalSpace,
               CustomText(
                 text: context.appWords.logIn,
                 fontSize: 16.w,
@@ -129,6 +132,49 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LoginBrandHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final logoPath = OdooConfig.logoAssetPath;
+    final brand = Theme.of(context).colorScheme.secondary;
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Column(
+      children: [
+        if (logoPath != null && logoPath.isNotEmpty)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16.r),
+            child: Image.asset(
+              logoPath,
+              height: 88.h,
+              width: 88.w,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.business,
+                size: 64.sp,
+                color: brand,
+              ),
+            ),
+          )
+        else
+          Icon(
+            Icons.business,
+            size: 64.sp,
+            color: brand,
+          ),
+        12.verticalSpace,
+        CustomText(
+          text: OdooConfig.appName,
+          fontSize: 18.sp,
+          fontWeight: FontWeight.w700,
+          color: primary,
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
