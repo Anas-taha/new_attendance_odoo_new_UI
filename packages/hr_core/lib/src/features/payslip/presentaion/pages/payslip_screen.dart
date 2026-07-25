@@ -21,20 +21,20 @@ class PayslipScreen extends StatelessWidget {
       builder: (controller) {
         return CustomScreen(
           loading: controller.isLoading,
-          floatingActionButton: Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: CustomButton(
-              text: context.appWords.downloadPayslip,
-              onTap: () {
-                controller.generatePdf();
-              },
-            ),
-          ),
+          floatingActionButton: controller.hasPayslip
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: CustomButton(
+                    text: context.appWords.downloadPayslip,
+                    onTap: controller.generatePdf,
+                  ),
+                )
+              : null,
           appBarTitle: context.appWords.salary,
           body: Column(
             children: [
               GestureDetector(
-                onTap: () => controller.selectDate(),
+                onTap: controller.selectDate,
                 child: CustomTextField(
                   hintText: context.appWords.selectDate,
                   usePrefixCalender: true,
@@ -44,112 +44,153 @@ class PayslipScreen extends StatelessWidget {
                 ),
               ),
               16.verticalSpace,
-              Stack(
-                alignment: AlignmentGeometry.center,
-                children: [
-                  Container(
-                    height: 130.h,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CustomImage(
-                        image: AppImage.salaryCard,
-                        fit: BoxFit.cover,
+              if (!controller.hasPayslip)
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 48.sp,
+                            color: AppColors.appA0A0A0Text2,
+                          ),
+                          16.verticalSpace,
+                          CustomText(
+                            text: context.appWords.noPayslipsFound,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            textAlign: TextAlign.center,
+                          ),
+                          8.verticalSpace,
+                          CustomText(
+                            text: context.appWords.payslipsWillAppear,
+                            fontSize: 13.sp,
+                            color: AppColors.appA0A0A0Text2,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  Column(
-                    children: [
-                      CustomText(
-                        text: _amountLabel(controller.salary.basicSalary),
-                        color: AppColors.appFFFFFFBackGround1,
-                        fontSize: 30.w,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      10.verticalSpace,
-                      CustomText(
-                        text: context.appWords.mainSalary,
-                        color: AppColors.appFFFFFFBackGround1,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ],
+                )
+              else
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              height: 130.h,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: CustomImage(
+                                  image: AppImage.salaryCard,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                CustomText(
+                                  text: _amountLabel(
+                                    controller.salary.basicSalary,
+                                  ),
+                                  color: AppColors.appFFFFFFBackGround1,
+                                  fontSize: 30.w,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                10.verticalSpace,
+                                CustomText(
+                                  text: context.appWords.mainSalary,
+                                  color: AppColors.appFFFFFFBackGround1,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        16.verticalSpace,
+                        CustomContainer(
+                          horizontalPadding: 16,
+                          verticalPadding: 16,
+                          color: AppColors.appFAFAFABackGround2,
+                          borderColor: AppColors.appE5E5E5Border,
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: context.appWords.allowances,
+                                color: AppColors.appPrimaryColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              const Spacer(),
+                              CustomText(
+                                text: _amountLabel(
+                                  controller.salary.allowances,
+                                ),
+                                color: AppColors.appPrimaryColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ],
+                          ),
+                        ),
+                        16.verticalSpace,
+                        CustomContainer(
+                          horizontalPadding: 16,
+                          verticalPadding: 16,
+                          color: AppColors.appFDD9D7CardBG2,
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: context.appWords.deductions,
+                                color: AppColors.appF44336Error,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              const Spacer(),
+                              CustomText(
+                                text: _amountLabel(
+                                  controller.salary.deductions,
+                                ),
+                                color: AppColors.appF44336Error,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ],
+                          ),
+                        ),
+                        16.verticalSpace,
+                        CustomContainer(
+                          horizontalPadding: 16,
+                          verticalPadding: 16,
+                          color: AppColors.appEEF7EECardBG3,
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: context.appWords.netSalary,
+                                color: AppColors.app4CAF50Success,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              const Spacer(),
+                              CustomText(
+                                text: _amountLabel(controller.salary.netSalary),
+                                color: AppColors.app4CAF50Success,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-              16.verticalSpace,
-              GestureDetector(
-                onTap: () {
-                  controller.getPayslipLine();
-                },
-                child: CustomContainer(
-                  horizontalPadding: 16,
-                  verticalPadding: 16,
-                  color: AppColors.appFAFAFABackGround2,
-                  borderColor: AppColors.appE5E5E5Border,
-                  child: Row(
-                    children: [
-                      CustomText(
-                        text: context.appWords.allowances,
-                        color: AppColors.appPrimaryColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      Spacer(),
-                      CustomText(
-                        text: _amountLabel(controller.salary.allowances),
-                        color: AppColors.appPrimaryColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-              16.verticalSpace,
-              CustomContainer(
-                horizontalPadding: 16,
-                verticalPadding: 16,
-                color: AppColors.appFDD9D7CardBG2,
-
-                child: Row(
-                  children: [
-                    CustomText(
-                      text: context.appWords.deductions,
-                      color: AppColors.appF44336Error,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    Spacer(),
-                    CustomText(
-                      text: _amountLabel(controller.salary.deductions),
-                      color: AppColors.appF44336Error,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-              ),
-              16.verticalSpace,
-              CustomContainer(
-                horizontalPadding: 16,
-                verticalPadding: 16,
-                color: AppColors.appEEF7EECardBG3,
-
-                child: Row(
-                  children: [
-                    CustomText(
-                      text: context.appWords.netSalary,
-                      color: AppColors.app4CAF50Success,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    Spacer(),
-                    CustomText(
-                      text: _amountLabel(controller.salary.netSalary),
-                      color: AppColors.app4CAF50Success,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         );
@@ -157,5 +198,5 @@ class PayslipScreen extends StatelessWidget {
     );
   }
 
-  String _amountLabel(num? value) => (value ?? 0).toString();
+  String _amountLabel(num? value) => (value ?? 0).toStringAsFixed(2);
 }

@@ -21,6 +21,7 @@ class PayslipController extends GetxController {
 
   TextEditingController dateController = TextEditingController();
   Payslips salary = Payslips();
+  bool hasPayslip = false;
   RxBool isLoading = false.obs;
 
   Uint8List? pdfBytes;
@@ -38,9 +39,8 @@ class PayslipController extends GetxController {
       final result = await _payslipRepository.getPayslips();
       log(name: 'PayslipController', 'result: ${result.status}');
       final payslips = result.payslips;
-      salary = (payslips != null && payslips.isNotEmpty)
-          ? payslips.first
-          : Payslips();
+      hasPayslip = payslips != null && payslips.isNotEmpty;
+      salary = hasPayslip ? payslips!.first : Payslips();
       update();
       log(
         name: 'PayslipController',
@@ -54,6 +54,7 @@ class PayslipController extends GetxController {
         stackTrace: stackTrace,
       );
       salary = Payslips();
+      hasPayslip = false;
       update();
     } finally {
       isLoading.value = false;

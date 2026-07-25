@@ -110,7 +110,7 @@ class Lines {
     name = json['name'];
     code = json['code'];
     category = json['category'];
-    total = json['total'];
+    total = Payslips._parseAmount(json['total']);
   }
 
   Map<String, dynamic> toJson() {
