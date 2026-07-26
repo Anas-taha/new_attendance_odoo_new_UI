@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:hr_core/src/app/app_image.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_core/src/custom_widgets/custom_screen/custom_screen.dart';
@@ -15,11 +15,11 @@ import 'package:hr_core/src/theme/app_theme.dart';
 class RegisterFaceScreen extends StatelessWidget {
   const RegisterFaceScreen({super.key});
 
-  static const _descriptionColor = Color(0xFF5B5858);
-
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<RegisterFaceController>();
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
 
     return PopScope(
       canPop: false,
@@ -33,7 +33,7 @@ class RegisterFaceScreen extends StatelessWidget {
               CustomText(
                 text: context.appWords.registerFaceTitle,
                 fontSize: 18.w,
-                color: AppColors.app1A1A1AText1,
+                color: primary,
                 fontWeight: FontWeight.w700,
                 textAlign: TextAlign.center,
               ),
@@ -43,7 +43,7 @@ class RegisterFaceScreen extends StatelessWidget {
                 child: CustomText(
                   text: context.appWords.registerFaceDescription,
                   fontSize: 13.w,
-                  color: _descriptionColor,
+                  color: AppColors.appA0A0A0Text2,
                   fontWeight: FontWeight.w500,
                   textAlign: TextAlign.center,
                 ),
@@ -54,6 +54,7 @@ class RegisterFaceScreen extends StatelessWidget {
                   imageBytes: controller.faceImageBytes.value,
                   hasCapturedImage: controller.hasCapturedImage.value,
                   onTap: controller.captureFace,
+                  accentColor: secondary,
                 ),
               ),
               16.verticalSpace,
@@ -78,15 +79,24 @@ class RegisterFaceScreen extends StatelessWidget {
                 text: context.appWords.registerFaceInstructionsTitle,
                 fontSize: 13.w,
                 fontWeight: FontWeight.w500,
-                color: AppColors.app1A1A1AText1,
+                color: primary,
                 textAlign: TextAlign.center,
               ),
               12.verticalSpace,
-              _InstructionItem(text: context.appWords.registerFaceInstruction1),
+              _InstructionItem(
+                text: context.appWords.registerFaceInstruction1,
+                accentColor: secondary,
+              ),
               8.verticalSpace,
-              _InstructionItem(text: context.appWords.registerFaceInstruction2),
+              _InstructionItem(
+                text: context.appWords.registerFaceInstruction2,
+                accentColor: secondary,
+              ),
               8.verticalSpace,
-              _InstructionItem(text: context.appWords.registerFaceInstruction3),
+              _InstructionItem(
+                text: context.appWords.registerFaceInstruction3,
+                accentColor: secondary,
+              ),
               32.verticalSpace,
               Obx(() {
                 final hasImage = controller.hasCapturedImage.value;
@@ -104,9 +114,9 @@ class RegisterFaceScreen extends StatelessWidget {
                       controller.saveAndContinue();
                     }
                   },
-                  color: hasImage && !requiresRetake
-                      ? AppColors.primary
-                      : AppColors.primary.withValues(alpha: 0.85),
+                  color: requiresRetake || !hasImage
+                      ? secondary.withValues(alpha: 0.85)
+                      : null,
                 );
               }),
               16.verticalSpace,
@@ -123,11 +133,13 @@ class _FacePreview extends StatelessWidget {
     required this.imageBytes,
     required this.hasCapturedImage,
     required this.onTap,
+    required this.accentColor,
   });
 
   final Uint8List? imageBytes;
   final bool hasCapturedImage;
   final VoidCallback onTap;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +193,7 @@ class _FacePreview extends StatelessWidget {
                 width: 36.w,
                 height: 36.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.92),
+                  color: accentColor.withValues(alpha: 0.92),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -199,9 +211,13 @@ class _FacePreview extends StatelessWidget {
 }
 
 class _InstructionItem extends StatelessWidget {
-  const _InstructionItem({required this.text});
+  const _InstructionItem({
+    required this.text,
+    required this.accentColor,
+  });
 
   final String text;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -214,8 +230,8 @@ class _InstructionItem extends StatelessWidget {
           child: Container(
             width: 5.w,
             height: 5.w,
-            decoration: const BoxDecoration(
-              color: AppColors.appA0A0A0Text2,
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.7),
               shape: BoxShape.circle,
             ),
           ),

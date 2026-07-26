@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:hr_core/src/app/app_image.dart';
 import 'package:hr_core/src/app/app_route.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_back_button.dart';
-import 'package:hr_core/src/features/home/presentation/pages/home_screen.dart';
 import 'package:hr_core/src/theme/app_theme.dart';
 import 'package:hr_core/src/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
@@ -30,6 +29,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 1,
@@ -37,12 +38,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
-          CustomBackButton(),
+          CustomBackButton(color: primary),
           CustomText(
             text: title,
             fontSize: 17.w,
             fontWeight: FontWeight.w700,
-            color: AppColors.appPrimaryColor,
+            color: primary,
           ),
           8.horizontalSpace,
           const Spacer(),
