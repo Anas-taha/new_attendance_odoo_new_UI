@@ -135,8 +135,8 @@ class AttendanceWidget extends StatelessWidget {
               );
             }
 
-            homeController.seconds.value;
-            final totalSeconds = homeController.seconds.value;
+            homeController.elapsed.value;
+            final totalSeconds = homeController.elapsed.value.inSeconds;
             final hours =
                 (totalSeconds ~/ 3600).toString().padLeft(2, '0');
             final minutes =

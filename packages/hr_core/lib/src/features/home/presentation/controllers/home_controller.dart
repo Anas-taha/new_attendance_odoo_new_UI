@@ -700,8 +700,7 @@ class HomeController extends GetxController {
         return;
       }
 
-      final status = await _faceService.getCurrentAttendanceStatus();
-      final currentlyCheckedIn = status['is_checked_in'] == true;
+      final wasCheckedIn = isCheckedIn.value;
 
       final imageData = await _faceService.pickImageFromGallery();
       if (imageData['success'] != true) {
@@ -769,29 +768,31 @@ class HomeController extends GetxController {
           latitude: lat,
           longitude: lon,
           address: addr,
-          currentlyCheckedIn: currentlyCheckedIn,
+          wasCheckedIn: wasCheckedIn,
         );
       }
 
       log('Attendance API result: $result', name: 'HomeController');
 
       if (result['success'] == true) {
-        await loadEmployeeData();
-        await loadTodayAttendance();
         _syncCheckedInFromAttendanceResult(
           result,
-          wasCheckedIn: currentlyCheckedIn,
+          wasCheckedIn: wasCheckedIn,
         );
 
-        final l10n = Get.context!.appWords;
-        final action = result['action']?.toString() ?? '';
-        final message =
-            result['message']?.toString() ??
-            (action == 'check_out' || currentlyCheckedIn
-                ? l10n.checkoutCompletedSuccess
-                : l10n.checkinCompletedSuccess);
+        await loadEmployeeData();
+        await loadTodayAttendance();
 
-        _showAttendanceMessage(message, isError: false);
+        // Server summary can lag; keep UI aligned with the last action.
+        _syncCheckedInFromAttendanceResult(
+          result,
+          wasCheckedIn: wasCheckedIn,
+        );
+
+        _showAttendanceMessage(
+          _attendanceSuccessMessage(result),
+          isError: false,
+        );
         return;
       }
 
@@ -820,7 +821,7 @@ class HomeController extends GetxController {
     required double latitude,
     required double longitude,
     required String address,
-    required bool currentlyCheckedIn,
+    required bool wasCheckedIn,
   }) async {
     final checkResult = await _homeRepository.getAttendanceCheck(
       latitude: latitude,
@@ -829,11 +830,13 @@ class HomeController extends GetxController {
     );
 
     if (checkResult.status == 'success') {
-      _applyCheckInModel(checkResult);
       return {
         'success': true,
-        'action': checkResult.action ?? (currentlyCheckedIn ? 'check_out' : 'check_in'),
+        'action': checkResult.action ??
+            (wasCheckedIn ? 'check_out' : 'check_in'),
         'message': null,
+        'check_in': checkResult.checkIn,
+        'check_out': checkResult.checkOut,
       };
     }
 
@@ -889,6 +892,10 @@ class HomeController extends GetxController {
     final action = result['action']?.toString().toLowerCase() ?? '';
 
     if (action == 'check_out') {
+      _mergeCheckoutSessionIntoTotal(
+        checkInRaw: result['check_in']?.toString(),
+        checkOutRaw: result['check_out']?.toString(),
+      );
       isCheckedIn.value = false;
       checkInDateTime.value = null;
       checkInTime.value = '--:--:--';
@@ -898,22 +905,48 @@ class HomeController extends GetxController {
 
     if (action == 'check_in') {
       isCheckedIn.value = true;
-      checkInDateTime.value ??= DateTime.now();
+      final parsedCheckIn = _parseOdooDateTime(result['check_in']);
+      checkInDateTime.value = parsedCheckIn ?? DateTime.now();
       _updateCheckInTimeLabel();
       _syncSessionTimer();
       return;
     }
 
-    // Face controller may return action=unknown; toggle from pre-request state.
+    // Face controller may return action=unknown; toggle from UI state.
     isCheckedIn.value = !wasCheckedIn;
     if (isCheckedIn.value) {
-      checkInDateTime.value ??= DateTime.now();
+      final parsedCheckIn = _parseOdooDateTime(result['check_in']);
+      checkInDateTime.value = parsedCheckIn ?? DateTime.now();
       _updateCheckInTimeLabel();
     } else {
+      _mergeCheckoutSessionIntoTotal(
+        checkInRaw: result['check_in']?.toString(),
+        checkOutRaw: result['check_out']?.toString(),
+      );
       checkInDateTime.value = null;
       checkInTime.value = '--:--:--';
     }
     _syncSessionTimer();
+  }
+
+  String _attendanceSuccessMessage(Map<String, dynamic> result) {
+    final l10n = Get.context!.appWords;
+    final serverMessage = result['message']?.toString().trim();
+    if (serverMessage != null && serverMessage.isNotEmpty) {
+      return serverMessage;
+    }
+
+    final action = result['action']?.toString().toLowerCase() ?? '';
+    if (action == 'check_out') {
+      return l10n.checkoutCompletedSuccess;
+    }
+    if (action == 'check_in') {
+      return l10n.checkinCompletedSuccess;
+    }
+
+    return isCheckedIn.value
+        ? l10n.checkinCompletedSuccess
+        : l10n.checkoutCompletedSuccess;
   }
 
   void _showAttendanceMessage(String message, {required bool isError}) {

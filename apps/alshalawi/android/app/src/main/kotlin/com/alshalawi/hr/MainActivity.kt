@@ -1,4 +1,4 @@
-package com.example.hr_app_odoo
+package com.alshalawi.hr
 
 import android.content.Intent
 import android.provider.Settings

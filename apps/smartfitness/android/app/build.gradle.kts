@@ -13,7 +13,7 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 android {
-    namespace = "com.example.hr_app_odoo"
+    namespace = "com.smartfitness.hr"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 

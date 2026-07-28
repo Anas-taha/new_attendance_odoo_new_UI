@@ -582,25 +582,20 @@ class FaceAttendanceService {
 
       if (response.statusCode != 200) {
         _logHttpError('submit_face', url, response);
+        final blocked = _isAttendanceBlockedStatus(response.statusCode);
         return {
           'success': false,
           'error': _httpErrorMessage('submit_face', response),
-          'use_attendance_check_fallback': true,
+          'status_code': response.statusCode,
+          if (!blocked) 'use_attendance_check_fallback': true,
         };
       }
 
       final message = _extractMessageFromHtml(response.body);
       final isSuccess = message.contains('Success') || message.contains('✅');
 
-      // Determine if it was check-in or check-out from the message
-      String action = 'unknown';
-      if (message.toLowerCase().contains('check') &&
-          message.toLowerCase().contains('in')) {
-        action = 'check_in';
-      } else if (message.toLowerCase().contains('check') &&
-          message.toLowerCase().contains('out')) {
-        action = 'check_out';
-      }
+      // Determine if it was check-in or check-out from the server message.
+      final action = _parseAttendanceActionFromMessage(message);
 
       if (isSuccess) {
         print('✅ Face attendance successful: $message');
@@ -608,7 +603,12 @@ class FaceAttendanceService {
       }
 
       print('❌ Face attendance failed: $message');
-      return {'success': false, 'error': message};
+      final blocked = _errorIndicatesBlockedAttendance(message);
+      return {
+        'success': false,
+        'error': message,
+        if (blocked) 'status_code': 403,
+      };
     } catch (e, stackTrace) {
       log(
         '❌ Face verification error: $e',
@@ -633,12 +633,29 @@ class FaceAttendanceService {
     );
   }
 
+  bool _isAttendanceBlockedStatus(int statusCode) =>
+      statusCode == 403 || statusCode == 303;
+
+  bool _errorIndicatesBlockedAttendance(String error) {
+    final lower = error.toLowerCase();
+    return lower.contains('http 403') ||
+        lower.contains('http 303') ||
+        lower.contains('(403)') ||
+        lower.contains('(303)') ||
+        lower.contains('access denied');
+  }
+
   String _httpErrorMessage(String label, http.Response response) {
     final location = response.headers['location'] ?? response.headers['Location'];
-    if (response.statusCode == 301 || response.statusCode == 302) {
+    if (response.statusCode == 301 ||
+        response.statusCode == 302 ||
+        response.statusCode == 303) {
       return '$label: HTTP ${response.statusCode} redirect'
           '${location != null ? ' → $location' : ''}. '
           'Check OdooConfig.baseUrl matches Postman base_url.';
+    }
+    if (response.statusCode == 403) {
+      return '$label: Access denied (HTTP 403). Face verification failed or not authorized.';
     }
     final snippet = response.body.length > 120
         ? '${response.body.substring(0, 120)}...'
@@ -671,10 +688,19 @@ class FaceAttendanceService {
       }
 
       final error = controllerResult['error']?.toString() ?? '';
+      final statusCode = controllerResult['status_code'] as int?;
       log(
         '⚠️ submit_face failed: $error',
         name: 'FaceAttendanceService',
       );
+
+      // Server rejected face verification — do not record attendance via fallback.
+      if (statusCode != null && _isAttendanceBlockedStatus(statusCode)) {
+        return controllerResult;
+      }
+      if (_errorIndicatesBlockedAttendance(error)) {
+        return controllerResult;
+      }
 
       // If it's a face matching issue, don't fallback - return the error
       if (error.contains('No matching face') ||
@@ -684,6 +710,7 @@ class FaceAttendanceService {
       }
 
       // For other errors (301, network, etc.) signal caller to use /mobile/attendance/check
+      // 403/303 are handled above and must not trigger fallback.
       return {
         'success': false,
         'error': error,
@@ -706,6 +733,11 @@ class FaceAttendanceService {
       Duration(milliseconds: OdooConfig.writeTimeout),
     );
     var response = await http.Response.fromStream(streamedResponse);
+
+    // 403/303 from submit_face must not be retried or followed — no attendance.
+    if (_isAttendanceBlockedStatus(response.statusCode)) {
+      return response;
+    }
 
     if (response.statusCode == 301 || response.statusCode == 302) {
       final location =
@@ -750,6 +782,34 @@ class FaceAttendanceService {
       print('❌ Face attendance controller not available: $e');
       return false;
     }
+  }
+
+  String _parseAttendanceActionFromMessage(String message) {
+    final lower = message.toLowerCase();
+
+    if (lower.contains('check-out') ||
+        lower.contains('checkout') ||
+        (lower.contains('check') && lower.contains('out'))) {
+      return 'check_out';
+    }
+    if (lower.contains('check-in') ||
+        lower.contains('checkin') ||
+        (lower.contains('check') && lower.contains('in'))) {
+      return 'check_in';
+    }
+
+    // Arabic server messages
+    if (message.contains('انصراف') ||
+        message.contains('الانصراف') ||
+        message.contains('خروج') ||
+        message.contains('الخروج')) {
+      return 'check_out';
+    }
+    if (message.contains('حضور') || message.contains('الحضور')) {
+      return 'check_in';
+    }
+
+    return 'unknown';
   }
 
   String _extractMessageFromHtml(String html) {
