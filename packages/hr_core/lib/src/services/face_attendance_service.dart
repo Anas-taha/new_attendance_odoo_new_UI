@@ -302,8 +302,41 @@ class FaceAttendanceService {
     }
   }
 
-  /// Get current attendance status
+  /// Get current attendance status.
+  ///
+  /// Prefer `/mobile/profile` (works without a linked res.users). Fall back to
+  /// `hr.attendance` search_read only when the profile call is unavailable.
   Future<Map<String, dynamic>> getCurrentAttendanceStatus() async {
+    try {
+      final profileResult = await OdooRPCService.instance.callOdooApi(
+        apiUrl: 'profile',
+      );
+      if (profileResult is Map &&
+          profileResult['status'] == 'success' &&
+          profileResult['profile'] is Map) {
+        final profile = Map<String, dynamic>.from(profileResult['profile'] as Map);
+        final state = (profile['attendance_state'] ?? '').toString().toLowerCase();
+        final last = profile['last_attendance'];
+        final lastMap = last is Map ? Map<String, dynamic>.from(last) : null;
+        final checkedIn = state == 'checked_in' ||
+            (lastMap != null &&
+                (lastMap['check_in']?.toString().isNotEmpty ?? false) &&
+                lastMap['check_out'] == null);
+        return {
+          'is_checked_in': checkedIn,
+          'attendance_id': null,
+          'check_in': lastMap?['check_in'],
+          'attendance_state': state,
+        };
+      }
+    } catch (e, stackTrace) {
+      log(
+        '⚠️ profile attendance status failed, falling back to search_read: $e',
+        name: 'FaceAttendanceService',
+        stackTrace: stackTrace,
+      );
+    }
+
     try {
       final employeeId = OdooRPCService.instance.currentEmployeeId;
       if (employeeId == null) {
@@ -341,6 +374,22 @@ class FaceAttendanceService {
       );
       return {'is_checked_in': false, 'attendance_id': null};
     }
+  }
+
+  Map<String, dynamic>? _tryParseJsonMap(String body) {
+    final trimmed = body.trim();
+    if (trimmed.isEmpty ||
+        !(trimmed.startsWith('{') || trimmed.startsWith('['))) {
+      return null;
+    }
+    try {
+      final decoded = json.decode(trimmed);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+    } catch (_) {
+      return null;
+    }
+    return null;
   }
 
   /// Perform check-in
@@ -582,33 +631,79 @@ class FaceAttendanceService {
 
       if (response.statusCode != 200) {
         _logHttpError('submit_face', url, response);
-        final blocked = _isAttendanceBlockedStatus(response.statusCode);
+        // Prefer JSON error body from the face controller when present.
+        final jsonError = _tryParseJsonMap(response.body);
+        if (jsonError != null) {
+          final msg = (jsonError['message'] ?? jsonError['error'] ?? '')
+              .toString();
+          if (msg.isNotEmpty) {
+            return {
+              'success': false,
+              'error': msg,
+              // Geofence / face rejects must NOT fall back to a second toggle.
+              'use_attendance_check_fallback': false,
+            };
+          }
+        }
         return {
           'success': false,
           'error': _httpErrorMessage('submit_face', response),
-          'status_code': response.statusCode,
-          if (!blocked) 'use_attendance_check_fallback': true,
+          'use_attendance_check_fallback': true,
         };
       }
 
-      final message = _extractMessageFromHtml(response.body);
-      final isSuccess = message.contains('Success') || message.contains('✅');
+      // Backend returns JSON ({status, action, ...}). Older builds returned HTML.
+      final jsonBody = _tryParseJsonMap(response.body);
+      if (jsonBody != null) {
+        final status = (jsonBody['status'] ?? '').toString().toLowerCase();
+        if (status == 'success') {
+          final action = (jsonBody['action'] ?? 'unknown').toString();
+          print('✅ Face attendance successful (JSON): action=$action');
+          return {
+            'success': true,
+            'action': action,
+            'attendance_id': jsonBody['attendance_id'],
+            'attendance_state': jsonBody['attendance_state'],
+            'geofence_status': jsonBody['geofence_status'],
+            'check_in': jsonBody['check_in'],
+            'check_out': jsonBody['check_out'],
+            'message': jsonBody['message'],
+          };
+        }
+        final err = (jsonBody['message'] ?? jsonBody['error'] ?? 'Face attendance failed')
+            .toString();
+        print('❌ Face attendance failed (JSON): $err');
+        return {
+          'success': false,
+          'error': err,
+          'use_attendance_check_fallback': false,
+        };
+      }
 
-      // Determine if it was check-in or check-out from the server message.
-      final action = _parseAttendanceActionFromMessage(message);
+      // Legacy HTML response fallback (should be rare).
+      final message = _extractMessageFromHtml(response.body);
+      final isSuccess = message.toLowerCase().contains('success') ||
+          message.contains('✅');
+
+      String action = 'unknown';
+      final lower = message.toLowerCase();
+      if (lower.contains('check-out') ||
+          lower.contains('check out') ||
+          lower.contains('checkout')) {
+        action = 'check_out';
+      } else if (lower.contains('check-in') ||
+          lower.contains('check in') ||
+          lower.contains('checkin')) {
+        action = 'check_in';
+      }
 
       if (isSuccess) {
-        print('✅ Face attendance successful: $message');
+        print('✅ Face attendance successful (HTML): $message');
         return {'success': true, 'message': message, 'action': action};
       }
 
-      print('❌ Face attendance failed: $message');
-      final blocked = _errorIndicatesBlockedAttendance(message);
-      return {
-        'success': false,
-        'error': message,
-        if (blocked) 'status_code': 403,
-      };
+      print('❌ Face attendance failed (HTML): $message');
+      return {'success': false, 'error': message};
     } catch (e, stackTrace) {
       log(
         '❌ Face verification error: $e',
@@ -633,29 +728,12 @@ class FaceAttendanceService {
     );
   }
 
-  bool _isAttendanceBlockedStatus(int statusCode) =>
-      statusCode == 403 || statusCode == 303;
-
-  bool _errorIndicatesBlockedAttendance(String error) {
-    final lower = error.toLowerCase();
-    return lower.contains('http 403') ||
-        lower.contains('http 303') ||
-        lower.contains('(403)') ||
-        lower.contains('(303)') ||
-        lower.contains('access denied');
-  }
-
   String _httpErrorMessage(String label, http.Response response) {
     final location = response.headers['location'] ?? response.headers['Location'];
-    if (response.statusCode == 301 ||
-        response.statusCode == 302 ||
-        response.statusCode == 303) {
+    if (response.statusCode == 301 || response.statusCode == 302) {
       return '$label: HTTP ${response.statusCode} redirect'
           '${location != null ? ' → $location' : ''}. '
           'Check OdooConfig.baseUrl matches Postman base_url.';
-    }
-    if (response.statusCode == 403) {
-      return '$label: Access denied (HTTP 403). Face verification failed or not authorized.';
     }
     final snippet = response.body.length > 120
         ? '${response.body.substring(0, 120)}...'
@@ -688,19 +766,10 @@ class FaceAttendanceService {
       }
 
       final error = controllerResult['error']?.toString() ?? '';
-      final statusCode = controllerResult['status_code'] as int?;
       log(
         '⚠️ submit_face failed: $error',
         name: 'FaceAttendanceService',
       );
-
-      // Server rejected face verification — do not record attendance via fallback.
-      if (statusCode != null && _isAttendanceBlockedStatus(statusCode)) {
-        return controllerResult;
-      }
-      if (_errorIndicatesBlockedAttendance(error)) {
-        return controllerResult;
-      }
 
       // If it's a face matching issue, don't fallback - return the error
       if (error.contains('No matching face') ||
@@ -710,7 +779,6 @@ class FaceAttendanceService {
       }
 
       // For other errors (301, network, etc.) signal caller to use /mobile/attendance/check
-      // 403/303 are handled above and must not trigger fallback.
       return {
         'success': false,
         'error': error,
@@ -733,11 +801,6 @@ class FaceAttendanceService {
       Duration(milliseconds: OdooConfig.writeTimeout),
     );
     var response = await http.Response.fromStream(streamedResponse);
-
-    // 403/303 from submit_face must not be retried or followed — no attendance.
-    if (_isAttendanceBlockedStatus(response.statusCode)) {
-      return response;
-    }
 
     if (response.statusCode == 301 || response.statusCode == 302) {
       final location =
@@ -782,34 +845,6 @@ class FaceAttendanceService {
       print('❌ Face attendance controller not available: $e');
       return false;
     }
-  }
-
-  String _parseAttendanceActionFromMessage(String message) {
-    final lower = message.toLowerCase();
-
-    if (lower.contains('check-out') ||
-        lower.contains('checkout') ||
-        (lower.contains('check') && lower.contains('out'))) {
-      return 'check_out';
-    }
-    if (lower.contains('check-in') ||
-        lower.contains('checkin') ||
-        (lower.contains('check') && lower.contains('in'))) {
-      return 'check_in';
-    }
-
-    // Arabic server messages
-    if (message.contains('انصراف') ||
-        message.contains('الانصراف') ||
-        message.contains('خروج') ||
-        message.contains('الخروج')) {
-      return 'check_out';
-    }
-    if (message.contains('حضور') || message.contains('الحضور')) {
-      return 'check_in';
-    }
-
-    return 'unknown';
   }
 
   String _extractMessageFromHtml(String html) {
