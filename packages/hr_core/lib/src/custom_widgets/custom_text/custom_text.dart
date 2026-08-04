@@ -20,6 +20,13 @@ class CustomText extends StatelessWidget {
   TextAlign? textAlign;
   TextOverflow? overflow;
 
+  double get _effectiveFontSize => bold ? 20 : (fontSize ?? 16);
+
+  double get _safeFontSize {
+    final size = _effectiveFontSize;
+    return size > 0 ? size : (bold ? 20 : 16);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Text(
@@ -27,7 +34,7 @@ class CustomText extends StatelessWidget {
       textAlign: textAlign,
       style: TextStyle(
         color: color ?? AppColors.app1A1A1AText1,
-        fontSize: bold ? 20 : fontSize ?? 16,
+        fontSize: _safeFontSize,
         fontWeight: bold ? FontWeight.bold : fontWeight ?? FontWeight.w500,
         overflow: overflow,
       ),
