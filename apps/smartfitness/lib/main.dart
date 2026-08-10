@@ -5,8 +5,8 @@ void main() {
   runHrCoreApp(
     config: const TenantConfig(
       appName: 'SMART FITNESS',
-      odooBaseUrl: 'https://smartfitness.gulftriangle.net',
-      odooDatabase: 'smartfitnesssa-fitness-gym-main-17599672',
+      odooBaseUrl: 'https://smartfitness.gulftriangle.net/mobile/',
+      odooDatabase: 'main',
       secondaryColor: Color(0xFFa41526),
       primaryColor: Color(0xFF000000),
       logoAssetPath: 'assets/branding/logo.png',
