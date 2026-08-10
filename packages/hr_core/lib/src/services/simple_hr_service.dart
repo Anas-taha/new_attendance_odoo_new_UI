@@ -1,9 +1,5 @@
 ﻿import 'dart:developer';
 
-import 'package:get/get.dart';
-import 'package:hr_core/src/app/app_route.dart';
-import 'package:hr_core/src/custom_widgets/custom_dialog/custom_dialog.dart';
-import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_core/src/models/attendance_model.dart';
 import 'package:hr_core/src/models/check_in_model.dart';
 import 'package:hr_core/src/models/holiday_model.dart';
@@ -110,8 +106,7 @@ class SimpleHrService {
   }) async {
     try {
       if (latitude == null || longitude == null || address == null) {
-        CustomDialog.dialog(child: CustomText(text: 'Please enter valid data'));
-        return CheckInModel();
+        return CheckInModel(status: 'Please enter valid location data');
       }
       final result = await _odooService.callOdooApi(
         apiUrl: 'attendance/check',
@@ -123,13 +118,19 @@ class SimpleHrService {
       if (result is Map<String, dynamic> && result['status'] == 'success') {
         return CheckInModel.fromJson(result);
       }
-      if (result is Map && result['message'] != null) {
-        log(
-          name: 'SimpleHrService',
-          'attendance/check failed: ${result['message']}',
-        );
+      if (result is Map) {
+        final message = result['message']?.toString();
+        if (message != null && message.isNotEmpty) {
+          log(
+            name: 'SimpleHrService',
+            'attendance/check failed: $message',
+          );
+          return CheckInModel(status: message);
+        }
       }
-      return CheckInModel(status: result is Map ? result['status']?.toString() : 'error');
+      return CheckInModel(
+        status: result is Map ? result['status']?.toString() : 'error',
+      );
     } catch (e, stackTrace) {
       log(
         'Error attendance/check: $e',

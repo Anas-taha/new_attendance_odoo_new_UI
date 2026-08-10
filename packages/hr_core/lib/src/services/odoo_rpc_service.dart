@@ -364,23 +364,19 @@ class OdooRPCService {
             if (jsonResponse['result']['status'] == 'success') {
               return jsonResponse['result'];
             } else if (jsonResponse['result']['status'] == 'error') {
-              if (jsonResponse['result']['message'] ==
-                  'Invalid mobile session') {
+              final errorResult = Map<String, dynamic>.from(
+                jsonResponse['result'] as Map,
+              );
+              if (errorResult['message'] == 'Invalid mobile session') {
                 log(
                   name: 'OdooRPCService',
                   'Session expired or invalid. Redirecting to login.',
                 );
                 await CustomDialog.loginAgainDialog(
-                  jsonResponse['result']['message'],
-                );
-                // Get.offNamed(AppRoutes.login);
-              } else {
-                CustomDialog.dialog(
-                  child: CustomText(
-                    text: jsonResponse['result']['message'] ?? 'Error',
-                  ),
+                  errorResult['message']?.toString(),
                 );
               }
+              return errorResult;
             }
           }
         } catch (e) {

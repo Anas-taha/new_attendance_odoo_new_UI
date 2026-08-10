@@ -7,7 +7,7 @@ import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
 class CustomDialog {
   static Future dialog({
     required Widget child,
-    bool barrierDismissible = false,
+    bool barrierDismissible = true,
   }) {
     return showDialog(
       context: Get.context!,

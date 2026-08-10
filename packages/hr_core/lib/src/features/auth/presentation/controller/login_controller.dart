@@ -339,7 +339,7 @@ class LoginController extends GetxController {
 
     while (true) {
       final confirmed = await CustomDialog.dialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
