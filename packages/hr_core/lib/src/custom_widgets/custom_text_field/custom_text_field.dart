@@ -37,7 +37,10 @@ class CustomTextField extends StatelessWidget {
   final double? height;
   final double? fontSize;
 
-  double get _fontSize => fontSize ?? 12.w;
+  double get _fontSize {
+    final size = fontSize ?? 12.w;
+    return size > 0 ? size : 12;
+  }
 
   @override
   Widget build(BuildContext context) {
