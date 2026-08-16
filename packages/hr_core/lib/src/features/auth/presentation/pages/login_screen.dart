@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              10.verticalSpace,
+              SizedBox(height: MediaQuery.of(context).padding.top),
               Align(
                 alignment: AlignmentDirectional.topEnd,
                 child: GestureDetector(
@@ -150,8 +150,8 @@ class _LoginBrandHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.r),
             child: Image.asset(
               logoPath,
-              height: 88.h,
-              width: 88.w,
+              height: 120.h,
+              // width: 88.w,
               fit: BoxFit.contain,
               errorBuilder: (_, __, ___) => Icon(
                 Icons.business,
@@ -167,13 +167,13 @@ class _LoginBrandHeader extends StatelessWidget {
             color: brand,
           ),
         12.verticalSpace,
-        CustomText(
-          text: OdooConfig.appName,
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w700,
-          color: primary,
-          textAlign: TextAlign.center,
-        ),
+        // CustomText(
+        //   text: OdooConfig.appName,
+        //   fontSize: 18.sp,
+        //   fontWeight: FontWeight.w700,
+        //   color: primary,
+        //   textAlign: TextAlign.center,
+        // ),
       ],
     );
   }

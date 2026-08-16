@@ -230,10 +230,17 @@ class ProfileScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.appFFFFFFBackGround1,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.app1A1A1AText1.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 10),
+                            ),
+                          ],
                         ),
                         child: CustomImage(
                           shape: BoxShape.circle,
-                          image: AppImage.defaultProfile,
+                          image: AppImage.person,
                         ),
                       ),
                     ],

@@ -9,7 +9,9 @@ void main() {
       odooDatabase: 'al-shalawi',
       primaryColor: Color(0xFF39493f),
       secondaryColor: Color(0xFFc7a67c),
-      logoAssetPath: 'assets/branding/shalawy_slogan.jpeg',
+      logoAssetPath: 'assets/branding/shalawy_slogan.jpeg', 
+           headerImageAssetPath: 'assets/branding/welcom_logo.png',
+
     ),
   );
 }

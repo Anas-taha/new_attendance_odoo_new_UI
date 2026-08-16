@@ -29,6 +29,7 @@ class CustomScreen extends StatelessWidget {
         children: [
           SafeArea(
             top: false,
+            bottom: false,
             child: Scaffold(
               backgroundColor: AppColors.appFFFFFFBackGround1,
               floatingActionButton: Padding(

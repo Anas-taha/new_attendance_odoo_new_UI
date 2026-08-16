@@ -288,7 +288,7 @@ class LoginController extends GetxController {
       }
 
       final profile = await SimpleHrService().getProfile();
-      final needsFaceRegistration = profile.profile?.hasImage != true;
+      final needsFaceRegistration = profile.profile?.hasImage == true;
 
       if (needsFaceRegistration) {
         Get.offAllNamed(AppRoutes.registerFace);

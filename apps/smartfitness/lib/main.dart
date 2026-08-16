@@ -9,7 +9,8 @@ void main() {
       odooDatabase: 'main',
       secondaryColor: Color(0xFFa41526),
       primaryColor: Color(0xFF000000),
-      logoAssetPath: 'assets/branding/logo.png',
+      logoAssetPath: 'assets/branding/smart_logo.png',
+      headerImageAssetPath: 'assets/branding/smart_welcome_logo.png',
     ),
   );
 }

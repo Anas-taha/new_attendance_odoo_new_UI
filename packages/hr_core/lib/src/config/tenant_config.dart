@@ -11,6 +11,7 @@ class TenantConfig {
     required this.primaryColor,
     required this.secondaryColor,
     this.logoAssetPath,
+    this.headerImageAssetPath,
   });
 
   final String appName;
@@ -22,4 +23,8 @@ class TenantConfig {
   /// Optional logo asset path declared in the app shell, e.g.
   /// `assets/branding/logo.png`.
   final String? logoAssetPath;
+
+  /// Optional second header image (banner, slogan, etc.) shown next to the logo
+  /// on the home greeting row. Configure per app in `main.dart`.
+  final String? headerImageAssetPath;
 }

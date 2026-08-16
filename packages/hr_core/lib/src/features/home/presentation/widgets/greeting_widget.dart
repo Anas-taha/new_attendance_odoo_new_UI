@@ -41,43 +41,27 @@ class GreetingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final brand = Theme.of(context).colorScheme.secondary;
     final logoPath = OdooConfig.logoAssetPath;
+    final headerImagePath = OdooConfig.headerImageAssetPath;
+    final hasHeaderImage =
+        headerImagePath != null && headerImagePath.isNotEmpty;
 
     return Column(
       children: [
         Row(
           children: [
-            if (logoPath != null && logoPath.isNotEmpty) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: Image.asset(
-                  logoPath,
-                  height: 28.h,
-                  width: 28.w,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => Icon(
-                    Icons.business,
-                    size: 24.sp,
-                    color: brand,
-                  ),
-                ),
-              ),
-              8.horizontalSpace,
-              Flexible(
-                child: CustomText(
-                  text: OdooConfig.appName,
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ] else
-              CustomText(
+           
+           
+              _BrandAssetImage(path: headerImagePath ?? logoPath!, brand: brand),
+          
+            if (!hasHeaderImage)
+             ... [
+              SizedBox(width: 8.w),
+               CustomText(
                 text: OdooConfig.appName,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w700,
                 color: Theme.of(context).colorScheme.primary,
-              ),
+              ),],
             const Spacer(),
             _AvatarChip(initials: _initials, brand: brand),
             10.horizontalSpace,
@@ -115,6 +99,33 @@ class GreetingWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _BrandAssetImage extends StatelessWidget {
+  const _BrandAssetImage({
+    required this.path,
+    required this.brand,
+  });
+
+  final String path;
+  final Color brand;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.r),
+      child: Image.asset(
+        path,
+        height: 40.h,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Icon(
+          Icons.business,
+          size: 24.sp,
+          color: brand,
+        ),
+      ),
     );
   }
 }

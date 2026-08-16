@@ -31,6 +31,8 @@ class OdooConfig {
 
   static String? get logoAssetPath => tenant.logoAssetPath;
 
+  static String? get headerImageAssetPath => tenant.headerImageAssetPath;
+
   static String get baseUrl {
     _ensureInitialized();
     return _config!.odooBaseUrl;
