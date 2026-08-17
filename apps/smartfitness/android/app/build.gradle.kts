@@ -27,7 +27,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.smartfitness.hr"
+        applicationId = "com.hr.app_odoo"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
