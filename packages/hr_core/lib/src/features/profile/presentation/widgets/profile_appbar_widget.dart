@@ -5,6 +5,7 @@ import 'package:hr_core/src/app/app_image.dart';
 import 'package:hr_core/src/app/app_route.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_back_button.dart';
 import 'package:hr_core/src/custom_widgets/custom_image/custom_image.dart';
+import 'package:hr_core/src/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_core/src/theme/app_theme.dart';
 
 class ProfileAppBar extends StatelessWidget {
@@ -34,8 +35,11 @@ class ProfileAppBar extends StatelessWidget {
             ),
           ),
           InkWell(
-            onTap: () {
-              Get.toNamed(AppRoutes.notifications);
+            onTap: () async {
+              await Get.toNamed(AppRoutes.notifications);
+              if (Get.isRegistered<HomeController>()) {
+                await Get.find<HomeController>().loadRecentNotifications();
+              }
             },
             child: Container(
               height: 24.h,

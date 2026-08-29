@@ -35,9 +35,7 @@ class HomeScreen extends StatelessWidget {
                   Obx(
                     () => GreetingWidget(
                       employeeName: controller.userName.value,
-                      unreadCount: controller.recentNotifications
-                          .where((n) => n.state == 'unread')
-                          .length,
+                      unreadCount: controller.unreadNotificationCount.value,
                     ),
                   ),
                   14.verticalSpace,

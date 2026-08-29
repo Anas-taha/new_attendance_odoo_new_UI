@@ -26,102 +26,110 @@ class RegisterFaceScreen extends StatelessWidget {
       child: CustomScreen(
         loading: controller.isLoading,
         screenPadding: 20,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              24.verticalSpace,
-              CustomText(
-                text: context.appWords.registerFaceTitle,
-                fontSize: 18.w,
-                color: primary,
-                fontWeight: FontWeight.w700,
-                textAlign: TextAlign.center,
-              ),
-              8.verticalSpace,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: CustomText(
-                  text: context.appWords.registerFaceDescription,
-                  fontSize: 13.w,
-                  color: AppColors.appA0A0A0Text2,
-                  fontWeight: FontWeight.w500,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              40.verticalSpace,
-              Obx(
-                () => _FacePreview(
-                  imageBytes: controller.faceImageBytes.value,
-                  hasCapturedImage: controller.hasCapturedImage.value,
-                  onTap: controller.captureFace,
-                  accentColor: secondary,
-                ),
-              ),
-              16.verticalSpace,
-              Obx(() {
-                final message = controller.errorMessage.value;
-                if (message == null || message.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w),
-                  child: CustomText(
-                    text: message,
-                    fontSize: 13.w,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.appF44336Error,
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }),
-              24.verticalSpace,
-              CustomText(
-                text: context.appWords.registerFaceInstructionsTitle,
-                fontSize: 13.w,
-                fontWeight: FontWeight.w500,
-                color: primary,
-                textAlign: TextAlign.center,
-              ),
-              12.verticalSpace,
-              _InstructionItem(
-                text: context.appWords.registerFaceInstruction1,
-                accentColor: secondary,
-              ),
-              8.verticalSpace,
-              _InstructionItem(
-                text: context.appWords.registerFaceInstruction2,
-                accentColor: secondary,
-              ),
-              8.verticalSpace,
-              _InstructionItem(
-                text: context.appWords.registerFaceInstruction3,
-                accentColor: secondary,
-              ),
-              32.verticalSpace,
-              Obx(() {
-                final hasImage = controller.hasCapturedImage.value;
-                final requiresRetake = controller.requiresRetake.value;
-                final buttonText = requiresRetake || !hasImage
-                    ? context.appWords.registerFaceRetake
-                    : context.appWords.registerFaceContinue;
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomText(
+                      text: context.appWords.registerFaceTitle,
+                      fontSize: 18.w,
+                      color: primary,
+                      fontWeight: FontWeight.w700,
+                      textAlign: TextAlign.center,
+                    ),
+                    8.verticalSpace,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      child: CustomText(
+                        text: context.appWords.registerFaceDescription,
+                        fontSize: 13.w,
+                        color: AppColors.appA0A0A0Text2,
+                        fontWeight: FontWeight.w500,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    40.verticalSpace,
+                    Obx(
+                      () => _FacePreview(
+                        imageBytes: controller.faceImageBytes.value,
+                        hasCapturedImage: controller.hasCapturedImage.value,
+                        onTap: controller.captureFace,
+                        accentColor: secondary,
+                      ),
+                    ),
+                    16.verticalSpace,
+                    Obx(() {
+                      final message = controller.errorMessage.value;
+                      if (message == null || message.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: CustomText(
+                          text: message,
+                          fontSize: 13.w,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.appF44336Error,
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }),
+                    24.verticalSpace,
+                    CustomText(
+                      text: context.appWords.registerFaceInstructionsTitle,
+                      fontSize: 13.w,
+                      fontWeight: FontWeight.w500,
+                      color: primary,
+                      textAlign: TextAlign.center,
+                    ),
+                    12.verticalSpace,
+                    _InstructionItem(
+                      text: context.appWords.registerFaceInstruction1,
+                      accentColor: secondary,
+                    ),
+                    8.verticalSpace,
+                    _InstructionItem(
+                      text: context.appWords.registerFaceInstruction2,
+                      accentColor: secondary,
+                    ),
+                    8.verticalSpace,
+                    _InstructionItem(
+                      text: context.appWords.registerFaceInstruction3,
+                      accentColor: secondary,
+                    ),
+                    32.verticalSpace,
+                    Obx(() {
+                      final hasImage = controller.hasCapturedImage.value;
+                      final requiresRetake = controller.requiresRetake.value;
+                      final buttonText = requiresRetake || !hasImage
+                          ? context.appWords.registerFaceRetake
+                          : context.appWords.registerFaceContinue;
 
-                return CustomButton(
-                  text: buttonText,
-                  onTap: () {
-                    if (requiresRetake || !hasImage) {
-                      controller.captureFace();
-                    } else {
-                      controller.saveAndContinue();
-                    }
-                  },
-                  color: requiresRetake || !hasImage
-                      ? secondary.withValues(alpha: 0.85)
-                      : null,
-                );
-              }),
-              16.verticalSpace,
-            ],
-          ),
+                      return CustomButton(
+                        text: buttonText,
+                        onTap: () {
+                          if (requiresRetake || !hasImage) {
+                            controller.captureFace();
+                          } else {
+                            controller.saveAndContinue();
+                          }
+                        },
+                        color: requiresRetake || !hasImage
+                            ? secondary.withValues(alpha: 0.85)
+                            : null,
+                      );
+                    }),
+                    16.verticalSpace,
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

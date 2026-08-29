@@ -6,6 +6,7 @@ import 'package:hr_core/src/app/app_route.dart';
 import 'package:hr_core/src/config/odoo_config.dart';
 import 'package:hr_core/src/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_core/src/features/home/presentation/controllers/home_controller.dart';
 import 'package:hr_core/src/services/extension.dart';
 import 'package:hr_core/src/theme/app_theme.dart';
 
@@ -169,7 +170,12 @@ class _NotificationBell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed(AppRoutes.notifications),
+      onTap: () async {
+        await Get.toNamed(AppRoutes.notifications);
+        if (Get.isRegistered<HomeController>()) {
+          await Get.find<HomeController>().loadRecentNotifications();
+        }
+      },
       borderRadius: BorderRadius.circular(20.r),
       child: SizedBox(
         height: 36.h,

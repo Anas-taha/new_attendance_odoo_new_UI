@@ -73,7 +73,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.notifications,
-      page: () => NotificationScreen(),
+      page: () => const NotificationScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut<NotificationController>(
           () => NotificationController(),

@@ -308,6 +308,9 @@ class OdooRPCService {
     double? latitude,
     double? longitude,
     String? address,
+    int? id,
+    List<int>? ids,
+    Map<String, dynamic>? extraParams,
   }) async {
     if (!isAuthenticated) {
       throw Exception('Not authenticated. Please login first.');
@@ -336,6 +339,9 @@ class OdooRPCService {
       if (latitude != null) params['latitude'] = latitude;
       if (longitude != null) params['longitude'] = longitude;
       if (address != null) params['address'] = address;
+      if (id != null) params['id'] = id;
+      if (ids != null) params['ids'] = ids;
+      if (extraParams != null) params.addAll(extraParams);
 
       final response = await http
           .post(

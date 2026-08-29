@@ -1,7 +1,7 @@
 name: smartfitness
 description: SMART FITNESS — white-label HR attendance app shell.
 publish_to: none
-version: 1.0.8+11
+version: 1.0.9+12
 
 environment:
   sdk: ^3.8.1

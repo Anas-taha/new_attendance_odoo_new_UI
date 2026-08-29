@@ -2,28 +2,42 @@ class NotificationModel {
   String? status;
   num? unreadCount;
   List<Notifications>? notifications;
+  num? marked;
 
-  NotificationModel({this.status, this.unreadCount, this.notifications});
+  NotificationModel({
+    this.status,
+    this.unreadCount,
+    this.notifications,
+    this.marked,
+  });
 
   NotificationModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    unreadCount = json['unread_count'];
+    status = json['status']?.toString();
+    unreadCount = json['unread_count'] as num?;
+    marked = json['marked'] as num?;
     if (json['notifications'] != null) {
       notifications = <Notifications>[];
-      json['notifications'].forEach((v) {
-        notifications!.add(new Notifications.fromJson(v));
-      });
+      for (final item in json['notifications'] as List) {
+        notifications!.add(
+          Notifications.fromJson(Map<String, dynamic>.from(item as Map)),
+        );
+      }
+    } else if (json['notification'] != null) {
+      notifications = [
+        Notifications.fromJson(
+          Map<String, dynamic>.from(json['notification'] as Map),
+        ),
+      ];
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['unread_count'] = this.unreadCount;
-    if (this.notifications != null) {
-      data['notifications'] = this.notifications!
-          .map((v) => v.toJson())
-          .toList();
+    final data = <String, dynamic>{};
+    data['status'] = status;
+    data['unread_count'] = unreadCount;
+    data['marked'] = marked;
+    if (notifications != null) {
+      data['notifications'] = notifications!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -36,6 +50,9 @@ class Notifications {
   String? type;
   String? state;
   String? date;
+  String? readDate;
+  num? leaveId;
+  String? rejectedReason;
 
   Notifications({
     this.id,
@@ -44,25 +61,58 @@ class Notifications {
     this.type,
     this.state,
     this.date,
+    this.readDate,
+    this.leaveId,
+    this.rejectedReason,
   });
 
   Notifications.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    title = json['title'];
-    description = json['description'];
-    type = json['type'];
-    state = json['state'];
-    date = json['date'];
+    id = json['id'] as num?;
+    title = json['title']?.toString();
+    description = json['description']?.toString();
+    type = json['type']?.toString();
+    state = json['state']?.toString();
+    date = json['date']?.toString();
+    readDate = json['read_date']?.toString();
+    leaveId = json['leave_id'] as num?;
+    rejectedReason = json['rejected_reason']?.toString();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['type'] = this.type;
-    data['state'] = this.state;
-    data['date'] = this.date;
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['description'] = description;
+    data['type'] = type;
+    data['state'] = state;
+    data['date'] = date;
+    data['read_date'] = readDate;
+    data['leave_id'] = leaveId;
+    data['rejected_reason'] = rejectedReason;
     return data;
+  }
+
+  Notifications copyWith({
+    num? id,
+    String? title,
+    String? description,
+    String? type,
+    String? state,
+    String? date,
+    String? readDate,
+    num? leaveId,
+    String? rejectedReason,
+  }) {
+    return Notifications(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      state: state ?? this.state,
+      date: date ?? this.date,
+      readDate: readDate ?? this.readDate,
+      leaveId: leaveId ?? this.leaveId,
+      rejectedReason: rejectedReason ?? this.rejectedReason,
+    );
   }
 }

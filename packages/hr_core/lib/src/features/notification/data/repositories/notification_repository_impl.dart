@@ -7,17 +7,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
     : _hrService = hrService ?? SimpleHrService();
   final SimpleHrService _hrService;
 
-  // static const List<String> _notifications = <String>[
-  //   ' readed notification 1',
-  //   ' readed notification 2',
-  //   'unReaded notification 1',
-  //   'unReaded notification 2',
-  //   'unReaded notification 3',
-  // ];
-
   @override
-  Future<NotificationModel> getNotification() async {
-    final result = await _hrService.getNotification();
+  Future<NotificationModel> getNotification({String? state}) async {
+    final result = await _hrService.getNotification(state: state);
     if (result.status == 'success') {
       return result;
     }
@@ -26,13 +18,23 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<List<Notifications>> getReadNotifications() async {
-    final model = await getNotification();
-    return model.notifications?.where((n) => n.state == 'read').toList() ?? [];
+    final model = await getNotification(state: 'read');
+    return model.notifications ?? [];
   }
 
   @override
   Future<List<Notifications>> getUnreadNotifications() async {
-    final model = await getNotification();
-    return model.notifications?.where((n) => n.state == 'unread').toList() ?? [];
+    final model = await getNotification(state: 'unread');
+    return model.notifications ?? [];
+  }
+
+  @override
+  Future<NotificationModel> markAsRead({int? id, List<int>? ids}) {
+    return _hrService.markNotificationsRead(id: id, ids: ids);
+  }
+
+  @override
+  Future<NotificationModel> markAllAsRead({List<int>? ids}) {
+    return _hrService.markAllNotificationsRead(ids: ids);
   }
 }

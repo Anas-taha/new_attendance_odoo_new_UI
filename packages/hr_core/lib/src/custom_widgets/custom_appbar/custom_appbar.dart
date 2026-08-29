@@ -4,9 +4,10 @@ import 'package:get/get.dart';
 import 'package:hr_core/src/app/app_image.dart';
 import 'package:hr_core/src/app/app_route.dart';
 import 'package:hr_core/src/custom_widgets/custom_button/custom_back_button.dart';
-import 'package:hr_core/src/theme/app_theme.dart';
 import 'package:hr_core/src/custom_widgets/custom_image/custom_image.dart';
 import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
+import 'package:hr_core/src/features/home/presentation/controllers/home_controller.dart';
+import 'package:hr_core/src/theme/app_theme.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -38,7 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
-          CustomBackButton(color: primary),
+          CustomBackButton(color: primary, onTap: onBackTap),
           CustomText(
             text: title,
             fontSize: 17.w,
@@ -54,7 +55,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? _buildIconButton(
                   height: 30,
                   image: AppImage.notificationIcon,
-                  onTap: () => Get.toNamed(AppRoutes.notifications),
+                  onTap: onNotificationTap ??
+                      () async {
+                        await Get.toNamed(AppRoutes.notifications);
+                        if (Get.isRegistered<HomeController>()) {
+                          await Get.find<HomeController>()
+                              .loadRecentNotifications();
+                        }
+                      },
                 )
               : SizedBox.shrink(),
           5.horizontalSpace,

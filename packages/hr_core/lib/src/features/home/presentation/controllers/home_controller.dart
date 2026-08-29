@@ -72,6 +72,7 @@ class HomeController extends GetxController {
   Rx<String> beforeTime = Rx<String>("00:00");
   Rxn<HomeUiEvent> uiEvent = Rxn<HomeUiEvent>();
   RxList<Notifications> recentNotifications = RxList<Notifications>([]);
+  RxInt unreadNotificationCount = 0.obs;
   RxString userName = ''.obs;
 
   final HomeRepository _homeRepository;
@@ -196,10 +197,12 @@ class HomeController extends GetxController {
   Future<void> loadRecentNotifications() async {
     try {
       final model = await _notificationRepository.getNotification();
-      recentNotifications.assignAll(
-        (model.notifications ?? []).take(3).toList(),
-      );
+      final items = model.notifications ?? [];
+      unreadNotificationCount.value = model.unreadCount?.toInt() ??
+          items.where((n) => n.state == 'unread').length;
+      recentNotifications.assignAll(items.take(3).toList());
     } catch (e) {
+      unreadNotificationCount.value = 0;
       recentNotifications.clear();
     }
   }

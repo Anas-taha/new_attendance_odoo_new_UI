@@ -67,19 +67,57 @@ class SimpleHrService {
     }
   }
 
-  Future<NotificationModel> getNotification() async {
+  Future<NotificationModel> getNotification({String? state}) async {
     try {
       final result = await _odooService.callOdooApi(
         apiUrl: 'notifications',
-        state: null,
+        state: state,
       );
-      if (result['status'] == 'success') {
-        return NotificationModel.fromJson(result);
+      if (result is Map && result['status'] == 'success') {
+        return NotificationModel.fromJson(Map<String, dynamic>.from(result));
       }
       return NotificationModel();
     } catch (e) {
-      print('❌ Error getting salary: $e');
+      print('❌ Error getting notifications: $e');
       return NotificationModel();
+    }
+  }
+
+  /// POST /mobile/notifications/read — mark one or many as read.
+  Future<NotificationModel> markNotificationsRead({
+    int? id,
+    List<int>? ids,
+  }) async {
+    try {
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'notifications/read',
+        id: id,
+        ids: ids,
+      );
+      if (result is Map && result['status'] == 'success') {
+        return NotificationModel.fromJson(Map<String, dynamic>.from(result));
+      }
+      return NotificationModel(status: 'error');
+    } catch (e) {
+      print('❌ Error marking notifications read: $e');
+      return NotificationModel(status: 'error');
+    }
+  }
+
+  /// POST /mobile/notifications/mark_read — mark all unread (or given ids).
+  Future<NotificationModel> markAllNotificationsRead({List<int>? ids}) async {
+    try {
+      final result = await _odooService.callOdooApi(
+        apiUrl: 'notifications/mark_read',
+        ids: ids,
+      );
+      if (result is Map && result['status'] == 'success') {
+        return NotificationModel.fromJson(Map<String, dynamic>.from(result));
+      }
+      return NotificationModel(status: 'error');
+    } catch (e) {
+      print('❌ Error mark_read notifications: $e');
+      return NotificationModel(status: 'error');
     }
   }
 
