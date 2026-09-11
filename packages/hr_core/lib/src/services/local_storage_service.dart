@@ -319,6 +319,22 @@ class LocalStorageService {
     await prefs.remove(_biometricLoginEnabledKey);
   }
 
+  /// Clears password + biometric so the user can enter new credentials.
+  /// Keeps the last email by default for convenience after password change.
+  Future<void> clearAuthForReLogin({bool keepEmail = true}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = keepEmail ? prefs.getString(_savedEmailKey) : null;
+
+    await prefs.remove(_savedPasswordKey);
+    await prefs.remove(_savedNameKey);
+    await prefs.remove(_biometricLoginEnabledKey);
+    if (!keepEmail) {
+      await prefs.remove(_savedEmailKey);
+    } else if (savedEmail != null && savedEmail.isNotEmpty) {
+      await prefs.setString(_savedEmailKey, savedEmail);
+    }
+  }
+
   Future<bool> isBiometricLoginEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_biometricLoginEnabledKey) ?? false;

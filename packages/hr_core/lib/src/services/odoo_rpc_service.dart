@@ -1,12 +1,8 @@
 ﻿import 'dart:convert';
 import 'dart:developer';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:hr_core/src/app/app_route.dart';
-import 'package:hr_core/src/custom_widgets/custom_button/custom_button.dart';
 import 'package:hr_core/src/custom_widgets/custom_dialog/custom_dialog.dart';
-import 'package:hr_core/src/custom_widgets/custom_text/custom_text.dart';
 import 'package:hr_core/src/models/hr_login.dart';
+import 'package:hr_core/src/services/local_storage_service.dart';
 import 'package:http/http.dart' as http;
 import '../config/odoo_config.dart';
 
@@ -974,6 +970,8 @@ class OdooRPCService {
     _webSessionId = null;
     _username = null;
     _password = null;
+    _mobileToken = null;
+    OdooConfig.token = '';
     clearCurrentEmployeeId();
   }
 
@@ -985,8 +983,17 @@ class OdooRPCService {
     _webSessionId = null;
     _username = null;
     _password = null;
+    _mobileToken = null;
+    OdooConfig.token = '';
     clearCurrentEmployeeId();
     print('✅ Session data cleared completely');
+  }
+
+  /// Clears in-memory token/session when credentials are no longer valid
+  /// (password changed, expired mobile session, etc.).
+  Future<void> invalidateLocalAuth({bool keepSavedEmail = true}) async {
+    clearSession();
+    await LocalStorageService().clearAuthForReLogin(keepEmail: keepSavedEmail);
   }
 
   /// Get a web session for API calls

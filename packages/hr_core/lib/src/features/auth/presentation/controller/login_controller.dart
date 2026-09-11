@@ -256,9 +256,8 @@ class LoginController extends GetxController {
       );
 
       if (!result.success) {
-        _showSnackBar(
+        await _handleInvalidCredentials(
           result.error ?? AppLocalizations.of(Get.context!)!.authFailed,
-          isError: true,
         );
         return;
       }
@@ -485,6 +484,14 @@ class LoginController extends GetxController {
   Future<void> openBiometricSettings() async {
     await _biometricAuth.openDeviceSettings();
     await _refreshBiometricState();
+  }
+
+  Future<void> _handleInvalidCredentials(String message) async {
+    await OdooRPCService.instance.invalidateLocalAuth(keepSavedEmail: true);
+    passwordController.clear();
+    await prefillSavedCredentials();
+    await _refreshBiometricState();
+    _showSnackBar(message, isError: true);
   }
 
   void _showSnackBar(String message, {required bool isError}) {
